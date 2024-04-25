@@ -1,0 +1,9 @@
+#myCanvas {
+    width: 50%;
+    height: 50%;
+    border-style: solid;
+    border-color: black;
+    align-content: center;
+    background-color: #ffca1a;
+    
+}
