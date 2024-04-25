@@ -3,5 +3,8 @@
     "express": "^4.19.2",
     "websocket": "^1.0.34",
     "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.0"
   }
 }
