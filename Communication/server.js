@@ -14,6 +14,15 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'main.html'));
 });
 
+app.use(express.json());
+
+app.post('/createGame', (req, res) => {
+    const data = req.body;
+    console.log(data);
+
+    res.send('POST request received');
+});
+
 wss.on('connection', function connection(ws) {
     clients.add(ws);
     ws.on('message', function incoming(fromClientMessage) {

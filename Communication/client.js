@@ -22,3 +22,40 @@ socket.addEventListener('error', function (error) {
 socket.addEventListener('close', function (event) {
     console.log('Connection closed.');
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const button = document.getElementById('createGameButton');
+    if (button) {
+        button.addEventListener('click', createGame);
+    } else {
+        console.error('Button with id "createGameButton" not found.');
+    }
+});
+
+function createGame() {
+    console.log("yesss!");
+    fetch('http://localhost:3000/createGame', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        // TODO set parameter not static values
+        body: JSON.stringify({
+            board: 1,
+            colorOfFigure: "red",
+            colorOfDie: "blue"
+        }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
