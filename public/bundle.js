@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function createGame() {
-    console.log("yesss!");
     fetch('http://localhost:3000/createGame', {
         method: 'POST',
         headers: {
@@ -178,5 +177,4 @@ document.addEventListener('DOMContentLoaded', function () {
 },{}],3:[function(require,module,exports){
 const script = require('./View/script');
 const client = require('./Communication/client');
-
 },{"./Communication/client":1,"./View/script":2}]},{},[3]);

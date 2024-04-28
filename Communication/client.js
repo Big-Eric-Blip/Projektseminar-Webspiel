@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function createGame() {
-    console.log("yesss!");
     fetch('http://localhost:3000/createGame', {
         method: 'POST',
         headers: {
