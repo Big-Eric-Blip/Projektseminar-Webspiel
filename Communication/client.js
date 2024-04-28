@@ -1,26 +1,24 @@
-const WebSocket = require('ws');
-
-const url = "127.0.0.1:3000";
-const socket = new WebSocket('ws://' + url);
+const url = "ws://127.0.0.1:3000";
+const socket = new WebSocket(url);
 
 // Connect to server
-socket.on('open', function () {
+socket.addEventListener('open', function (event) {
     console.log('Connection established.');
 
-    socket.send('Hello Server, i\'m the client!');
+    socket.send('Hello Server, I\'m the client!');
 });
 
 // Handle incoming messages
-socket.on('message', function (data) {
-    console.log('Message from server:', data.toString());
+socket.addEventListener('message', function (event) {
+    console.log('Message from server:', event.data);
 });
 
 // Error handling on connection
-socket.on('error', function (error) {
+socket.addEventListener('error', function (error) {
     console.error('Connection Error:', error);
 });
 
 // Close connection
-socket.on('close', function () {
+socket.addEventListener('close', function (event) {
     console.log('Connection closed.');
 });
