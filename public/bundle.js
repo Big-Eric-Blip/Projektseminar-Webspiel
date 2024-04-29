@@ -72,12 +72,6 @@ function createGame() {
 function rollDice() {
     fetch('http://localhost:3000/rollDice', {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            result
-        }),
     })
         .then(response => {
             if (!response.ok) {
@@ -85,13 +79,14 @@ function rollDice() {
             }
             return response.json();
         })
-        .then(data => {
-            console.log('Dice Roll Result:', data.result); // Log the dice roll result
+        .then(response => {
+            console.log('Dice Roll Result:', data.result); 
         })
         .catch(error => {
             console.error('Error:', error);
         });
 }
+
 
 },{}],2:[function(require,module,exports){
 document.addEventListener('DOMContentLoaded', function () {
