@@ -29,6 +29,16 @@ app.post('/createGame', (req, res) => {
     res.send({gameId: gameId, playerId: playerId});
 });
 
+
+app.post('/rollDice', (req, res) => {
+    
+    const diceResult = Math.floor(Math.random() * 6) + 1; 
+    // Respond
+    res.json({ result: diceResult });
+});
+
+
+
 wss.on('connection', function connection(ws) {
     clients.add(ws);
     ws.on('message', function incoming(fromClientMessage) {
