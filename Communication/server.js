@@ -30,7 +30,7 @@ app.post('/createGame', (req, res) => {
 });
 
 
-app.post('/rollDice', (req, res) => {
+app.get('/rollDice', (req, res) => {
     
     const diceResult = Math.floor(Math.random() * 6) + 1; 
     // Respond

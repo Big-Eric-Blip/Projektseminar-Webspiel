@@ -26,12 +26,21 @@ socket.addEventListener('close', function (event) {
 
 document.addEventListener('DOMContentLoaded', function() {
     const button = document.getElementById('createGameButton');
+    const rollButton = document.getElementById('rollDiceButton');
+
     if (button) {
         button.addEventListener('click', createGame);
     } else {
         console.error('Button with id "createGameButton" not found.');
     }
+
+    if (rollButton) {
+        rollButton.addEventListener('click', rollDice);
+    } else {
+        console.error('Button with id "rollDiceButton" not found.');
+    }
 });
+
 
 function createGame() {
     fetch('http://localhost:3000/createGame', {
@@ -59,6 +68,31 @@ function createGame() {
             console.error('Error:', error);
         });
 }
+
+function rollDice() {
+    fetch('http://localhost:3000/rollDice', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            result
+        }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Dice Roll Result:', data.result); // Log the dice roll result
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
 },{}],2:[function(require,module,exports){
 document.addEventListener('DOMContentLoaded', function () {
     var c = document.getElementById("myCanvas");
