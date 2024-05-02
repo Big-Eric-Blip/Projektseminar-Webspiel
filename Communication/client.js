@@ -1,5 +1,3 @@
-const { response } = require("express");
-
 const url = "ws://127.0.0.1:3000";
 const socket = new WebSocket(url);
 
@@ -26,11 +24,11 @@ socket.addEventListener('close', function (event) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    const button = document.getElementById('createGameButton');
+    const createGameButton = document.getElementById('createGameButton');
     const rollButton = document.getElementById('rollDiceButton');
 
-    if (button) {
-        button.addEventListener('click', createGame);
+    if (createGameButton) {
+        createGameButton.addEventListener('click', createGame);
     } else {
         console.error('Button with id "createGameButton" not found.');
     }
@@ -93,7 +91,7 @@ function rollDice() {
             return response.json();
         })
         .then(response => {
-            console.log('Dice Roll Result:', data.result); 
+            console.log('Dice Roll Result:', response.result);
         })
         .catch(error => {
             console.error('Error:', error);
