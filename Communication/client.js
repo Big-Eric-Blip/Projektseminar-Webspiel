@@ -1,27 +1,29 @@
-const url = "ws://127.0.0.1:3000";
-const socket = new WebSocket(url);
+function sendMessage(message) {
+    const url = "ws://127.0.0.1:3000";
+    const socket = new WebSocket(url);
 
-// Connect to server
-socket.addEventListener('open', function (event) {
-    console.log('Connection established.');
+    // Connect to server
+    socket.addEventListener('open', function (event) {
+        console.log('Connection established.');
+        // Send the message once the connection is open
+        socket.send(JSON.stringify(message));
+    });
 
-    socket.send('Hello Server, I\'m the client!');
-});
+    // Handle incoming messages
+    socket.addEventListener('message', function (event) {
+        console.log('Message from server:', event.data);
+    });
 
-// Handle incoming messages
-socket.addEventListener('message', function (event) {
-    console.log('Message from server:', event.data);
-});
+    // Error handling on connection
+    socket.addEventListener('error', function (error) {
+        console.error('Connection Error:', error);
+    });
 
-// Error handling on connection
-socket.addEventListener('error', function (error) {
-    console.error('Connection Error:', error);
-});
-
-// Close connection
-socket.addEventListener('close', function (event) {
-    console.log('Connection closed.');
-});
+    // Close connection
+    socket.addEventListener('close', function (event) {
+        console.log('Connection closed.');
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const createGameButton = document.getElementById('createGameButton');
@@ -81,21 +83,7 @@ function createGame() {
 
 
 function rollDice() {
-    fetch('http://localhost:3000/rollDice', {
-        method: 'GET',
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(response => {
-            console.log('Dice Roll Result:', response.result);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    sendMessage({ type: 'rollDice' });
 }
 
 

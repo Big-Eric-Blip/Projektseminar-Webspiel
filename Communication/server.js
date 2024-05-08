@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
@@ -31,25 +31,38 @@ app.post('/createGame', (req, res) => {
 
 
 app.get('/rollDice', (req, res) => {
-    const diceResult = Math.floor(Math.random() * 6) + 1; 
-    
+    const diceResult = Math.floor(Math.random() * 6) + 1;
+
     res.send({result: diceResult});
-    //res.json({ result: diceResult });
+    // res.json({ result: diceResult });
 });
 
 
+function checkClientMessage(message) {
+    switch (message.type) {
+        case 'rollDice':
+            return {dieValue: (Math.floor(Math.random() * 6) + 1).toString()};
+        default:
+            console.log(`Sorry, we are out of ${message.type}.`);
+            return {message: `Sorry, we are out of ${message.type}.`};
+    }
+}
 
 wss.on('connection', function connection(ws) {
-    clients.add(ws);
+    // clients.add(ws);
     ws.on('message', function incoming(fromClientMessage) {
         console.log('received: %s', fromClientMessage);
-        const toClientMessage = "Message from server";
-        for (let client of clients) {
-            client.send(toClientMessage);
-        }
+        let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage));
+
+        ws.send(JSON.stringify(sendBackToClient));
+        // for (let client of clients) {
+        //     client.send(sendBackToClient);
+        // }
     });
+    
 
     ws.send('connected');
+
 });
 
 const PORT = process.env.PORT || 3000;
