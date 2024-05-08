@@ -1,5 +1,6 @@
 body {
     background-color: #ffca1a;
+    margin-top: 100px;
 }
 
 #myCanvas {
@@ -35,8 +36,8 @@ body {
     width: auto;
     padding-left: 20px;
     padding-right: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 .game-board {
     display: flex;
@@ -49,10 +50,11 @@ body {
    justify-content: space-evenly;
    align-items: center; 
    padding: 20px;
-   background-color: aliceblue;
-   margin-top: none;
-   margin-left: none;
-   margin-right: none;
+   position: fixed;
+   background-color: #ffca1a;
+   top: 0;
+    left: 0;
+    width: 100%;
 }
 .site-header__wrapper {
     display:flex;
@@ -60,3 +62,9 @@ body {
     align-items: center;
     flex-wrap: wrap;
 }
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%
+  }
