@@ -4,6 +4,7 @@ class Renderer {
         this.ctx = this.canvas.getContext("2d");
         this.small = 35;
         this.big = 45;
+        this.draw();
 
     }
     draw() {
@@ -154,3 +155,7 @@ class Renderer {
     };
 
 }
+/*document.addEventListener("DOMContentLoaded", function() {
+    const renderer = new Renderer("myCanvas");
+    renderer.draw();
+});*/
