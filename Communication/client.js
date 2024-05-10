@@ -1,4 +1,4 @@
-function sendMessage(message) {
+function sendMessage(message, onResponse) {
     const url = "ws://127.0.0.1:3000";
     const socket = new WebSocket(url);
 
@@ -12,6 +12,7 @@ function sendMessage(message) {
     // Handle incoming messages
     socket.addEventListener('message', function (event) {
         console.log('Message from server:', event.data);
+        onResponse(event.data);
     });
 
     // Error handling on connection
@@ -25,7 +26,7 @@ function sendMessage(message) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const createGameButton = document.getElementById('createGameButton');
     const rollButton = document.getElementById('rollDiceButton');
 
@@ -83,12 +84,14 @@ function createGame() {
 
 
 function rollDice() {
-    sendMessage({ type: 'rollDice' });
+    sendMessage({type: 'rollDice'}, handleRollDiceResponse);
 }
 
 
+function handleRollDiceResponse(response) {
+    const dieObj = JSON.parse(response);
+    console.log(dieObj);
+    console.log(dieObj.dieValue);
 
-
-
-
+}
 

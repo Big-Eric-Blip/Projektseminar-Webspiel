@@ -1,5 +1,5 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-function sendMessage(message) {
+function sendMessage(message, onResponse) {
     const url = "ws://127.0.0.1:3000";
     const socket = new WebSocket(url);
 
@@ -13,6 +13,7 @@ function sendMessage(message) {
     // Handle incoming messages
     socket.addEventListener('message', function (event) {
         console.log('Message from server:', event.data);
+        onResponse(event.data);
     });
 
     // Error handling on connection
@@ -26,7 +27,7 @@ function sendMessage(message) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const createGameButton = document.getElementById('createGameButton');
     const rollButton = document.getElementById('rollDiceButton');
 
@@ -84,30 +85,16 @@ function createGame() {
 
 
 function rollDice() {
-    sendMessage({ type: 'rollDice' });
-
-    // fetch('http://localhost:3000/rollDice', {
-    //     method: 'GET',
-    // })
-    //     .then(response => {
-    //         if (!response.ok) {
-    //             throw new Error('Network response was not ok');
-    //         }
-    //         return response.json();
-    //     })
-    //     .then(response => {
-    //         console.log('Dice Roll Result:', response.result);
-    //     })
-    //     .catch(error => {
-    //         console.error('Error:', error);
-    //     });
+    sendMessage({type: 'rollDice'}, handleRollDiceResponse);
 }
 
 
+function handleRollDiceResponse(response) {
+    const responseObj = JSON.parse(response);
+    console.log(responseObj);
+    console.log(responseObj.dieValue);
 
-
-
-
+}
 
 
 },{}],2:[function(require,module,exports){

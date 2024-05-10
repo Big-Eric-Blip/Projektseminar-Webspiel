@@ -59,9 +59,7 @@ wss.on('connection', function connection(ws) {
         //     client.send(sendBackToClient);
         // }
     });
-    
 
-    ws.send('connected');
 
 });
 
