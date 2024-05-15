@@ -1,19 +1,24 @@
 class Game {
     /**
-     * 
-     * @param {*} gameID 
-     * @param {*} player 
-     * @param {*} boardType 
-     * @param {*} startingPositions 
-     * @param {*} gameArray 
-     * @param {*} goalArray 
+     *
+     * @param {string} gameID
+     * @param {Player[]} player
+     * @param {string} boardType
      */
-    constructor(gameID, player, boardType, startingPositions, gameArray, goalArray) {
-        this.gameID = gameID
-        this.player = player
-        this.boardType = boardType
-        this.startingPositions = startingPositions
-        this.gameArray = gameArray
-        this.goalArray = goalArray
+    constructor(gameID, player, boardType) {
+        this.gameID = gameID;
+        this.player = player;
+        this.boardType = boardType;
+        // this.startingPositions = startingPositions
+        // this.gameArray = gameArray
+        // this.goalArray = goalArray
     }
+
+    addPlayer(newPlayer) {
+        this.player.push(newPlayer);
+    }
+
+//     TODO add removePlayer method
 }
+
+module.exports = Game;
