@@ -1,45 +1,65 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-'use strict';
-
-module.exports = function () {
-  throw new Error(
-    'ws does not work in the browser. Browser clients must use the native ' +
-      'WebSocket object'
-  );
-};
-
-},{}],2:[function(require,module,exports){
-const WebSocket = require('ws');
-
-const url = "127.0.0.1:3000";
-const socket = new WebSocket('ws://' + url);
+const url = "ws://127.0.0.1:3000";
+const socket = new WebSocket(url);
 
 // Connect to server
-socket.on('open', function () {
+socket.addEventListener('open', function (event) {
     console.log('Connection established.');
 
-    socket.send('Hello Server, i\'m the client!');
+    socket.send('Hello Server, I\'m the client!');
 });
 
 // Handle incoming messages
-socket.on('message', function (data) {
-    console.log('Message from server:', data.toString());
+socket.addEventListener('message', function (event) {
+    console.log('Message from server:', event.data);
 });
 
 // Error handling on connection
-socket.on('error', function (error) {
+socket.addEventListener('error', function (error) {
     console.error('Connection Error:', error);
 });
 
 // Close connection
-socket.on('close', function () {
+socket.addEventListener('close', function (event) {
     console.log('Connection closed.');
 });
 
-},{"ws":1}],3:[function(require,module,exports){
-const script = require('./script');
-const client = require('./client');
-},{"./client":2,"./script":4}],4:[function(require,module,exports){
+document.addEventListener('DOMContentLoaded', function() {
+    const button = document.getElementById('createGameButton');
+    if (button) {
+        button.addEventListener('click', createGame);
+    } else {
+        console.error('Button with id "createGameButton" not found.');
+    }
+});
+
+function createGame() {
+    fetch('http://localhost:3000/createGame', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        // TODO set parameter not static values
+        body: JSON.stringify({
+            boardType: "default",
+            playerName: "Alice",
+            playerColor: "red"
+        }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+},{}],2:[function(require,module,exports){
 document.addEventListener('DOMContentLoaded', function () {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -154,4 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-},{}]},{},[3]);
+},{}],3:[function(require,module,exports){
+const script = require('./View/script');
+const client = require('./Communication/client');
+},{"./Communication/client":1,"./View/script":2}]},{},[3]);

@@ -2,16 +2,37 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
+const {v4: uuidv4} = require('uuid');
+const Game = require('../Model/Game');
+const Player = require('../Model/Player');
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 const clients = new Set();
+let games = [];
 
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'main.html'));
+});
+
+app.use(express.json());
+
+app.post('/createGame', (req, res) => {
+    const data = req.body;
+
+    const gameId = uuidv4();
+    const playerId = uuidv4();
+
+    let game = new Game(gameId, [], data.boardType);
+    let player = new Player(playerId, data.playerColor, data.playerName);
+
+    game.addPlayer(player);
+    games.push(game);
+
+    res.send({gameId: gameId, playerId: playerId});
 });
 
 wss.on('connection', function connection(ws) {
