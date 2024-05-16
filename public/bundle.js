@@ -45,17 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-/* document.addEventListener('DOMContentLoaded', function() {
-    const button = document.getElementById('createGameButton');
-    if (button) {
-        button.addEventListener('click', createGame);
-    } else {
-        console.error('Button with id "createGameButton" not found.');
-    }
-});
- */
-
-
 function createGame() {
     fetch('http://localhost:3000/createGame', {
         method: 'POST',
@@ -260,8 +249,6 @@ document.addEventListener("DOMContentLoaded", function() {
     renderer.draw();
 });
 },{}],3:[function(require,module,exports){
-
 const client = require('./Communication/client');
 const board =  require('./View/Renderer');
-//const test = require('./View/test.js');
 },{"./Communication/client":1,"./View/Renderer":2}]},{},[3]);

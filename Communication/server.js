@@ -24,8 +24,6 @@ app.post('/createGame', (req, res) => {
     const gameId = uuidv4();
     const playerId = uuidv4();
 
-    // TODO create game with new class diagram
-
     res.send({gameId: gameId, playerId: playerId});
 });
 
@@ -34,7 +32,6 @@ app.get('/rollDice', (req, res) => {
     const diceResult = Math.floor(Math.random() * 6) + 1;
 
     res.send({result: diceResult});
-    // res.json({ result: diceResult });
 });
 
 
@@ -49,15 +46,11 @@ function checkClientMessage(message) {
 }
 
 wss.on('connection', function connection(ws) {
-    // clients.add(ws);
     ws.on('message', function incoming(fromClientMessage) {
         console.log('received: %s', fromClientMessage);
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage));
 
         ws.send(JSON.stringify(sendBackToClient));
-        // for (let client of clients) {
-        //     client.send(sendBackToClient);
-        // }
     });
 
 

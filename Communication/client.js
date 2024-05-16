@@ -44,17 +44,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-/* document.addEventListener('DOMContentLoaded', function() {
-    const button = document.getElementById('createGameButton');
-    if (button) {
-        button.addEventListener('click', createGame);
-    } else {
-        console.error('Button with id "createGameButton" not found.');
-    }
-});
- */
-
-
 function createGame() {
     fetch('http://localhost:3000/createGame', {
         method: 'POST',
