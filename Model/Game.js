@@ -9,9 +9,6 @@ class Game {
         this.gameID = gameID;
         this.player = player;
         this.boardType = boardType;
-        // this.startingPositions = startingPositions
-        // this.gameArray = gameArray
-        // this.goalArray = goalArray
     }
 
     addPlayer(newPlayer) {
