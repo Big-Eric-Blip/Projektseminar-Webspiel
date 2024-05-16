@@ -1,4 +1,9 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+let currentGame = {
+    gameId: "",
+    playerId: ""
+}
+
 function sendMessage(message, onResponse) {
     const url = "ws://127.0.0.1:3000";
     const socket = new WebSocket(url);
@@ -28,20 +33,21 @@ function sendMessage(message, onResponse) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const createGameButton = document.getElementById('createGameButton');
-    const rollButton = document.getElementById('rollDiceButton');
+    const buttonFunctions = {
+        createGameButton: createGame,
+        rollDiceButton: rollDice,
+    };
 
-    if (createGameButton) {
-        createGameButton.addEventListener('click', createGame);
-    } else {
-        console.error('Button with id "createGameButton" not found.');
-    }
+    const buttons = document.querySelectorAll('.server-communication-button');
 
-    if (rollButton) {
-        rollButton.addEventListener('click', rollDice);
-    } else {
-        console.error('Button with id "rollDiceButton" not found.');
-    }
+    buttons.forEach(button => {
+        const buttonFunction = buttonFunctions[button.id];
+        if (buttonFunction) {
+            button.addEventListener('click', buttonFunction);
+        } else {
+            console.error(`Button or function for button with id "${button.id}" not found.`);
+        }
+    });
 });
 
 
@@ -55,6 +61,19 @@ function createGame() {
     }, handleCreateGameResponse);
 }
 
+function handleCreateGameResponse(response) {
+    const gameObj = JSON.parse(response);
+    currentGame.gameId = gameObj.gameId;
+    currentGame.playerId = gameObj.playerId;
+    console.log(currentGame);
+}
+
+function joinGame() {
+    sendMessage({
+        type: 'joinGame',
+        gameId: currentGame.gameId
+    });
+}
 
 function rollDice() {
     sendMessage({type: 'rollDice'}, handleRollDiceResponse);
@@ -68,10 +87,7 @@ function handleRollDiceResponse(response) {
 
 }
 
-function handleCreateGameResponse(response) {
-    const gameObj = JSON.parse(response);
-    console.log(gameObj);
-}
+
 },{}],2:[function(require,module,exports){
 class Renderer {
     constructor(canvasID) {

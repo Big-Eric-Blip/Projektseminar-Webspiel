@@ -32,8 +32,6 @@ function checkClientMessage(message) {
             let player = new Player(playerId, message.playerColor, message.playerName);
             game.addPlayer(player);
             games.push(game);
-            console.log(game);
-            console.log(games);
             return {gameId: gameId, playerId: playerId};
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
