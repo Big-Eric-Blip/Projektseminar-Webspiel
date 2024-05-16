@@ -53,9 +53,9 @@ function createGame() {
         },
         // TODO set parameter not static values
         body: JSON.stringify({
-            board: 1,
-            colorOfFigure: "red",
-            colorOfDie: "blue"
+            boardType: "default",
+            playerName: "Alice",
+            playerColor: "red"
         }),
     })
         .then(response => {

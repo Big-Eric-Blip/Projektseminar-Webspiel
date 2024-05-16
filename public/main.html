@@ -3,21 +3,31 @@
 
 <head>
   <meta charset="utf-8">
-  <title>title</title>
+  <title>Stay cool, buddy!</title>
   <link rel="stylesheet" href="style.css">
   <script src="bundle.js"></script>
   
 </head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<header class="site-header" id="mainHeader">
+<div class="wrapper site-header__wrapper">
+  <nav class="nav">
+<button class="red-button">Create game</button>
+<button class="red-button">Join game</button>
+<button class="red-button">Settings</button>
+</nav>
+</div>
+</header>
 
 <body>
-  <h1>Ärgerliches Spielchen</h1>
+  <h1>Stay cool, buddy!</h1>
   <button id="createGameButton">Create Game</button>
   <button id="rollDiceButton">Roll the Dice</button>
   <br>
   <br>
 
-  <canvas id="myCanvas" width="1100" height="1100"></canvas>
-  
+ <div class="game-board" id="board"> <canvas id="myCanvas" width="1100" height="1100"></canvas>
+  </canvas> </div>
 </body>
 
 </html>
