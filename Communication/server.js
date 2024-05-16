@@ -20,33 +20,21 @@ app.get('/', (req, res) => {
 
 app.use(express.json());
 
-app.post('/createGame', (req, res) => {
-    const data = req.body;
-
-    const gameId = uuidv4();
-    const playerId = uuidv4();
-
-    let game = new Game(gameId, [], data.boardType);
-    let player = new Player(playerId, data.playerColor, data.playerName);
-
-    game.addPlayer(player);
-    games.push(game);
-
-    res.send({gameId: gameId, playerId: playerId});
-});
-
-
-app.get('/rollDice', (req, res) => {
-    const diceResult = Math.floor(Math.random() * 6) + 1;
-
-    res.send({result: diceResult});
-});
-
 
 function checkClientMessage(message) {
     switch (message.type) {
         case 'rollDice':
             return {dieValue: (Math.floor(Math.random() * 6) + 1).toString()};
+        case 'createGame':
+            const gameId = uuidv4();
+            const playerId = uuidv4();
+            let game = new Game(gameId, [], message.boardType);
+            let player = new Player(playerId, message.playerColor, message.playerName);
+            game.addPlayer(player);
+            games.push(game);
+            console.log(game);
+            console.log(games);
+            return {gameId: gameId, playerId: playerId};
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {message: `Sorry, we are out of ${message.type}.`};

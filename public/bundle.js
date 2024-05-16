@@ -46,30 +46,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function createGame() {
-    fetch('http://localhost:3000/createGame', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        // TODO set parameter not static values
-        body: JSON.stringify({
-            boardType: "default",
-            playerName: "Alice",
-            playerColor: "red"
-        }),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(data => {
-            console.log('Response:', data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    // TODO set parameter to not static values
+    sendMessage({
+        type: 'createGame',
+        boardType: "default",
+        playerName: "Alice",
+        playerColor: "red"
+    }, handleCreateGameResponse);
 }
 
 
@@ -85,7 +68,10 @@ function handleRollDiceResponse(response) {
 
 }
 
-
+function handleCreateGameResponse(response) {
+    const gameObj = JSON.parse(response);
+    console.log(gameObj);
+}
 },{}],2:[function(require,module,exports){
 class Renderer {
     constructor(canvasID) {
