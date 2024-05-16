@@ -35,17 +35,33 @@ app.post('/createGame', (req, res) => {
     res.send({gameId: gameId, playerId: playerId});
 });
 
+
+app.get('/rollDice', (req, res) => {
+    const diceResult = Math.floor(Math.random() * 6) + 1;
+
+    res.send({result: diceResult});
+});
+
+
+function checkClientMessage(message) {
+    switch (message.type) {
+        case 'rollDice':
+            return {dieValue: (Math.floor(Math.random() * 6) + 1).toString()};
+        default:
+            console.log(`Sorry, we are out of ${message.type}.`);
+            return {message: `Sorry, we are out of ${message.type}.`};
+    }
+}
+
 wss.on('connection', function connection(ws) {
-    clients.add(ws);
     ws.on('message', function incoming(fromClientMessage) {
         console.log('received: %s', fromClientMessage);
-        const toClientMessage = "Message from server";
-        for (let client of clients) {
-            client.send(toClientMessage);
-        }
+        let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage));
+
+        ws.send(JSON.stringify(sendBackToClient));
     });
 
-    ws.send('connected');
+
 });
 
 const PORT = process.env.PORT || 3000;

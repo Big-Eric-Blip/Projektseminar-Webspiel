@@ -1,36 +1,48 @@
-const url = "ws://127.0.0.1:3000";
-const socket = new WebSocket(url);
+function sendMessage(message, onResponse) {
+    const url = "ws://127.0.0.1:3000";
+    const socket = new WebSocket(url);
 
-// Connect to server
-socket.addEventListener('open', function (event) {
-    console.log('Connection established.');
+    // Connect to server
+    socket.addEventListener('open', function (event) {
+        console.log('Connection established.');
+        // Send the message once the connection is open
+        socket.send(JSON.stringify(message));
+    });
 
-    socket.send('Hello Server, I\'m the client!');
-});
+    // Handle incoming messages
+    socket.addEventListener('message', function (event) {
+        console.log('Message from server:', event.data);
+        onResponse(event.data);
+    });
 
-// Handle incoming messages
-socket.addEventListener('message', function (event) {
-    console.log('Message from server:', event.data);
-});
+    // Error handling on connection
+    socket.addEventListener('error', function (error) {
+        console.error('Connection Error:', error);
+    });
 
-// Error handling on connection
-socket.addEventListener('error', function (error) {
-    console.error('Connection Error:', error);
-});
+    // Close connection
+    socket.addEventListener('close', function (event) {
+        console.log('Connection closed.');
+    });
+}
 
-// Close connection
-socket.addEventListener('close', function (event) {
-    console.log('Connection closed.');
-});
+document.addEventListener('DOMContentLoaded', function () {
+    const createGameButton = document.getElementById('createGameButton');
+    const rollButton = document.getElementById('rollDiceButton');
 
-document.addEventListener('DOMContentLoaded', function() {
-    const button = document.getElementById('createGameButton');
-    if (button) {
-        button.addEventListener('click', createGame);
+    if (createGameButton) {
+        createGameButton.addEventListener('click', createGame);
     } else {
         console.error('Button with id "createGameButton" not found.');
     }
+
+    if (rollButton) {
+        rollButton.addEventListener('click', rollDice);
+    } else {
+        console.error('Button with id "rollDiceButton" not found.');
+    }
 });
+
 
 function createGame() {
     fetch('http://localhost:3000/createGame', {
@@ -58,3 +70,17 @@ function createGame() {
             console.error('Error:', error);
         });
 }
+
+
+function rollDice() {
+    sendMessage({type: 'rollDice'}, handleRollDiceResponse);
+}
+
+
+function handleRollDiceResponse(response) {
+    const dieObj = JSON.parse(response);
+    console.log(dieObj);
+    console.log(dieObj.dieValue);
+
+}
+
