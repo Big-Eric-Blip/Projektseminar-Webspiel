@@ -6,13 +6,12 @@
   <title>Stay cool, buddy!</title>
   <link rel="stylesheet" href="style.css">
   <script src="bundle.js"></script>
-  <script src=""></script>
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <header class="site-header" id="mainHeader">
 <div class="wrapper site-header__wrapper">
   <nav class="nav">
-<button class="red-button">Create game</button>
+<button class="red-button" id="openPopup">Create game</button>
 <button class="red-button">Join game</button>
 <button class="red-button">Settings</button>
 </nav>
@@ -21,6 +20,17 @@
 
 <body>
   <h1>Stay cool, buddy!</h1>
+
+  <!--Example Pop up-->
+  <button id="openPopup">Open Popup</button>
+
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <span class="close" id="closePopup">&times;</span>
+      <h2>This is a popup template</h2>
+      <p>This is some sample text inside the popup.</p>
+    </div>
+  </div>
 
  <div class="game-board" id="board"> <canvas id="myCanvas" width="1100" height="1100"></canvas>
   </canvas> </div>

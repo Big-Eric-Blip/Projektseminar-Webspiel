@@ -1,3 +1,4 @@
+//THIS IS A TEST
 document.addEventListener('DOMContentLoaded', function () {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -111,3 +112,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+// Example pop up
+document.getElementById('openPopup').addEventListener('click', function() {
+    document.getElementById('popup').style.display = 'block';
+  });
+  
+  document.getElementById('closePopup').addEventListener('click', function() {
+    document.getElementById('popup').style.display = 'none';
+  });
