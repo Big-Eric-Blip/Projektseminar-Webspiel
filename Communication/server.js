@@ -5,12 +5,14 @@ const path = require('path');
 const {v4: uuidv4} = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
+const Board = require('../Model/Board');
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 const clients = new Set();
 let games = [];
+let board = new Board(16, 4);
 
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -37,6 +39,9 @@ function checkClientMessage(message) {
         case 'joinGame':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
+                    if (game.player.length >= board.maxPlayers) {
+                        return {message: `The game is full. There is no space for another player.`};
+                    }
                     playerId = uuidv4();
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
