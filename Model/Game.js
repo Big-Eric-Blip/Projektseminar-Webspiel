@@ -1,12 +1,12 @@
 class Game {
     /**
      *
-     * @param {string} gameID
+     * @param {string} gameId
      * @param {Player[]} player
      * @param {string} boardType
      */
-    constructor(gameID, player, boardType) {
-        this.gameID = gameID;
+    constructor(gameId, player, boardType) {
+        this.gameId = gameId;
         this.player = player;
         this.boardType = boardType;
     }

@@ -1,6 +1,6 @@
 class Display {
     
-    constructor(gameID) {
-        this.gameID = gameID
+    constructor(gameId) {
+        this.gameId = gameId
     }
 }
