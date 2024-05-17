@@ -22,17 +22,28 @@ app.use(express.json());
 
 
 function checkClientMessage(message) {
+    let playerId = "";
     switch (message.type) {
         case 'rollDice':
             return {dieValue: (Math.floor(Math.random() * 6) + 1).toString()};
         case 'createGame':
             const gameId = uuidv4();
-            const playerId = uuidv4();
+            playerId = uuidv4();
             let game = new Game(gameId, [], message.boardType);
             let player = new Player(playerId, message.playerColor, message.playerName);
             game.addPlayer(player);
             games.push(game);
             return {gameId: gameId, playerId: playerId};
+        case 'joinGame':
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    playerId = uuidv4();
+                    let player = new Player(playerId, "", "");
+                    game.addPlayer(player);
+                    return {playerId: playerId};
+                }
+            }
+            return {message: `There is no game with game id: ${message.gameId}`};
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {message: `Sorry, we are out of ${message.type}.`};

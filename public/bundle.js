@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttonFunctions = {
         createGameButton: createGame,
         rollDiceButton: rollDice,
+        joinGameButton: joinGame
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(`Button or function for button with id "${button.id}" not found.`);
         }
     });
+
 });
 
 
@@ -69,10 +71,17 @@ function handleCreateGameResponse(response) {
 }
 
 function joinGame() {
+    const inputField = document.getElementById('joinGameInputId');
+    currentGame.gameId = inputField.value;
     sendMessage({
         type: 'joinGame',
         gameId: currentGame.gameId
-    });
+    }, handleJoinGameResponse);
+}
+
+function handleJoinGameResponse(response) {
+    // currentGame.playerId = response.playerId;
+    console.log(response);
 }
 
 function rollDice() {
