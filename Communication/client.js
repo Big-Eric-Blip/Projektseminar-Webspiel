@@ -73,14 +73,24 @@ function createGame() {
 
 
 function rollDice() {
+    console.log('rollDice function called');
     sendMessage({type: 'rollDice'}, handleRollDiceResponse);
 }
 
 
 function handleRollDiceResponse(response) {
+    console.log('handleRollDiceResponse function called');
     const dieObj = JSON.parse(response);
     console.log(dieObj);
     console.log(dieObj.dieValue);
 
+    const diceResultDiv = document.getElementById('resultDice');
+    if (diceResultDiv) {
+        diceResultDiv.textContent = `${dieObj.dieValue}`;
+    } else {
+        console.error('Element with id "diceResult" not found.');
+    }
 }
+
+
 
