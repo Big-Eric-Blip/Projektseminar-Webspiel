@@ -79,8 +79,12 @@ function joinGame() {
 }
 
 function handleJoinGameResponse(response) {
-    // currentGame.playerId = response.playerId;
-    console.log(response);
+    const joinGameResponse = JSON.parse(response);
+    if (joinGameResponse.playerId) {
+        currentGame.playerId = joinGameResponse.playerId;
+    } else {
+        console.log(joinGameResponse.message);
+    }
 }
 
 function rollDice() {
