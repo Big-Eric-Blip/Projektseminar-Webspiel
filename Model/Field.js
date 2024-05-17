@@ -1,17 +1,27 @@
 class Field {
     /**
      * 
-     * @param {*} color 
      * @param {*} fieldID 
-     * @param {*} type 
+     * @param {*} color 
+     * @param {*} type : available types: START, REGULAR, GOAL
+     * @param {*} xCoord 
+     * @param {*} yCoord 
      */
-    constructor(color, fieldID, type) {
-        this.color = color
+    constructor(fieldID, xCoord, yCoord, color, type) {
         this.fieldID = fieldID
+        this.color = color
         this.type = type
+        this.xCoord = xCoord
+        this.yCoord = yCoord
     }
 
     /*TODO: create getters and setters for type
     with the available types START, REGULAR, GOAL
     */
+   getXCoord() {
+    return this.xCoord
+   }
+   getYCoord() {
+    return this.yCoord
+   }
 }
