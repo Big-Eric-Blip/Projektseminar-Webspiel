@@ -40,7 +40,7 @@ function checkClientMessage(message) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     if (game.player.length >= board.maxPlayers) {
-                        return {message: `The game is full. There is no space for another player.`};
+                        return {message: `The game you've tried to join is full. There is no space for another player.`};
                     }
                     playerId = uuidv4();
                     let player = new Player(playerId, "", "");

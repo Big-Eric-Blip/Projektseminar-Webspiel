@@ -67,8 +67,8 @@ function handleCreateGameResponse(response) {
     const gameObj = JSON.parse(response);
     currentGame.gameId = gameObj.gameId;
     currentGame.playerId = gameObj.playerId;
-    const serverResponse = document.getElementById("gameId");
-    serverResponse.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
+    const gameId = document.getElementById("gameId");
+    gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
 }
 
@@ -82,11 +82,15 @@ function joinGame() {
 }
 
 function handleJoinGameResponse(response) {
+    let serverResponseText = document.getElementById("serverResponse");
     const joinGameResponse = JSON.parse(response);
     if (joinGameResponse.playerId) {
         currentGame.playerId = joinGameResponse.playerId;
+        serverResponseText.innerHTML = "You've joined the game. " +
+            "Please choose a name and a color";
     } else {
         console.log(joinGameResponse.message);
+        serverResponseText.innerHTML = joinGameResponse.message;
     }
 }
 
