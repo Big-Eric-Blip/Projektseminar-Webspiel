@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(`Button or function for button with id "${button.id}" not found.`);
         }
     });
-
 });
 
 
@@ -64,9 +63,12 @@ function createGame() {
 }
 
 function handleCreateGameResponse(response) {
+    document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
     const gameObj = JSON.parse(response);
     currentGame.gameId = gameObj.gameId;
     currentGame.playerId = gameObj.playerId;
+    const serverResponse = document.getElementById("gameId");
+    serverResponse.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
 }
 
