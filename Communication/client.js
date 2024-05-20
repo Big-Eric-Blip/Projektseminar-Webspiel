@@ -45,6 +45,9 @@ function fromServerMessage(event) {
         case 'joinGame':
             handleJoinGameResponse(message);
             break;
+        case 'playerJoined':
+            handlePlayerJoinedResponse(message);
+            break;
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
     }
@@ -134,3 +137,7 @@ function handleRollDiceResponse(response) {
 
 }
 
+function handlePlayerJoinedResponse(message) {
+    document.getElementById("serverResponse").innerHTML =
+        "A new player joined your game. There are now " + message.numberOfPlayers + " players your game."
+}

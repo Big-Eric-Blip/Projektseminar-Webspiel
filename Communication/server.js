@@ -10,7 +10,7 @@ const Board = require('../Model/Board');
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
-const clients = new Set();
+const clients = new Map();
 let games = [];
 let board = new Board(16, 4);
 
@@ -47,6 +47,12 @@ function checkClientMessage(message, playerId) {
                     if (game.player.length >= board.maxPlayers) {
                         return {message: `The game you've tried to join is full. There is no space for another player.`};
                     }
+                    for (const player of game.player) {
+                        let client = clients.get(player.playerID)
+                        if (client.readyState === WebSocket.OPEN) {
+                            client.send(JSON.stringify({type: "playerJoined", numberOfPlayers: game.player.length + 1}));
+                        }
+                    }
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
@@ -65,14 +71,14 @@ function checkClientMessage(message, playerId) {
 wss.on('connection', function connection(ws) {
     const playerId = uuidv4();
     ws.playerId = playerId;
-    clients.add(playerId);
+    clients.set(playerId, ws);
     console.log(`New client connected: ${playerId}`);
 
     ws.on('message', function incoming(fromClientMessage) {
         console.log(`Received message from ${playerId}: ${fromClientMessage}`);
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
 
-        console.log(`Current clients:`, [...clients]);
+        console.log(`Current clients:`, [...clients.keys()]);
 
         ws.send(JSON.stringify(sendBackToClient));
     });
@@ -80,7 +86,7 @@ wss.on('connection', function connection(ws) {
     ws.on('close', () => {
         clients.delete(playerId);
         console.log(`Client disconnected: ${playerId}`);
-        console.log(`Currently connected clients:`, [...clients]);
+        console.log(`Currently connected clients:`, [...clients.keys()]);
     });
 
 
