@@ -1,14 +1,17 @@
 class Board {
-/**
- * 
- * @param {*} numberOfTokens 
- * @param {*} maxPlayers 
- * @param {*} boardFields 
- */
-    constructor(numberOfTokens, maxPlayers, boardFields) {
+    /**
+     *
+     * @param {number} numberOfTokens
+     * @param {number} maxPlayers
+     */
+    constructor(numberOfTokens, maxPlayers) {
         this.numberOfTokens = numberOfTokens
         this.maxPlayers = maxPlayers
-        this.boardFields = boardFields
+        this.startingPositions = []
+        this.gamrArray = []
+        this.goalArray = []
     }
 
 }
+
+module.exports = Board;
