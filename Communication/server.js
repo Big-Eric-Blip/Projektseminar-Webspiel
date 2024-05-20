@@ -27,7 +27,10 @@ function checkClientMessage(message) {
     let playerId = "";
     switch (message.type) {
         case 'rollDice':
-            return {dieValue: (Math.floor(Math.random() * 6) + 1).toString()};
+            return {
+                type: 'rollDice',
+                dieValue: (Math.floor(Math.random() * 6) + 1).toString()
+            };
         case 'createGame':
             const gameId = uuidv4();
             playerId = uuidv4();
@@ -35,7 +38,11 @@ function checkClientMessage(message) {
             let player = new Player(playerId, message.playerColor, message.playerName);
             game.addPlayer(player);
             games.push(game);
-            return {gameId: gameId, playerId: playerId};
+            return {
+                type: 'createGame',
+                gameId: gameId,
+                playerId: playerId
+            };
         case 'joinGame':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
@@ -45,7 +52,10 @@ function checkClientMessage(message) {
                     playerId = uuidv4();
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
-                    return {playerId: playerId};
+                    return {
+                        type: 'joinGame',
+                        playerId: playerId
+                    };
                 }
             }
             return {message: `There is no game with game id: ${message.gameId}`};
@@ -56,11 +66,24 @@ function checkClientMessage(message) {
 }
 
 wss.on('connection', function connection(ws) {
+    const playerId = uuidv4();
+    ws.playerId = playerId;
+    clients.add(playerId);
+    console.log(`New client connected: ${playerId}`);
+
     ws.on('message', function incoming(fromClientMessage) {
-        console.log('received: %s', fromClientMessage);
+        console.log(`Received message from ${playerId}: ${fromClientMessage}`);
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage));
 
+        console.log(`Current clients:`, [...clients]);
+
         ws.send(JSON.stringify(sendBackToClient));
+    });
+
+    ws.on('close', () => {
+        clients.delete(playerId);
+        console.log(`Client disconnected: ${playerId}`);
+        console.log(`Currently connected clients:`, [...playerId]);
     });
 
 
