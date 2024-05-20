@@ -23,8 +23,7 @@ app.get('/', (req, res) => {
 app.use(express.json());
 
 
-function checkClientMessage(message) {
-    let playerId = "";
+function checkClientMessage(message, playerId) {
     switch (message.type) {
         case 'rollDice':
             return {
@@ -33,7 +32,6 @@ function checkClientMessage(message) {
             };
         case 'createGame':
             const gameId = uuidv4();
-            playerId = uuidv4();
             let game = new Game(gameId, [], message.boardType);
             let player = new Player(playerId, message.playerColor, message.playerName);
             game.addPlayer(player);
@@ -49,7 +47,6 @@ function checkClientMessage(message) {
                     if (game.player.length >= board.maxPlayers) {
                         return {message: `The game you've tried to join is full. There is no space for another player.`};
                     }
-                    playerId = uuidv4();
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
@@ -73,7 +70,7 @@ wss.on('connection', function connection(ws) {
 
     ws.on('message', function incoming(fromClientMessage) {
         console.log(`Received message from ${playerId}: ${fromClientMessage}`);
-        let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage));
+        let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
 
         console.log(`Current clients:`, [...clients]);
 
@@ -83,7 +80,7 @@ wss.on('connection', function connection(ws) {
     ws.on('close', () => {
         clients.delete(playerId);
         console.log(`Client disconnected: ${playerId}`);
-        console.log(`Currently connected clients:`, [...playerId]);
+        console.log(`Currently connected clients:`, [...clients]);
     });
 
 
