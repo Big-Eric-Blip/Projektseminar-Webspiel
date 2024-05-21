@@ -71,9 +71,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttonFunctions = {
         createGameButton: createGame,
         rollDiceButton: rollDice,
+        openExamplePopupButton: openExamplePopup,
+        closeExamplePopupButton: closeExamplePopup,
         joinGameButton: joinGame
     };
 
+
+    //also add "popup buttons into this?"
     const buttons = document.querySelectorAll('.server-communication-button');
 
     buttons.forEach(button => {
@@ -85,6 +89,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+function openExamplePopup(){
+    document.getElementById('examplePopup').style.display = 'block';
+}
+
+function closeExamplePopup(){
+    document.getElementById('examplePopup').style.display = 'none';
+}
 
 function createGame() {
     // TODO set parameter to not static values
