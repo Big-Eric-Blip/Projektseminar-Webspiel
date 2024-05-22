@@ -12,7 +12,7 @@
 <header class="site-header" id="mainHeader">
     <div class="wrapper site-header__wrapper">
         <nav class="nav">
-            <button class="red-button">Create game</button>
+            <button class="server-communication-button red-button" id="createGamePopupButton">Create game</button>
             <button class="red-button">Join game</button>
             <button class="red-button">Settings</button>
         </nav>
@@ -21,31 +21,50 @@
 
 <body>
 <h1>Stay cool, buddy!</h1>
-<button id="createGameButton" class="server-communication-button">Create Game</button>
-<button id="rollDiceButton" class="server-communication-button">Roll the Dice</button>
+
+<button id="rollDiceButton" class="server-communication-button popup-button">Roll the Dice</button>
+<button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
 <input type="text" id="joinGameInputId" placeholder="Enter game id">
-<button id="joinGameButton" class="server-communication-button">Join Game</button>
+
 
 <!--Example Pop up-->
-<button id="openExamplePopupButton" class="server-communication-button">Open Popup</button>
-
+<!--
+<button id="openExamplePopupButton" class="server-communication-button popup-button">Open Popup</button>
+-->
 <div class="popup" id="examplePopup">
   <div class="popup-content">
     <h2>Optional header</h2>
     <p>This is some sample text inside the popup.</p>
       <br>
-      <button class="server-communication-button" id="exampleConfirmationButton">Confirm action</button>
+      <!-- <button class="server-communication-button" id="exampleConfirmationButton">Confirm action</button> -->
       <button class="server-communication-button" id="closeExamplePopupButton">Back</button>
       <br>
       <br>
   </div>
 </div>
 <!-- End Example Popup-->
+<!-- Begin Create Game Popup-->
+<div class="popup" id="createGamePopup">
+    <div class="popup-content">
+        <h2>Create a new game</h2>
+        <p>Placeholder: Select the number of players (max 4)</p>
+        <p>Select your own color</p>
+        <p>Select your die skin</p>
+        <br>
+        <h3 id="serverResponse"></h3>
+        <p id="gameId"></p>
+        <br>
+        <br>
+        <button id="createGameButton" class="server-communication-button">Create Game</button>
+        <button id="closeCreateGamePopupButton" class="server-communication-button" >Back</button>
+        <!--The two <br> elements are currently necessary for the formatting-->
+        <br>
+        <br>
+    </div>
+</div>
+<!-- End Create Game Popup-->
 
-<h3 id="serverResponse"></h3>
-<p id="gameId"></p>
-<br>
-<br>
+
 
 <div class="game-board" id="board">
     <canvas id="myCanvas" width="1100" height="1100"></canvas>

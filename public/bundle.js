@@ -69,14 +69,19 @@ function sendMessage(message) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    // <id of the button being clicked>: name of the function below
     const buttonFunctions = {
         createGameButton: createGame,
         rollDiceButton: rollDice,
         openExamplePopupButton: openExamplePopup,
         closeExamplePopupButton: closeExamplePopup,
+        createGamePopupButton: openCreateGamePopup,
+        closeCreateGamePopupButton: closeCreateGamePopup,
         joinGameButton: joinGame
     };
 
+
+    //also add "popup buttons into this?"
     const buttons = document.querySelectorAll('.server-communication-button');
 
     buttons.forEach(button => {
@@ -92,9 +97,14 @@ document.addEventListener('DOMContentLoaded', function () {
 function openExamplePopup(){
     document.getElementById('examplePopup').style.display = 'block';
 }
-
 function closeExamplePopup(){
     document.getElementById('examplePopup').style.display = 'none';
+}
+function openCreateGamePopup(){
+    document.getElementById('createGamePopup').style.display = 'block';
+}
+function closeCreateGamePopup(){
+    document.getElementById('createGamePopup').style.display = 'none';
 }
 
 function createGame() {
@@ -114,6 +124,7 @@ function handleCreateGameResponse(response) {
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
+    document.getElementById("createGameButton").style.display = 'none';
 }
 
 function joinGame() {
@@ -316,39 +327,7 @@ document.addEventListener("DOMContentLoaded", function() {
     renderer.draw();
 });
 },{}],3:[function(require,module,exports){
-// Example pop up
-//document.getElementById('openPopup').addEventListener('click', function() {
-// document.getElementById('popup').style.display = 'block';
-// });
-
-// document.getElementById('closePopup').addEventListener('click', function() {
-//  document.getElementById('popup').style.display = 'none';
-//});
-
-document.addEventListener('DOMContentLoaded', function () {
-    const createPopUpButton = document.getElementById('openPopup');
-    const hidePopUpButton = document.getElementById('closePopup');
-
-    if (openPopup) {
-        createPopUpButton.addEventListener('click', function () {
-            document.getElementById('popup').style.display = 'block';
-        })
-    } else {
-        console.error('Button with id "openPopup" not found.');
-    }
-
-    if (closePopup) {
-        hidePopUpButton.addEventListener('click', function () {
-            document.getElementById('popup').style.display = 'none';
-        })
-    } else {
-        console.error('Button with id "closePopup" not found.');
-    }
-});
-
-},{}],4:[function(require,module,exports){
 const client = require('./Communication/client');
 const board =  require('./View/Renderer');
-const script = require('./View/script');
 
-},{"./Communication/client":1,"./View/Renderer":2,"./View/script":3}]},{},[4]);
+},{"./Communication/client":1,"./View/Renderer":2}]},{},[3]);
