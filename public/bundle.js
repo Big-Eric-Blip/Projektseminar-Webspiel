@@ -72,6 +72,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttonFunctions = {
         createGameButton: createGame,
         rollDiceButton: rollDice,
+        openExamplePopupButton: openExamplePopup,
+        closeExamplePopupButton: closeExamplePopup,
         joinGameButton: joinGame
     };
 
@@ -86,6 +88,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+function openExamplePopup(){
+    document.getElementById('examplePopup').style.display = 'block';
+}
+
+function closeExamplePopup(){
+    document.getElementById('examplePopup').style.display = 'none';
+}
 
 function createGame() {
     // TODO set parameter to not static values
@@ -306,6 +316,39 @@ document.addEventListener("DOMContentLoaded", function() {
     renderer.draw();
 });
 },{}],3:[function(require,module,exports){
+// Example pop up
+//document.getElementById('openPopup').addEventListener('click', function() {
+// document.getElementById('popup').style.display = 'block';
+// });
+
+// document.getElementById('closePopup').addEventListener('click', function() {
+//  document.getElementById('popup').style.display = 'none';
+//});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const createPopUpButton = document.getElementById('openPopup');
+    const hidePopUpButton = document.getElementById('closePopup');
+
+    if (openPopup) {
+        createPopUpButton.addEventListener('click', function () {
+            document.getElementById('popup').style.display = 'block';
+        })
+    } else {
+        console.error('Button with id "openPopup" not found.');
+    }
+
+    if (closePopup) {
+        hidePopUpButton.addEventListener('click', function () {
+            document.getElementById('popup').style.display = 'none';
+        })
+    } else {
+        console.error('Button with id "closePopup" not found.');
+    }
+});
+
+},{}],4:[function(require,module,exports){
 const client = require('./Communication/client');
 const board =  require('./View/Renderer');
-},{"./Communication/client":1,"./View/Renderer":2}]},{},[3]);
+const script = require('./View/script');
+
+},{"./Communication/client":1,"./View/Renderer":2,"./View/script":3}]},{},[4]);
