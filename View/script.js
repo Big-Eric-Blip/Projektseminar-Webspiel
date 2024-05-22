@@ -1,12 +1,3 @@
-// Example pop up
-//document.getElementById('openPopup').addEventListener('click', function() {
-// document.getElementById('popup').style.display = 'block';
-// });
-
-// document.getElementById('closePopup').addEventListener('click', function() {
-//  document.getElementById('popup').style.display = 'none';
-//});
-
 document.addEventListener('DOMContentLoaded', function () {
     const createPopUpButton = document.getElementById('openPopup');
     const hidePopUpButton = document.getElementById('closePopup');
