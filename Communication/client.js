@@ -123,6 +123,7 @@ function handleCreateGameResponse(response) {
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
+    document.getElementById("createGameButton").style.display = 'none';
 }
 
 function joinGame() {

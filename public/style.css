@@ -26,17 +26,19 @@ body {
 
 }
 .server-communication-button {
+}
+.popup-button {
     color: whitesmoke;
     background-color: crimson;
     border: none;
     float: right;
-        border-radius:10px;
+    border-radius:10px;
     font-size: medium;
     width: auto;
     padding: 8px 20px;
     margin-bottom: 30px;
     margin-left: 20px;
-
+    display: block;
 }
 .game-board {
     display: flex;
@@ -87,6 +89,13 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   }
-#createGamePopup {
-    display: block;
+
+#joinGameInputId {
+    margin-top: 5px;
+    margin-left: 20px;
+    float: right;
 }
+
+
+
+
