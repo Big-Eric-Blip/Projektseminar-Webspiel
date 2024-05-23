@@ -72,15 +72,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttonFunctions = {
         createGameButton: createGame,
         rollDiceButton: rollDice,
-        openExamplePopupButton: openExamplePopup,
-        closeExamplePopupButton: closeExamplePopup,
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         joinGameButton: joinGame
     };
 
-
-    //also add "popup buttons into this?"
     const buttons = document.querySelectorAll('.server-communication-button');
 
     buttons.forEach(button => {
@@ -107,6 +103,7 @@ function closeCreateGamePopup(){
 }
 
 function createGame() {
+    const selectedColor = document.querySelector('input[name="playerColor"]:checked');
     // TODO set parameter to not static values
     sendMessage({
         type: 'createGame',

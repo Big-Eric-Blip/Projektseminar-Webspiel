@@ -26,30 +26,69 @@
 <button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
 <input type="text" id="joinGameInputId" placeholder="Enter game id">
 
-
-<!--Example Pop up-->
-<!--
-<button id="openExamplePopupButton" class="server-communication-button popup-button">Open Popup</button>
--->
-<div class="popup" id="examplePopup">
-  <div class="popup-content">
-    <h2>Optional header</h2>
-    <p>This is some sample text inside the popup.</p>
-      <br>
-      <!-- <button class="server-communication-button" id="exampleConfirmationButton">Confirm action</button> -->
-      <button class="server-communication-button" id="closeExamplePopupButton">Back</button>
-      <br>
-      <br>
-  </div>
-</div>
-<!-- End Example Popup-->
 <!-- Begin Create Game Popup-->
 <div class="popup" id="createGamePopup">
     <div class="popup-content">
         <h2>Create a new game</h2>
-        <p>Placeholder: Select the number of players (max 4)</p>
-        <p>Select your own color</p>
-        <p>Select your die skin</p>
+        <form>
+            <h3>Select the number of human Players</h3>
+            <div class="dropdown-container">
+                <select class="dropdown-button">
+                    <option value="option1">1</option>
+                    <option value="option2">2</option>
+                    <option value="option3">3</option>
+                    <option value="option4" selected>4</option>
+                </select>
+            </div>
+            <h3>Choose your own color</h3>
+            <label>
+                <input type="radio" name="playerColor" value="1">
+                <img src="pictures/figureBlue.png" alt="Blue">
+            </label>
+            <label>
+                <input type="radio" name="playerColor" value="2" checked>
+                <img src="./pictures/figureGreen.png" alt="Green">
+            </label>
+            <label>
+                <input type="radio" name="playerColor" value="3">
+                <img src="./pictures/figureRed.png" alt="Red">
+            </label>
+            <label>
+                <input type="radio" name="playerColor" value="3">
+                <img src="./pictures/figureYellow.png" alt="Yellow">
+            </label>
+        </form>
+        <h3>Choose your die skin</h3>
+        <form>
+            <label>
+                <input type="radio" name="dieOption" value="1">
+                <img src="./pictures/dieBl.png" alt="Blue Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="2" checked>
+                <img src="./pictures/dieBlck.png" alt="Black Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="3">
+                <img src="./pictures/diePurp.png" alt="Purple Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="4">
+                <img src="./pictures/dieGrn.png" alt="Green Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="5">
+                <img src="./pictures/dieYlw.png" alt="Yellow Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="6">
+                <img src="./pictures/dieTurq.png" alt="Turquoise Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="7">
+                <img src="./pictures/dieRed.png" alt="Red Die">
+            </label>
+        </form>
         <br>
         <h3 id="serverResponse"></h3>
         <p id="gameId"></p>

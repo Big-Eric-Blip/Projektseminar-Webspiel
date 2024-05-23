@@ -96,6 +96,35 @@ body {
     float: right;
 }
 
+label {
+    display: inline-block;
+    margin: 10px;
+    cursor: pointer;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"] + img {
+    border: 2px solid transparent;
+    transition: border 0.3s;
+    width: 50px;  /* Set your desired width */
+    height: 50px; /* Set your desired height */
+    object-fit: cover; /* This ensures the images maintain their aspect ratio and fill the dimensions */
+}
+
+input[type="radio"]:checked + img {
+    border: 2px solid blue;
+}
+
+.dropdown-container {
+    margin: 20px;
+}
+.dropdown-button {
+    padding: 10px 20px;
+    font-size: 16px;
+}
 
 
 
