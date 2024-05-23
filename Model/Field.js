@@ -25,3 +25,5 @@ class Field {
     return this.yCoord
    }
 }
+
+module.exports = Field;

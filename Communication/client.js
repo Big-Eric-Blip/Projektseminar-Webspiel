@@ -158,7 +158,7 @@ function handleRollDiceResponse(response) {
 
     const diceResultDiv = document.getElementById('resultDice');
     if (diceResultDiv) {
-        diceResultDiv.textContent = `${dieObj.dieValue}`;
+        diceResultDiv.textContent = `${response.dieValue}`;
     } else {
         console.error('Element with id "diceResult" not found.');
     }

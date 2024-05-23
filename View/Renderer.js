@@ -161,13 +161,3 @@ document.addEventListener("DOMContentLoaded", function() {
     const renderer = new Renderer("myCanvas");
     renderer.draw();
 });
-function openPopup() {
-    document.getElementById("popup").style.display = "block";
-    document.getElementById("closeButton").addEventListener("click", closePopup);
-}
-
-function closePopup() {
-    document.getElementById("popup").style.display = "none";
-}
-
-    document.getElementById("popupButton").addEventListener("click", openPopup);

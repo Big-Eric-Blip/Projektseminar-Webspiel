@@ -7,12 +7,13 @@ const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
 
+
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 const clients = new Map();
 let games = [];
-let board = new Board(16, 4);
+let board = new Board(4, 4);
 
 app.use(express.static(path.join(__dirname, '../public')));
 

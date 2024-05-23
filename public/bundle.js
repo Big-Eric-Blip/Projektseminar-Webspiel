@@ -159,7 +159,7 @@ function handleRollDiceResponse(response) {
 
     const diceResultDiv = document.getElementById('resultDice');
     if (diceResultDiv) {
-        diceResultDiv.textContent = `${dieObj.dieValue}`;
+        diceResultDiv.textContent = `${response.dieValue}`;
     } else {
         console.error('Element with id "diceResult" not found.');
     }
@@ -336,16 +336,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const renderer = new Renderer("myCanvas");
     renderer.draw();
 });
-function openPopup() {
-    document.getElementById("popup").style.display = "block";
-    document.getElementById("closeButton").addEventListener("click", closePopup);
-}
 
-function closePopup() {
-    document.getElementById("popup").style.display = "none";
-}
-
-    document.getElementById("popupButton").addEventListener("click", openPopup);
 },{}],3:[function(require,module,exports){
 const client = require('./Communication/client');
 const board =  require('./View/Renderer');
