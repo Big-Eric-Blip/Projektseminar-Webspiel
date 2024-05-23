@@ -12,8 +12,8 @@
 <header class="site-header" id="mainHeader">
     <div class="wrapper site-header__wrapper">
         <nav class="nav">
-            <button class="server-communication-button red-button" id="createGamePopupButton">Create game</button>
-            <button class="red-button">Join game</button>
+            <button id="createGamePopupButton" class="server-communication-button red-button">Create game</button>
+            <button id="joinGamePopupButton" class="server-communication-button red-button">Join game</button>
             <button class="red-button">Settings</button>
         </nav>
     </div>
@@ -22,9 +22,25 @@
 <body>
 <h1>Stay cool, buddy!</h1>
 
-<button id="rollDiceButton" class="server-communication-button popup-button">Roll the Dice</button>
-<button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
-<input type="text" id="joinGameInputId" placeholder="Enter game id">
+
+
+
+<!-- Begin Join Game Popup-->
+<div class="popup" id="joinGamePopup">
+    <div class="popup-content">
+        <h2>Join an existing game</h2>
+        <h3>Please insert your URL/ID-Code:</h3>
+        <form>
+            <input type="text" id="joinGameInputId" placeholder="Enter game id">
+            <br><br>
+            <div class="button-container">
+                <button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
+                <button id="closeJoinGamePopupButton" class="server-communication-button popup-button" >Back</button>
+            </div> 
+        </form>
+    </div>
+</div>
+<!-- End Join Game Popup-->
 
 <!-- Begin Create Game Popup-->
 <div class="popup" id="createGamePopup">
@@ -94,8 +110,12 @@
         <p id="gameId"></p>
         <br>
         <br>
-        <button id="createGameButton" class="server-communication-button">Create Game</button>
-        <button id="closeCreateGamePopupButton" class="server-communication-button" >Back</button>
+        <div class="button-container">
+            <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
+            <button id="closeCreateGamePopupButton" class="server-communication-button popup-button" >Back</button>
+        </div>
+        
+        
         <!--The two <br> elements are currently necessary for the formatting-->
         <br>
         <br>
@@ -108,6 +128,8 @@
 <div class="game-board" id="board">
     <canvas id="myCanvas" width="1100" height="1100"></canvas>
 </div>
+<br>
+<button id="rollDiceButton" class="server-communication-button popup-button">Roll the Dice</button>
 </body>
 
 </html>

@@ -70,11 +70,18 @@ function sendMessage(message) {
 document.addEventListener('DOMContentLoaded', function () {
     // <id of the button being clicked>: name of the function below
     const buttonFunctions = {
-        createGameButton: createGame,
-        rollDiceButton: rollDice,
+        //Create Game
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
-        joinGameButton: joinGame
+        createGameButton: createGame,
+
+        //Join Game
+        joinGamePopupButton: openJoinGamePopup,
+        closeJoinGamePopupButton: closeJoinGamePopup,
+        joinGameButton: joinGame,
+
+        //Game Buttons
+        rollDiceButton: rollDice, 
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -89,11 +96,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function openExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'block';
+function openJoinGamePopup(){
+    document.getElementById('joinGamePopup').style.display = 'block';
 }
-function closeExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'none';
+function closeJoinGamePopup(){
+    document.getElementById('joinGamePopup').style.display = 'none';
 }
 function openCreateGamePopup(){
     document.getElementById('createGamePopup').style.display = 'block';
