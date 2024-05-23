@@ -4,110 +4,165 @@ class Renderer {
         this.ctx = this.canvas.getContext("2d");
         this.small = 35;
         this.big = 45;
+
+        this.tokens = [
+            // blue token
+            {tn: 'bt1', x: 50, y: 50, color: "blue"},
+            {tn: 'bt2', x: 50, y: 150, color: "blue"},
+            {tn: 'bt3', x: 150, y: 50, color: "blue"},
+            {tn: 'bt4', x: 150, y: 150, color: "blue"},
+            // green token
+            {tn: 'gt1', x: 950, y: 950, color: "green"},
+            {tn: 'gt2', x: 950, y: 1050, color: "green"},
+            {tn: 'gt3', x: 1050, y: 950, color: "green"},
+            {tn: 'gt4', x: 1050, y: 1050, color: "green"},
+            // yellow token
+            {tn: 'yt1', x: 50, y: 950, color: "yellow"},
+            {tn: 'yt2', x: 50, y: 1050, color: "yellow"},
+            {tn: 'yt3', x: 150, y: 950, color: "yellow"},
+            {tn: 'yt4', x: 150, y: 1050, color: "yellow"},
+            // red token
+            {tn: 'rt1', x: 950, y: 50, color: "red"},
+            {tn: 'rt2', x: 1050, y: 50, color: "red"},
+            {tn: 'rt3', x: 950, y: 150, color: "red"},
+            {tn: 'rt4', x: 1050, y: 150, color: "red"}
+        ];
+
         this.draw();
 
+        this.canvas.addEventListener('click', onCanvasClick.bind(this));
+
+        function onCanvasClick(event) {
+            console.log("event: ");
+            console.log(event);
+            // Get the canvas bounding box and the click coordinates
+            const rect = this.canvas.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const clickY = event.clientY - rect.top;
+
+            // Check each game piece to see if the click was inside it
+            this.tokens.forEach(function (token) {
+                if (isPointInRect({x: clickX, y: clickY}, token)) {
+                    // The click was inside this game piece
+                    console.log(`Game piece clicked:`, token);
+                    // Trigger any specific action you need here
+                }
+            });
+        }
+
+        function isPointInRect(point, token) {
+            return (
+                point.x >= token.x - 35 / 2 &&
+                point.x <= token.x + 35 / 2 &&
+                point.y >= token.y - 35 / 2 &&
+                point.y <= token.y + 35 / 2
+            );
+        }
+
     }
+
+
     draw() {
-      let big = this.big;
-      let small = this.small;
-      let ctx = this.ctx;
+        let big = this.big;
+        let small = this.small;
+        let ctx = this.ctx;
         /*Felder:
-        blue (x,y): außen (50,50) (50,150) (150,150) (150,50) 
+        blue (x,y): außen (50,50) (50,150) (150,150) (150,50)
                     innen (150,550) (250,550) (350,550) (450,550)
                     erstes (50,450)
-        green (x,y): außen (950,950) (950,1050) (1050,950) (1050,1050) 
+        green (x,y): außen (950,950) (950,1050) (1050,950) (1050,1050)
                     innen (650,550) (750,550) (850,550) (950,550)
                     erstes (1050,650)
-        yellow (x,y): außen (50,950) (50,1050) (150,950) (150,1050) 
+        yellow (x,y): außen (50,950) (50,1050) (150,950) (150,1050)
                     innen (550,650) (550,850) (550,750) (550,950)
                     erstes (450,1050)
-        red (x,y): außen (950,50) (950,50) (950,50) (950,50) 
+        red (x,y): außen (950,50) (950,50) (950,50) (950,50)
                     innen (550,150) (550,250) (550,350) (550,450)
                     erstes (650,50)
         */
         let fields = [
-        
+
             // blue home
-            { fn: 'ba1', x: 50, y: 50, color: "blue" },
-            { fn: 'ba2', x: 50, y: 150, color: "blue" },
-            { fn: 'ba3', x: 150, y: 50, color: "blue" },
-            { fn: 'ba4', x: 150, y: 150, color: "blue" },
+            {fn: 'ba1', x: 50, y: 50, color: "blue"},
+            {fn: 'ba2', x: 50, y: 150, color: "blue"},
+            {fn: 'ba3', x: 150, y: 50, color: "blue"},
+            {fn: 'ba4', x: 150, y: 150, color: "blue"},
             // blue safe
-            { fn: 'bi1', x: 150, y: 550, color: "blue" },
-            { fn: 'bi2', x: 250, y: 550, color: "blue" },
-            { fn: 'bi3', x: 350, y: 550, color: "blue" },
-            { fn: 'bi4', x: 450, y: 550, color: "blue" },
+            {fn: 'bi1', x: 150, y: 550, color: "blue"},
+            {fn: 'bi2', x: 250, y: 550, color: "blue"},
+            {fn: 'bi3', x: 350, y: 550, color: "blue"},
+            {fn: 'bi4', x: 450, y: 550, color: "blue"},
             // green home
-            { fn: 'ga1', x: 950, y: 950, color: "green" },
-            { fn: 'ga2', x: 950, y: 1050, color: "green" },
-            { fn: 'ga3', x: 1050, y: 950, color: "green" },
-            { fn: 'ga4', x: 1050, y: 1050, color: "green" },
+            {fn: 'ga1', x: 950, y: 950, color: "green"},
+            {fn: 'ga2', x: 950, y: 1050, color: "green"},
+            {fn: 'ga3', x: 1050, y: 950, color: "green"},
+            {fn: 'ga4', x: 1050, y: 1050, color: "green"},
             //green safe
-            { fn: 'gi1', x: 650, y: 550, color: "green" },
-            { fn: 'gi2', x: 750, y: 550, color: "green" },
-            { fn: 'gi3', x: 850, y: 550, color: "green" },
-            { fn: 'gi4', x: 950, y: 550, color: "green" },
+            {fn: 'gi1', x: 650, y: 550, color: "green"},
+            {fn: 'gi2', x: 750, y: 550, color: "green"},
+            {fn: 'gi3', x: 850, y: 550, color: "green"},
+            {fn: 'gi4', x: 950, y: 550, color: "green"},
             //yellow home
-            { fn: 'ya1', x: 50, y: 950, color: "yellow" },
-            { fn: 'ya2', x: 50, y: 1050, color: "yellow" },
-            { fn: 'ya3', x: 150, y: 950, color: "yellow" },
-            { fn: 'ya4', x: 150, y: 1050, color: "yellow" },
+            {fn: 'ya1', x: 50, y: 950, color: "yellow"},
+            {fn: 'ya2', x: 50, y: 1050, color: "yellow"},
+            {fn: 'ya3', x: 150, y: 950, color: "yellow"},
+            {fn: 'ya4', x: 150, y: 1050, color: "yellow"},
             // yellow safe
-            { fn: 'yi1', x: 550, y: 650, color: "yellow" },
-            { fn: 'yi2', x: 550, y: 750, color: "yellow" },
-            { fn: 'yi3', x: 550, y: 850, color: "yellow" },
-            { fn: 'yi4', x: 550, y: 950, color: "yellow" },
+            {fn: 'yi1', x: 550, y: 650, color: "yellow"},
+            {fn: 'yi2', x: 550, y: 750, color: "yellow"},
+            {fn: 'yi3', x: 550, y: 850, color: "yellow"},
+            {fn: 'yi4', x: 550, y: 950, color: "yellow"},
             // red home
-            { fn: 'ra1', x: 950, y: 50, color: "red" },
-            { fn: 'ra2', x: 1050, y: 50, color: "red" },
-            { fn: 'ra3', x: 950, y: 150, color: "red" },
-            { fn: 'ra4', x: 1050, y: 150, color: "red" },
+            {fn: 'ra1', x: 950, y: 50, color: "red"},
+            {fn: 'ra2', x: 1050, y: 50, color: "red"},
+            {fn: 'ra3', x: 950, y: 150, color: "red"},
+            {fn: 'ra4', x: 1050, y: 150, color: "red"},
             // red safe
-            { fn: 'ri1', x: 550, y: 150, color: "red" },
-            { fn: 'ri2', x: 550, y: 250, color: "red" },
-            { fn: 'ri3', x: 550, y: 350, color: "red" },
-            { fn: 'ri4', x: 550, y: 450, color: "red" },
+            {fn: 'ri1', x: 550, y: 150, color: "red"},
+            {fn: 'ri2', x: 550, y: 250, color: "red"},
+            {fn: 'ri3', x: 550, y: 350, color: "red"},
+            {fn: 'ri4', x: 550, y: 450, color: "red"},
             // white or first of color
-            { fn: 'wp1', x: 50, y: 450, color: "blue" },
-            { fn: 'wp2', x: 150, y: 450, color: "white" },
-            { fn: 'wp3', x: 250, y: 450, color: "white" },
-            { fn: 'wp4', x: 350, y: 450, color: "white" },
-            { fn: 'wp5', x: 450, y: 450, color: "white" },
-            { fn: 'wp6', x: 450, y: 350, color: "white" },
-            { fn: 'wp7', x: 450, y: 250, color: "white" },
-            { fn: 'wp8', x: 450, y: 150, color: "white" },
-            { fn: 'wp9', x: 450, y: 50, color: "white" },
-            { fn: 'wp10', x: 550, y: 50, color: "white" },
-            { fn: 'wp11', x: 650, y: 50, color: "red" },
-            { fn: 'wp12', x: 650, y: 150, color: "white" },
-            { fn: 'wp13', x: 650, y: 250, color: "white" },
-            { fn: 'wp14', x: 650, y: 350, color: "white" },
-            { fn: 'wp15', x: 650, y: 450, color: "white" },
-            { fn: 'wp16', x: 750, y: 450, color: "white" },
-            { fn: 'wp17', x: 850, y: 450, color: "white" },
-            { fn: 'wp18', x: 950, y: 450, color: "white" },
-            { fn: 'wp19', x: 1050, y: 450, color: "white" },
-            { fn: 'wp20', x: 1050, y: 550, color: "white" },
-            { fn: 'wp21', x: 1050, y: 650, color: "green" },
-            { fn: 'wp22', x: 950, y: 650, color: "white" },
-            { fn: 'wp24', x: 850, y: 650, color: "white" },
-            { fn: 'wp25', x: 750, y: 650, color: "white" },
-            { fn: 'wp26', x: 650, y: 650, color: "white" },
-            { fn: 'wp27', x: 650, y: 750, color: "white" },
-            { fn: 'wp28', x: 650, y: 850, color: "white" },
-            { fn: 'wp29', x: 650, y: 950, color: "white" },
-            { fn: 'wp30', x: 650, y: 1050, color: "white" },
-            { fn: 'wp31', x: 550, y: 1050, color: "white" },
-            { fn: 'wp32', x: 450, y: 1050, color: "yellow" },
-            { fn: 'wp33', x: 450, y: 950, color: "white" },
-            { fn: 'wp34', x: 450, y: 850, color: "white" },
-            { fn: 'wp35', x: 450, y: 750, color: "white" },
-            { fn: 'wp36', x: 450, y: 650, color: "white" },
-            { fn: 'wp37', x: 350, y: 650, color: "white" },
-            { fn: 'wp38', x: 250, y: 650, color: "white" },
-            { fn: 'wp39', x: 150, y: 650, color: "white" },
-            { fn: 'wp40', x: 50, y: 650, color: "white" },
-            { fn: 'wp41', x: 50, y: 550, color: "white" },
+            {fn: 'wp1', x: 50, y: 450, color: "blue"},
+            {fn: 'wp2', x: 150, y: 450, color: "white"},
+            {fn: 'wp3', x: 250, y: 450, color: "white"},
+            {fn: 'wp4', x: 350, y: 450, color: "white"},
+            {fn: 'wp5', x: 450, y: 450, color: "white"},
+            {fn: 'wp6', x: 450, y: 350, color: "white"},
+            {fn: 'wp7', x: 450, y: 250, color: "white"},
+            {fn: 'wp8', x: 450, y: 150, color: "white"},
+            {fn: 'wp9', x: 450, y: 50, color: "white"},
+            {fn: 'wp10', x: 550, y: 50, color: "white"},
+            {fn: 'wp11', x: 650, y: 50, color: "red"},
+            {fn: 'wp12', x: 650, y: 150, color: "white"},
+            {fn: 'wp13', x: 650, y: 250, color: "white"},
+            {fn: 'wp14', x: 650, y: 350, color: "white"},
+            {fn: 'wp15', x: 650, y: 450, color: "white"},
+            {fn: 'wp16', x: 750, y: 450, color: "white"},
+            {fn: 'wp17', x: 850, y: 450, color: "white"},
+            {fn: 'wp18', x: 950, y: 450, color: "white"},
+            {fn: 'wp19', x: 1050, y: 450, color: "white"},
+            {fn: 'wp20', x: 1050, y: 550, color: "white"},
+            {fn: 'wp21', x: 1050, y: 650, color: "green"},
+            {fn: 'wp22', x: 950, y: 650, color: "white"},
+            {fn: 'wp24', x: 850, y: 650, color: "white"},
+            {fn: 'wp25', x: 750, y: 650, color: "white"},
+            {fn: 'wp26', x: 650, y: 650, color: "white"},
+            {fn: 'wp27', x: 650, y: 750, color: "white"},
+            {fn: 'wp28', x: 650, y: 850, color: "white"},
+            {fn: 'wp29', x: 650, y: 950, color: "white"},
+            {fn: 'wp30', x: 650, y: 1050, color: "white"},
+            {fn: 'wp31', x: 550, y: 1050, color: "white"},
+            {fn: 'wp32', x: 450, y: 1050, color: "yellow"},
+            {fn: 'wp33', x: 450, y: 950, color: "white"},
+            {fn: 'wp34', x: 450, y: 850, color: "white"},
+            {fn: 'wp35', x: 450, y: 750, color: "white"},
+            {fn: 'wp36', x: 450, y: 650, color: "white"},
+            {fn: 'wp37', x: 350, y: 650, color: "white"},
+            {fn: 'wp38', x: 250, y: 650, color: "white"},
+            {fn: 'wp39', x: 150, y: 650, color: "white"},
+            {fn: 'wp40', x: 50, y: 650, color: "white"},
+            {fn: 'wp41', x: 50, y: 550, color: "white"},
         ];
 
         fields.forEach(function (draw) {
@@ -118,46 +173,23 @@ class Renderer {
             ctx.stroke();
         });
 
-        let token = [
-            // blue token
-            { tn: 'bt1', x: 50, y: 50, color: "blue" },
-            { tn: 'bt2', x: 50, y: 150, color: "blue" },
-            { tn: 'bt3', x: 150, y: 50, color: "blue" },
-            { tn: 'bt4', x: 150, y: 150, color: "blue" },
-            // green token
-            { tn: 'gt1', x: 950, y: 950, color: "green" },
-            { tn: 'gt2', x: 950, y: 1050, color: "green" },
-            { tn: 'gt3', x: 1050, y: 950, color: "green" },
-            { tn: 'gt4', x: 1050, y: 1050, color: "green" },
-            // yellow token
-            { tn: 'yt1', x: 50, y: 950, color: "yellow" },
-            { tn: 'yt2', x: 50, y: 1050, color: "yellow" },
-            { tn: 'yt3', x: 150, y: 950, color: "yellow" },
-            { tn: 'yt4', x: 150, y: 1050, color: "yellow" },
-            // red token
-            { tn: 'rt1', x: 950, y: 50, color: "red" },
-            { tn: 'rt2', x: 1050, y: 50, color: "red" },
-            { tn: 'rt3', x: 950, y: 150, color: "red" },
-            { tn: 'rt4', x: 1050, y: 150, color: "red" }
-
-        ];
-
-        token.forEach(function (draw){
+        this.tokens.forEach(function (draw) {
             ctx.beginPath();
             ctx.fillStyle = draw.color;
-            ctx.fillRect(draw.x-small/2, draw.y-small/2, small, small);
+            ctx.fillRect(draw.x - small / 2, draw.y - small / 2, small, small);
 
             ctx.strokeStyle = "black"; // Set the stroke color to black
-            ctx.strokeRect(draw.x-small/2, draw.y-small/2, small, small); // Drawing the rectangle border
+            ctx.strokeRect(draw.x - small / 2, draw.y - small / 2, small, small); // Drawing the rectangle border
             ctx.stroke();
         })
-       
+
     };
+
 
 }
 
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const renderer = new Renderer("myCanvas");
     renderer.draw();
 });
