@@ -1,14 +1,14 @@
 const Field = require('./Field');
 
 class Board {
- /**
-  * 
-  * @param {*} numberOfDifferentTokens 
-  * @param {*} maxPlayers 
-  * @param {*} boardFields 
-  */
-    constructor(numberOfDifferentTokens, maxPlayers) {
-        this.numberOfDifferentTokens = numberOfDifferentTokens
+    /**
+     *
+     * @param {*} numberOfTokens
+     * @param {*} maxPlayers
+     * @param {*} boardFields
+     */
+    constructor(numberOfTokens, maxPlayers) {
+        this.numberOfTokens = numberOfTokens
         this.maxPlayers = maxPlayers
         this.gameArray = [
             new Field('wp1', 50, 450, "blue", 'REGULAR'),
@@ -52,45 +52,81 @@ class Board {
             new Field('wp39', 50, 650, "white", 'REGULAR'),
             new Field('wp40', 50, 550, "white", 'REGULAR')]
 
-        this.goalArray = [[
-            // blue safe (Starting position 0)
-            new Field('bi1', 150, 550, "blue", 'GOAL'),
-            new Field('bi2', 250, 550, "blue", 'GOAL'),
-            new Field('bi3', 350, 550, "blue", 'GOAL'),
-            new Field('bi4', 450, 550, "blue", 'GOAL'),
-        // red safe (Starting position 1)
-        ],[
-            new Field('ri1', 550, 150, "red", 'GOAL'),
-            new Field('ri2', 550, 250, "red", 'GOAL'),
-            new Field('ri3', 550, 350, "red", 'GOAL'),
-            new Field('ri4', 550, 450, "red", 'GOAL')],
-        //green safe (Starting position 2)
-        [
-            new Field('gi1', 650, 550, "green", 'GOAL'),
-            new Field('gi2', 750, 550, "green", 'GOAL'),
-            new Field('gi3', 850, 550, "green", 'GOAL'),
-            new Field('gi4', 950, 550, "green", 'GOAL')],
-        // yellow safe (Starting position 3)
-        [
-            new Field('yi1', 550, 650, "yellow", 'GOAL'),
-            new Field('yi2', 550, 750, "yellow", 'GOAL'),
-            new Field('yi3', 550, 850, "yellow", 'GOAL'),
-            new Field('yi4', 550, 950, "yellow", 'GOAL')]
+        this.goalArray = [
+            [
+                // blue safe (Starting position 0)
+                new Field('bi1', 150, 550, "blue", 'GOAL'),
+                new Field('bi2', 250, 550, "blue", 'GOAL'),
+                new Field('bi3', 350, 550, "blue", 'GOAL'),
+                new Field('bi4', 450, 550, "blue", 'GOAL')],
+            // red safe (Starting position 1)
+            [
+                new Field('ri1', 550, 150, "red", 'GOAL'),
+                new Field('ri2', 550, 250, "red", 'GOAL'),
+                new Field('ri3', 550, 350, "red", 'GOAL'),
+                new Field('ri4', 550, 450, "red", 'GOAL')],
+            //green safe (Starting position 2)
+            [
+                new Field('gi1', 650, 550, "green", 'GOAL'),
+                new Field('gi2', 750, 550, "green", 'GOAL'),
+                new Field('gi3', 850, 550, "green", 'GOAL'),
+                new Field('gi4', 950, 550, "green", 'GOAL')],
+            // yellow safe (Starting position 3)
+            [
+                new Field('yi1', 550, 650, "yellow", 'GOAL'),
+                new Field('yi2', 550, 750, "yellow", 'GOAL'),
+                new Field('yi3', 550, 850, "yellow", 'GOAL'),
+                new Field('yi4', 550, 950, "yellow", 'GOAL')]
         ]
 
-        function getStartingPosition(color){
-            switch(color) {
-                case "blue": return "wp1"
-                case "red": return "wp11"
-                case "green": return "wp21"
-                case "yellow": return "wp32"
-                default: return "This is an invalid color"
+        this.homeArray = [
+            // blue home (Starting position 0)
+            [
+                new Field('bt1', 50, 50, "blue", 'HOME'),
+                new Field('bt2', 50, 150, "blue", 'HOME'),
+                new Field('bt3', 150, 50, "blue", 'HOME'),
+                new Field('bt4', 150, 150, "blue", 'HOME')],
+
+            // red home (Starting position 1)
+            [
+                new Field('gt1', 950, 950, "green", 'HOME'),
+                new Field('gt2', 950, 1050, "green", 'HOME'),
+                new Field('gt3', 1050, 950, "green", 'HOME'),
+                new Field('gt4', 1050, 1050, "green", 'HOME')],
+
+            // green home (Starting position 2)
+            [
+                new Field('yt1', 50, 950, "yellow", 'HOME'),
+                new Field('yt2', 50, 1050, "yellow", 'HOME'),
+                new Field('yt3', 150, 950, "yellow", 'HOME'),
+                new Field('yt4', 150, 1050, "yellow", 'HOME')],
+
+            // yellow home (Starting position 3)
+            [
+                new Field('rt1', 950, 50, "red", 'HOME'),
+                new Field('rt2', 950, 150, "red", 'HOME'),
+                new Field('rt3', 1050, 50, "red", 'HOME'),
+                new Field('rt4', 1050, 150, "red", 'HOME')]
+        ]
+
+        function getStartingPosition(color) {
+            switch (color) {
+                case "blue":
+                    return "wp1"
+                case "red":
+                    return "wp11"
+                case "green":
+                    return "wp21"
+                case "yellow":
+                    return "wp32"
+                default:
+                    return "This is an invalid color"
             }
         }
 
     }
 
 
-    }
+}
 
 module.exports = Board;

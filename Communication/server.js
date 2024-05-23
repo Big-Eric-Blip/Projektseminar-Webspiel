@@ -35,6 +35,7 @@ function checkClientMessage(message, playerId) {
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType);
             let player = new Player(playerId, message.playerColor, message.playerName);
+            addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
             games.push(game);
             return {
@@ -51,7 +52,10 @@ function checkClientMessage(message, playerId) {
                     for (const player of game.player) {
                         let client = clients.get(player.playerID)
                         if (client.readyState === WebSocket.OPEN) {
-                            client.send(JSON.stringify({type: "playerJoined", numberOfPlayers: game.player.length + 1}));
+                            client.send(JSON.stringify({
+                                type: "playerJoined",
+                                numberOfPlayers: game.player.length + 1
+                            }));
                         }
                     }
                     let player = new Player(playerId, "", "");
@@ -66,6 +70,17 @@ function checkClientMessage(message, playerId) {
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {message: `Sorry, we are out of ${message.type}.`};
+    }
+}
+
+function addTokensOnPlayerJoin(message, playerId, game) {
+    for (const fields of board.homeArray) {
+        if (fields[0].color === message.playerColor) {
+            for (let i = 0; i < fields.length; i++) {
+                game.addToken(playerId, fields[i].fieldId, fields[i].xCoord, fields[i].yCoord, message.playerColor);
+            }
+            break;
+        }
     }
 }
 
