@@ -1,7 +1,22 @@
 body {
-    background-color: #ffca1a;
+    background-color: #f7ca4d;
     margin-top: 100px;
     font-family: helvetica, sans-serif;
+
+
+
+}
+.landing-page {
+    display: grid;
+    height: 100%;
+
+}
+.img1 {
+    padding: 0;
+    display: block;
+    margin: 0 auto;
+    max-height: 100%;
+    max-width: 90%;
 }
 
 #myCanvas {
@@ -11,6 +26,20 @@ body {
     border-color: black;
     align-content: center;
     background-color: #ffca1a;
+}
+
+.pre-game {
+    display: block;
+
+}
+.lobby {
+    display: none;
+}
+.game-running {
+    display: none;
+}
+.game-over {
+    display: none;
 }
 
 .red-button {
@@ -25,8 +54,7 @@ body {
     margin-right: 30px;
 
 }
-.server-communication-button {
-}
+
 .popup-button {
     color: whitesmoke;
     background-color: crimson;
@@ -41,10 +69,11 @@ body {
     display: block;
 }
 .game-board {
-    display: flex;
+
     justify-content: center;
     align-items: center;
 }
+
 
 .site-header {
    display: flex;
@@ -52,16 +81,18 @@ body {
    align-items: center; 
    padding: 20px;
    position: fixed;
-   background-color: #ffca1a;
+   background-color: #f7ca4d;
    top: 0;
-    left: 0;
-    width: 100%;
+   width: 100%;
 }
 .site-header__wrapper {
     display:flex;
-    justify-content: space-evenly;
     align-items: center;
-    flex-wrap: wrap;
+
+}
+.side-nav {
+    width: 250px
+
 }
 
 .sticky {
@@ -95,6 +126,10 @@ body {
     margin-left: 20px;
     float: right;
 }
+#startGameButton {
+    display: none;
+}
+
 
 
 
