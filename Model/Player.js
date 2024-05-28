@@ -2,19 +2,28 @@ class Player {
 
     /**
      * 
-     * @param {*} playerID 
+     * @param {*} playerId
      * @param {*} color 
-     * @param {*} name 
-     */
-    constructor(playerID, color, name){
+     * @param {*} name
+
+     * */
+    constructor(playerId, color, name){
         this.color = color
-        this.playerID = playerID
+        this.playerId = playerId
         this.name = name
         this.playersTurn = false
     }
 
     //TODO: implement getters and setters
-    
+
+    updatePlayersTurn(change){
+        if(change === "true" || change ==="false") {
+            this.playersTurn = change
+        }
+        else {
+            console.log("Error: the player's turn for "+ this.playerId + " is neither TRUE NOR FALSE")
+        }
+    }
 
 }
 

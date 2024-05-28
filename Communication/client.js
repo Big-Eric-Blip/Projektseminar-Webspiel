@@ -1,6 +1,7 @@
 let currentGame = {
     gameId: "",
-    playerId: ""
+    playerId: "",
+    gameState: ""
 }
 
 let socket = null;
@@ -77,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         joinGameButton: joinGame
+        //TODO: implement Start game button
     };
 
 
@@ -115,6 +117,7 @@ function createGame() {
         playerColor: "red"
     });
 }
+
 
 function handleCreateGameResponse(response) {
     document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."

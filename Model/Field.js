@@ -1,14 +1,14 @@
 class Field {
     /**
      * 
-     * @param {*} fieldID 
+     * @param {*} fieldId
      * @param {*} color 
      * @param {*} type : available types: START, REGULAR, GOAL
      * @param {*} xCoord 
      * @param {*} yCoord 
      */
-    constructor(fieldID, xCoord, yCoord, color, type) {
-        this.fieldID = fieldID
+    constructor(fieldId, xCoord, yCoord, color, type) {
+        this.fieldId = fieldId
         this.color = color
         this.type = type
         this.xCoord = xCoord

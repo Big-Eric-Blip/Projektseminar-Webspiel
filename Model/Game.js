@@ -1,6 +1,6 @@
 const Board = require("./Board");
 const Token = require("./Token");
-
+const GameAction = require('../Model/GameAction');
 class Game {
     /**
      *
@@ -19,11 +19,23 @@ class Game {
         this.player.push(newPlayer);
     }
 
+    removePlayer(playerId) {
+        //TODO implement this method
+        //remove player from game: save their points or not?
+    }
+
     addToken(playerId, fieldId, xCoord, yCoord, color) {
         this.tokens.push(new Token(playerId, fieldId, xCoord, yCoord, color));
     }
 
-//     TODO add removePlayer method
+    getAvailableGameActions() {
+        //TODO implement this method
+
+    }
+
+
+
+
 }
 
 module.exports = Game;
