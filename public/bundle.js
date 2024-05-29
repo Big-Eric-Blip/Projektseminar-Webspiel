@@ -79,7 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         joinGameButton: joinGame,
-        startGameButton: startGame
+        startGameButton: startGame,
+        leaveGameButton: leaveGame,
+        landingPageButton: returnToLandingPage
     };
 
 
@@ -124,6 +126,9 @@ function createGame() {
     //the game state influences the CSS of the game
 
 }
+function returnToLandingPage() {
+    setGameState('PRE_GAME')
+}
 //The following function may be not necessary?
 function startGame() {
     setGameState('GAME_RUNNING')
@@ -131,6 +136,9 @@ function startGame() {
     //    type: 'startGame'
         //TODO implement full requiredJSON
     //});
+}
+function leaveGame() {
+    setGameState('GAME_OVER')
 }
 function setGameState(state) {
     switch (state) {
@@ -143,10 +151,15 @@ function setGameState(state) {
 }
 function setPreGame() {
     currentGame.gameState = "PRE_GAME"
-    //TODO list all html objects visible in the pre game state
-    const gameBoard = document.getElementById("board")
-    gameBoard.classList.add("pre-game")
-    console.log("Status changed")
+    const gameOverElements = document.querySelectorAll('.game-over')
+    const preGameElements = document.querySelectorAll('.pre-game')
+    gameOverElements.forEach((element) => element.style.display = 'none')
+    preGameElements.forEach((element) => element.style.display = 'block')
+    //if necessary reset body attributes
+    document.getElementById('body').style.backgroundColor = '#f7ca4d'
+    document.getElementById('body').style.marginTop = '100px'
+    document.getElementById('main-area').style.marginLeft = '0'
+
 }
 
 function setLobby() {
@@ -157,6 +170,10 @@ function setLobby() {
     const lobbyElements = document.querySelectorAll('.lobby')
     lobbyElements.forEach((element) => element.style.display = 'block')
     document.getElementById('body').style.backgroundColor = 'azure'
+    document.getElementById('body').style.marginTop = '60px'
+    document.getElementById('main-area').style.marginLeft = '240px'
+    //document.getElementById('body').style.width = '80%'
+
 }
 
 function setGameRunning() {
@@ -171,7 +188,10 @@ function endGame() {
     currentGame.gameState = "GAME_OVER"
     const gameRunningElements = document.querySelectorAll('.game-running')
     const gameOverElements = document.querySelectorAll('.game-over')
+    gameRunningElements.forEach((element) => element.style.display = 'none')
+    gameOverElements.forEach((element) => element.style.display = 'block')
 }
+
 
 function handleCreateGameResponse(response) {
     document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
