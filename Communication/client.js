@@ -114,7 +114,6 @@ function closeCreateGamePopup(){
 
 function createGame() {
     setGameState("LOBBY")
-    lobbyElements.forEach((element) => element.style.display = 'block')
     // TODO set parameter to not static values
     sendMessage({
         type: 'createGame',
