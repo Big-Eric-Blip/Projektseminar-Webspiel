@@ -1,10 +1,10 @@
 class GameAction {
-    //TODO: potential problem: tokens have no IDs -> combined ID from playerId and fieldId?
     //available actions: MOVE, ROLLDIE
-    constructor(playerId, fieldId, action, amount) {
+    constructor(playerId, action, tokenId, fieldId, amount) {
         this.playerId = playerId
-        this.fieldId = fieldId
         this.action = action
+        this.tokenId = tokenId
+        this.fieldId = fieldId
         this.amount = amount
     }
 
