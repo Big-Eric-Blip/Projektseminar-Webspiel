@@ -16,7 +16,7 @@ class Player {
 
     //TODO: implement getters and setters
 
-    updatePlayersTurn(change){
+    setPlayersTurn(change){
         if(change === "true" || change ==="false") {
             this.playersTurn = change
         }

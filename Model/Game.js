@@ -13,6 +13,7 @@ class Game {
         this.player = player;
         this.boardType = boardType;
         this.tokens = [];
+        this.gameActions = [];
     }
 
     addPlayer(newPlayer) {
@@ -22,6 +23,10 @@ class Game {
     removePlayer(playerId) {
         //TODO implement this method
         //remove player from game: save their points or not?
+    }
+
+    updatePlayersTurn() {
+        //TODO implement this method
     }
 
     addToken(tokenId, playerId, fieldId, color) {

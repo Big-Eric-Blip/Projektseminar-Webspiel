@@ -6,7 +6,7 @@ const {v4: uuidv4} = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
-const GameAction = require('../Model/GameAction');
+//const GameAction = require('../Model/GameAction');
 
 const app = express();
 const server = http.createServer(app);
@@ -50,7 +50,7 @@ function checkClientMessage(message, playerId) {
                         return {message: `The game you've tried to join is full. There is no space for another player.`};
                     }
                     for (const player of game.player) {
-                        let client = clients.get(player.playerID)
+                        let client = clients.get(player.playerId)
                         if (client.readyState === WebSocket.OPEN) {
                             client.send(JSON.stringify({
                                 type: "playerJoined",
