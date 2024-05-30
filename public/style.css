@@ -2,7 +2,9 @@ body {
     background-color: #f7ca4d;
     margin-top: 100px;
     font-family: helvetica, sans-serif;
-    height: 100%
+    height: 100%;
+    margin-left: 0;
+    margin-right: 0
 }
 
 .landing-page {
@@ -28,7 +30,6 @@ body {
     width: 200px;
     height: 1100px;
     padding: 15px;
-
     margin-right: 40px;
     margin-left: 0;
     border-right-style: inset;
