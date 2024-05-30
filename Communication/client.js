@@ -233,9 +233,17 @@ function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
 
+    const diceResultDiv = document.getElementById('resultDice');
+    if (diceResultDiv) {
+        diceResultDiv.textContent = `${response.dieValue}`;
+    } else {
+        console.error('Element with id "diceResult" not found.');
+    }
 }
 
 function handlePlayerJoinedResponse(message) {
     document.getElementById("serverResponse").innerHTML =
         "A new player joined your game. There are now " + message.numberOfPlayers + " players your game."
 }
+
+

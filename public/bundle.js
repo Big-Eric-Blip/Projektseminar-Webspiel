@@ -234,12 +234,20 @@ function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
 
+    const diceResultDiv = document.getElementById('resultDice');
+    if (diceResultDiv) {
+        diceResultDiv.textContent = `${response.dieValue}`;
+    } else {
+        console.error('Element with id "diceResult" not found.');
+    }
 }
 
 function handlePlayerJoinedResponse(message) {
     document.getElementById("serverResponse").innerHTML =
         "A new player joined your game. There are now " + message.numberOfPlayers + " players your game."
 }
+
+
 
 },{}],2:[function(require,module,exports){
 class Renderer {
@@ -248,29 +256,33 @@ class Renderer {
         this.ctx = this.canvas.getContext("2d");
         this.small = 35;
         this.big = 45;
-        this.draw();
 
-    }
-    draw() {
-      let big = this.big;
-      let small = this.small;
-      let ctx = this.ctx;
-        /*Felder:
-        blue (x,y): außen (50,50) (50,150) (150,150) (150,50) 
-                    innen (150,550) (250,550) (350,550) (450,550)
-                    erstes (50,450)
-        green (x,y): außen (950,950) (950,1050) (1050,950) (1050,1050) 
-                    innen (650,550) (750,550) (850,550) (950,550)
-                    erstes (1050,650)
-        yellow (x,y): außen (50,950) (50,1050) (150,950) (150,1050) 
-                    innen (550,650) (550,850) (550,750) (550,950)
-                    erstes (450,1050)
-        red (x,y): außen (950,50) (950,50) (950,50) (950,50) 
-                    innen (550,150) (550,250) (550,350) (550,450)
-                    erstes (650,50)
-        */
-        let fields = [
-        
+
+
+        this.tokens = [
+            // blue token
+            { tn: 'bt1', x: 50, y: 50, color: "blue" },
+            { tn: 'bt2', x: 50, y: 150, color: "blue" },
+            { tn: 'bt3', x: 150, y: 50, color: "blue" },
+            { tn: 'bt4', x: 150, y: 150, color: "blue" },
+            // green token
+            { tn: 'gt1', x: 950, y: 950, color: "green" },
+            { tn: 'gt2', x: 950, y: 1050, color: "green" },
+            { tn: 'gt3', x: 1050, y: 950, color: "green" },
+            { tn: 'gt4', x: 1050, y: 1050, color: "green" },
+            // yellow token
+            { tn: 'yt1', x: 50, y: 950, color: "yellow" },
+            { tn: 'yt2', x: 50, y: 1050, color: "yellow" },
+            { tn: 'yt3', x: 150, y: 950, color: "yellow" },
+            { tn: 'yt4', x: 150, y: 1050, color: "yellow" },
+            // red token
+            { tn: 'rt1', x: 950, y: 50, color: "red" },
+            { tn: 'rt2', x: 1050, y: 50, color: "red" },
+            { tn: 'rt3', x: 950, y: 150, color: "red" },
+            { tn: 'rt4', x: 1050, y: 150, color: "red" }
+        ];
+        this.fields = [
+
             // blue home
             { fn: 'ba1', x: 50, y: 50, color: "blue" },
             { fn: 'ba2', x: 50, y: 150, color: "blue" },
@@ -354,55 +366,100 @@ class Renderer {
             { fn: 'wp41', x: 50, y: 550, color: "white" },
         ];
 
-        fields.forEach(function (draw) {
+        this.drawFields();
+        this.drawTokens();
+
+        this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
+
+
+    }
+
+
+    drawFields() {
+        let big = this.big;
+        let ctx = this.ctx;
+
+        this.fields.forEach(function (draw) {
             ctx.beginPath();
             ctx.fillStyle = draw.color;
             ctx.arc(draw.x, draw.y, big, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
         });
+    }
 
-        let token = [
-            // blue token
-            { tn: 'bt1', x: 50, y: 50, color: "blue" },
-            { tn: 'bt2', x: 50, y: 150, color: "blue" },
-            { tn: 'bt3', x: 150, y: 50, color: "blue" },
-            { tn: 'bt4', x: 150, y: 150, color: "blue" },
-            // green token
-            { tn: 'gt1', x: 950, y: 950, color: "green" },
-            { tn: 'gt2', x: 950, y: 1050, color: "green" },
-            { tn: 'gt3', x: 1050, y: 950, color: "green" },
-            { tn: 'gt4', x: 1050, y: 1050, color: "green" },
-            // yellow token
-            { tn: 'yt1', x: 50, y: 950, color: "yellow" },
-            { tn: 'yt2', x: 50, y: 1050, color: "yellow" },
-            { tn: 'yt3', x: 150, y: 950, color: "yellow" },
-            { tn: 'yt4', x: 150, y: 1050, color: "yellow" },
-            // red token
-            { tn: 'rt1', x: 950, y: 50, color: "red" },
-            { tn: 'rt2', x: 1050, y: 50, color: "red" },
-            { tn: 'rt3', x: 950, y: 150, color: "red" },
-            { tn: 'rt4', x: 1050, y: 150, color: "red" }
+    drawTokens() {
+        let small = this.small;
+        let ctx = this.ctx;
 
-        ];
-
-        token.forEach(function (draw){
+        this.tokens.forEach(function (draw) {
             ctx.beginPath();
             ctx.fillStyle = draw.color;
-            ctx.fillRect(draw.x-small/2, draw.y-small/2, small, small);
+            ctx.fillRect(draw.x - small / 2, draw.y - small / 2, small, small);
 
-            ctx.strokeStyle = "black"; // Set the stroke color to black
-            ctx.strokeRect(draw.x-small/2, draw.y-small/2, small, small); // Drawing the rectangle border
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(draw.x - small / 2, draw.y - small / 2, small, small);
             ctx.stroke();
-        })
-       
-    };
+        });
+    }
 
+    onCanvasClick(event) {
+        const rect = this.canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+
+        this.tokens.forEach(token => {
+            if (this.isPointInRect({ x: clickX, y: clickY }, token)) {
+                console.log(`Game piece clicked:`, token);
+                this.moveToken(token);
+            }
+        });
+    }
+
+    isPointInRect(point, token) {
+        return (
+            point.x >= token.x - this.small / 2 &&
+            point.x <= token.x + this.small / 2 &&
+            point.y >= token.y - this.small / 2 &&
+            point.y <= token.y + this.small / 2
+        );
+    }
+
+
+
+    moveToken(token) {
+        console.log('Moving token:', token);
+
+        console.log('Token is valid. Proceeding with movement.');
+        const diceResultDiv = document.getElementById('resultDice');
+        const resultDice = parseInt(diceResultDiv.innerText);
+        console.log('Dice result:', resultDice);
+        const currentIndex = this.fields.findIndex(field => field.x === token.x && field.y === token.y);
+        console.log('Current index:', currentIndex);
+        const newIndex = (currentIndex + resultDice) % this.fields.length;
+        console.log('New index:', newIndex);
+        const newField = this.fields[newIndex];
+        console.log('New field:', newField);
+
+        token.x = newField.x;
+        token.y = newField.y;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawFields();
+        this.drawTokens();
+
+    }
 }
-document.addEventListener("DOMContentLoaded", function() {
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
     const renderer = new Renderer("myCanvas");
-    renderer.draw();
+    
 });
+
 },{}],3:[function(require,module,exports){
 const client = require('./Communication/client');
 const board =  require('./View/Renderer');
