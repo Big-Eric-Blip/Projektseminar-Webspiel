@@ -1,7 +1,7 @@
 let currentGame = {
     gameId: "",
     playerId: "",
-    gameState: ""
+    gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
 
 let socket = null;
@@ -77,8 +77,10 @@ document.addEventListener('DOMContentLoaded', function () {
         closeExamplePopupButton: closeExamplePopup,
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
-        joinGameButton: joinGame
-        //TODO: implement Start game button
+        joinGameButton: joinGame,
+        startGameButton: startGame,
+        leaveGameButton: leaveGame,
+        landingPageButton: returnToLandingPage
     };
 
 
@@ -95,6 +97,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+
+
 function openExamplePopup(){
     document.getElementById('examplePopup').style.display = 'block';
 }
@@ -109,6 +113,7 @@ function closeCreateGamePopup(){
 }
 
 function createGame() {
+    setGameState("LOBBY")
     // TODO set parameter to not static values
     sendMessage({
         type: 'createGame',
@@ -116,6 +121,73 @@ function createGame() {
         playerName: "Alice",
         playerColor: "red"
     });
+    //the game state influences the CSS of the game
+
+}
+function returnToLandingPage() {
+    setGameState('PRE_GAME')
+}
+//The following function may be not necessary?
+function startGame() {
+    setGameState('GAME_RUNNING')
+    //sendMessage({
+    //    type: 'startGame'
+        //TODO implement full requiredJSON
+    //});
+}
+function leaveGame() {
+    setGameState('GAME_OVER')
+}
+function setGameState(state) {
+    switch (state) {
+        case "PRE_GAME": setPreGame(); break
+        case "LOBBY": setLobby(); break
+        case "GAME_RUNNING": setGameRunning(); break
+        case "GAME_OVER": endGame(); break
+        default: console.log("The game state "+ state+ " is not available")
+    }
+}
+function setPreGame() {
+    currentGame.gameState = "PRE_GAME"
+    const gameOverElements = document.querySelectorAll('.game-over')
+    const preGameElements = document.querySelectorAll('.pre-game')
+    gameOverElements.forEach((element) => element.style.display = 'none')
+    preGameElements.forEach((element) => element.style.display = 'block')
+    //if necessary reset body attributes
+    document.getElementById('body').style.backgroundColor = '#f7ca4d'
+    document.getElementById('body').style.marginTop = '100px'
+    document.getElementById('main-area').style.marginLeft = '0'
+
+}
+
+function setLobby() {
+    currentGame.gameState = "LOBBY"
+    //TODO list all html objects visible in the lobby state
+    const preGameElements = document.querySelectorAll('.pre-game')
+    preGameElements.forEach((element) => element.style.display = 'none')
+    const lobbyElements = document.querySelectorAll('.lobby')
+    lobbyElements.forEach((element) => element.style.display = 'block')
+    document.getElementById('body').style.backgroundColor = 'azure'
+    document.getElementById('body').style.marginTop = '60px'
+    document.getElementById('main-area').style.marginLeft = '240px'
+    //document.getElementById('body').style.width = '80%'
+
+}
+
+function setGameRunning() {
+    currentGame.gameState = "GAME_RUNNING"
+    const lobbyElements = document.querySelectorAll('.lobby')
+    const gameRunningElements = document.querySelectorAll('.game-running')
+    lobbyElements.forEach((element) => element.style.display = 'none')
+    gameRunningElements.forEach((element) => element.style.display = 'block')
+}
+
+function endGame() {
+    currentGame.gameState = "GAME_OVER"
+    const gameRunningElements = document.querySelectorAll('.game-running')
+    const gameOverElements = document.querySelectorAll('.game-over')
+    gameRunningElements.forEach((element) => element.style.display = 'none')
+    gameOverElements.forEach((element) => element.style.display = 'block')
 }
 
 
@@ -144,6 +216,7 @@ function handleJoinGameResponse(response) {
         currentGame.playerId = response.playerId;
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
+        setGameState('LOBBY');
     } else {
         console.log(response.message);
         serverResponseText.innerHTML = response.message;
