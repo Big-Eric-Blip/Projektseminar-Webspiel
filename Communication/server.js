@@ -77,7 +77,8 @@ function addTokensOnPlayerJoin(message, playerId, game) {
     for (const fields of board.homeArray) {
         if (fields[0].color === message.playerColor) {
             for (let i = 0; i < fields.length; i++) {
-                game.addToken(playerId, fields[i].fieldId, fields[i].xCoord, fields[i].yCoord, message.playerColor);
+                let tokenId = playerId + (i+1)
+                game.addToken(tokenId, playerId, fields[i].fieldId, message.playerColor);
             }
             break;
         }

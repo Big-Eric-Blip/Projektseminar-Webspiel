@@ -24,8 +24,8 @@ class Game {
         //remove player from game: save their points or not?
     }
 
-    addToken(playerId, fieldId, xCoord, yCoord, color) {
-        this.tokens.push(new Token(playerId, fieldId, xCoord, yCoord, color));
+    addToken(tokenId, playerId, fieldId, color) {
+        this.tokens.push(new Token(tokenId, playerId, fieldId, color));
     }
 
     getAvailableGameActions() {
