@@ -217,6 +217,7 @@ function handleJoinGameResponse(response) {
         currentGame.playerId = response.playerId;
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
+        setGameState('LOBBY');
     } else {
         console.log(response.message);
         serverResponseText.innerHTML = response.message;
