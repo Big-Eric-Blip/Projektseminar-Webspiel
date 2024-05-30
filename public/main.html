@@ -9,74 +9,70 @@
 
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<header class="site-header" id="mainHeader">
-  <div class="wrapper site-header__wrapper">
-    <nav class="nav">
-      <button class="server-communication-button red-button" id="createGamePopupButton">Create game</button>
-      <button class="red-button">Join game</button>
-      <button class="red-button">Settings</button>
-    </nav>
-  </div>
+<header class="site-header pre-game" id="mainHeader">
+    <div class="wrapper site-header__wrapper">
+        <nav class="nav">
+            <button class="server-communication-button red-button" id="createGamePopupButton">Create game</button>
+            <button class="red-button">Join game</button>
+
+            <button class="red-button">Settings</button>
+        </nav>
+    </div>
 </header>
 
-<body>
-  <h1>Stay cool, buddy!</h1>
+<!--Communication panel-->
 
+
+<body id="body">
+<!-- <h1>Stay cool, buddy!</h1>-->
+<aside class="panel-left lobby game-running game-over">
+    <button class="lobby test-button" id="testlobby">test lobby visibility</button>
+    <button class="game-running test-button">test game running visibility</button>
+    <button class="game-over test-button">test game over visibility</button>
+    <button id="startGameButton" class="server-communication-button panel-button lobby">Start Game</button>
+    <button id="rollDiceButton" class="server-communication-button panel-button game-running">Roll the Dice</button>
+    <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave Game</button>
+    <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
+</aside>
+
+<div class="main-area" id="main-area">
+<button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
+<input type="text" id="joinGameInputId" placeholder="Enter game id">
+<!---->
   <div id="resultDice">Hier wird ergebnis angezeigt</div>
   <br>
   <br>
 
-  <button id="rollDiceButton" class="server-communication-button popup-button">Roll the Dice</button>
-  <button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
-  <input type="text" id="joinGameInputId" placeholder="Enter game id">
-
-
-  <!--Example Pop up-->
-  <!--
-<button id="openExamplePopupButton" class="server-communication-button popup-button">Open Popup</button>
--->
-  <div class="popup" id="examplePopup">
+<!-- Begin Create Game Popup-->
+<div class="popup" id="createGamePopup">
     <div class="popup-content">
-      <h2>Optional header</h2>
-      <p>This is some sample text inside the popup.</p>
-      <br>
-      <!-- <button class="server-communication-button" id="exampleConfirmationButton">Confirm action</button> -->
-      <button class="server-communication-button" id="closeExamplePopupButton">Back</button>
-      <br>
-      <br>
-    </div>
-  </div>
-  <!-- End Example Popup-->
-  <!-- Begin Create Game Popup-->
-  <div class="popup" id="createGamePopup">
-    <div class="popup-content">
-      <h2>Create a new game</h2>
-      <p>Placeholder: Select the number of players (max 4)</p>
-      <p>Select your own color</p>
-      <p>Select your die skin</p>
-      <br>
-      <h3 id="serverResponse"></h3>
-      <p id="gameId"></p>
-      <br>
-      <br>
-      <button id="createGameButton" class="server-communication-button">Create Game</button>
-      <button id="closeCreateGamePopupButton" class="server-communication-button">Back</button>
-      <!--The two <br> elements are currently necessary for the formatting-->
-      <br>
-      <br>
+        <h2>Create a new game</h2>
+        <p>Placeholder: Select the number of players (max 4)</p>
+        <p>Select your own color</p>
+        <p>Select your die skin</p>
+        <br>
+        <h3 id="serverResponse"></h3>
+        <p id="gameId"></p>
+        <br>
+        <br>
+        <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
+        <button id="closeCreateGamePopupButton" class="server-communication-button popup-button" >Back</button>
+        <!--The two <br> elements are currently necessary for the formatting-->
+        <br>
+        <br>
     </div>
   </div>
   <!-- End Create Game Popup-->
 
+<button class="pre-game test-button">test pre game visibility</button>
 
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <div class="game-board" id="board">
+
+<div class="game-board lobby game-running" id="board">
     <canvas id="myCanvas" width="1100" height="1100"></canvas>
-  </div>
+</div>
+<div class="landing-page pre-game"><img class='img1' src="./pictures/background_landing_page.png" alt="Logo of 'Stay cool, buddy!'">
+</div>
+</div>
 </body>
 
 </html>
