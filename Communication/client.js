@@ -73,8 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttonFunctions = {
         createGameButton: createGame,
         rollDiceButton: rollDice,
-        openExamplePopupButton: openExamplePopup,
-        closeExamplePopupButton: closeExamplePopup,
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         joinGameButton: joinGame,
@@ -97,18 +95,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
-
-function openExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'block';
-}
-function closeExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'none';
-}
-function openCreateGamePopup(){
+function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
 }
-function closeCreateGamePopup(){
+
+function closeCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'none';
 }
 
@@ -124,29 +115,43 @@ function createGame() {
     //the game state influences the CSS of the game
 
 }
+
 function returnToLandingPage() {
     setGameState('PRE_GAME')
 }
+
 //The following function may be not necessary?
 function startGame() {
     setGameState('GAME_RUNNING')
     //sendMessage({
     //    type: 'startGame'
-        //TODO implement full requiredJSON
+    //TODO implement full requiredJSON
     //});
 }
+
 function leaveGame() {
     setGameState('GAME_OVER')
 }
+
 function setGameState(state) {
     switch (state) {
-        case "PRE_GAME": setPreGame(); break
-        case "LOBBY": setLobby(); break
-        case "GAME_RUNNING": setGameRunning(); break
-        case "GAME_OVER": endGame(); break
-        default: console.log("The game state "+ state+ " is not available")
+        case "PRE_GAME":
+            setPreGame();
+            break
+        case "LOBBY":
+            setLobby();
+            break
+        case "GAME_RUNNING":
+            setGameRunning();
+            break
+        case "GAME_OVER":
+            endGame();
+            break
+        default:
+            console.log("The game state " + state + " is not available")
     }
 }
+
 function setPreGame() {
     currentGame.gameState = "PRE_GAME"
     const gameOverElements = document.querySelectorAll('.game-over')
