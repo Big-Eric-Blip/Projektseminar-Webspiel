@@ -23,6 +23,12 @@ class Game {
         this.tokens.push(new Token(playerId, fieldId, xCoord, yCoord, color));
     }
 
+    moveToken(tokenId,dieValue){
+        this.tokens(tokenId)
+
+    }
+
+        
 //     TODO add removePlayer method
 }
 
