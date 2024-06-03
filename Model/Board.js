@@ -108,8 +108,8 @@ class Board {
                 new Field('rt3', 1050, 50, "red", 'HOME'),
                 new Field('rt4', 1050, 150, "red", 'HOME')]
         ]
-
-        function getStartingPosition(color) {
+    }
+        getStartingPosition(color) {
             switch (color) {
                 case "blue":
                     return "wp1"
@@ -124,7 +124,17 @@ class Board {
             }
         }
 
-    }
+        getFieldType(fieldId){
+        switch(fieldId.substring(2)) {
+            case 'i': return "GOAL"
+            case 't': return "HOME"
+            case 'p': return "REGULAR"
+            default: return "UNKNOWN"
+        }
+
+        }
+
+
 
 
 }

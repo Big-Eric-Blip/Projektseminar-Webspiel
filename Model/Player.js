@@ -24,6 +24,9 @@ class Player {
             console.log("Error: the player's turn for "+ this.playerId + " is neither TRUE NOR FALSE")
         }
     }
+    getColor(){
+        return this.color;
+    }
 
 }
 

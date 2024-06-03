@@ -24,6 +24,9 @@ class Field {
    getYCoord() {
     return this.yCoord
    }
+   getFieldType() {
+       return this.type
+   }
 }
 
 module.exports = Field;

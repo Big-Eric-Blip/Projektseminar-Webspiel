@@ -6,6 +6,7 @@ const {v4: uuidv4} = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
+const Die = require('../Model/Die')
 //const GameAction = require('../Model/GameAction');
 
 const app = express();
@@ -31,6 +32,7 @@ function checkClientMessage(message, playerId) {
                 type: 'rollDice',
                 dieValue: (Math.floor(Math.random() * 6) + 1).toString()
             };
+
         case 'createGame':
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType);
@@ -77,7 +79,8 @@ function addTokensOnPlayerJoin(message, playerId, game) {
     for (const fields of board.homeArray) {
         if (fields[0].color === message.playerColor) {
             for (let i = 0; i < fields.length; i++) {
-                let tokenId = playerId + (i+1)
+                //TODO: match Tokenid with front end!
+                let tokenId = color + (i+1)
                 game.addToken(tokenId, playerId, fields[i].fieldId, message.playerColor);
             }
             break;
