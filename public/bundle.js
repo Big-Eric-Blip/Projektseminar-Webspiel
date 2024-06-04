@@ -50,6 +50,15 @@ function fromServerMessage(event) {
         case 'playerJoined':
             handlePlayerJoinedResponse(message);
             break;
+        case 'aPlayerLeftGame':
+            handleAPlayerLeftGame(message);
+            break;
+        case 'leftGame':
+            handleLeftGame(message);
+            break;
+        case 'message':
+            handleServerMessage(message);
+            break;
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
     }
@@ -74,8 +83,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttonFunctions = {
         createGameButton: createGame,
         rollDiceButton: rollDice,
-        openExamplePopupButton: openExamplePopup,
-        closeExamplePopupButton: closeExamplePopup,
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         joinGameButton: joinGame,
@@ -98,18 +105,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
-
-function openExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'block';
-}
-function closeExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'none';
-}
-function openCreateGamePopup(){
+function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
 }
-function closeCreateGamePopup(){
+
+function closeCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'none';
 }
 
@@ -125,29 +125,47 @@ function createGame() {
     //the game state influences the CSS of the game
 
 }
+
 function returnToLandingPage() {
     setGameState('PRE_GAME')
 }
+
 //The following function may be not necessary?
 function startGame() {
     setGameState('GAME_RUNNING')
     //sendMessage({
     //    type: 'startGame'
-        //TODO implement full requiredJSON
+    //TODO implement full requiredJSON
     //});
 }
+
 function leaveGame() {
     setGameState('GAME_OVER')
+    sendMessage({
+        type: 'leaveGame',
+        gameId: currentGame.gameId
+    });
 }
+
 function setGameState(state) {
     switch (state) {
-        case "PRE_GAME": setPreGame(); break
-        case "LOBBY": setLobby(); break
-        case "GAME_RUNNING": setGameRunning(); break
-        case "GAME_OVER": endGame(); break
-        default: console.log("The game state "+ state+ " is not available")
+        case "PRE_GAME":
+            setPreGame();
+            break
+        case "LOBBY":
+            setLobby();
+            break
+        case "GAME_RUNNING":
+            setGameRunning();
+            break
+        case "GAME_OVER":
+            endGame();
+            break
+        default:
+            console.log("The game state " + state + " is not available")
     }
 }
+
 function setPreGame() {
     currentGame.gameState = "PRE_GAME"
     const gameOverElements = document.querySelectorAll('.game-over')
@@ -191,7 +209,6 @@ function endGame() {
     gameOverElements.forEach((element) => element.style.display = 'block')
 }
 
-
 function handleCreateGameResponse(response) {
     document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
@@ -229,7 +246,6 @@ function rollDice() {
     sendMessage({type: 'rollDice'});
 }
 
-
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
@@ -247,8 +263,18 @@ function handlePlayerJoinedResponse(message) {
         "A new player joined your game. There are now " + message.numberOfPlayers + " players your game."
 }
 
+function handleAPlayerLeftGame(message) {
+    console.log(message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer + ' player) left the game.')
+}
 
+function handleLeftGame(message) {
+    console.log('You left the game (' + message.gameId + ').')
+}
 
+function handleServerMessage(response) {
+    // TODO show message in game in grey block on the left or maybe implement chat and show it there
+    console.log(response.message);
+}
 },{}],2:[function(require,module,exports){
 class Renderer {
     constructor(canvasID) {

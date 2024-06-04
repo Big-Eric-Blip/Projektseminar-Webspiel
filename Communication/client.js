@@ -49,6 +49,15 @@ function fromServerMessage(event) {
         case 'playerJoined':
             handlePlayerJoinedResponse(message);
             break;
+        case 'aPlayerLeftGame':
+            handleAPlayerLeftGame(message);
+            break;
+        case 'leftGame':
+            handleLeftGame(message);
+            break;
+        case 'message':
+            handleServerMessage(message);
+            break;
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
     }
@@ -131,6 +140,10 @@ function startGame() {
 
 function leaveGame() {
     setGameState('GAME_OVER')
+    sendMessage({
+        type: 'leaveGame',
+        gameId: currentGame.gameId
+    });
 }
 
 function setGameState(state) {
@@ -195,7 +208,6 @@ function endGame() {
     gameOverElements.forEach((element) => element.style.display = 'block')
 }
 
-
 function handleCreateGameResponse(response) {
     document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
@@ -233,7 +245,6 @@ function rollDice() {
     sendMessage({type: 'rollDice'});
 }
 
-
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
@@ -251,4 +262,15 @@ function handlePlayerJoinedResponse(message) {
         "A new player joined your game. There are now " + message.numberOfPlayers + " players your game."
 }
 
+function handleAPlayerLeftGame(message) {
+    console.log(message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer + ' player) left the game.')
+}
 
+function handleLeftGame(message) {
+    console.log('You left the game (' + message.gameId + ').')
+}
+
+function handleServerMessage(response) {
+    // TODO show message in game in grey block on the left or maybe implement chat and show it there
+    console.log(response.message);
+}

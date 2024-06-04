@@ -49,16 +49,12 @@ function checkClientMessage(message, playerId) {
                     if (game.player.length >= board.maxPlayers) {
                         return {message: `The game you've tried to join is full. There is no space for another player.`};
                     }
-                    for (const player of game.player) {
-                        let client = clients.get(player.playerID)
-                        if (client.readyState === WebSocket.OPEN) {
-                            client.send(JSON.stringify({
-                                type: "playerJoined",
-                                numberOfPlayers: game.player.length + 1
-                            }));
-                        }
-                    }
+                    sendMessageToAllPlayers(game, {
+                        type: "playerJoined",
+                        numberOfPlayers: game.player.length + 1
+                    });
                     let player = new Player(playerId, "", "");
+                    // TODO addTokensOnPlayerJoin
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
@@ -66,10 +62,46 @@ function checkClientMessage(message, playerId) {
                     };
                 }
             }
+            // TODO check if type: is missing
             return {message: `There is no game with game id: ${message.gameId}`};
+        case 'leaveGame':
+            console.log("leaveGame");
+            for (let i = 0; i < games.length; i++) {
+                if (games[i].gameId === message.gameId) {
+                    const leavingPlayer = games[i].removePlayer(playerId);
+                    // if the game is empty delete the game
+                    if (games[i].player.length === 0) {
+                        games.splice(i, 1);
+                    // TODO else if (games[i].player.length === 1) trigger winning screen
+                    } else {
+                        sendMessageToAllPlayers(games[i], {
+                            type: 'aPlayerLeftGame',
+                            colorOfLeavingPlayer: leavingPlayer.color,
+                            nameOfLeavingPlayer: leavingPlayer.name
+                        });
+                    }
+                    return {
+                        type: 'leftGame',
+                        gameId: message.gameId
+                    }
+                }
+            }
+            return {
+                type: 'message', message: 'There is no game with game id: ' + message.gameId +
+                    '. Meaning you are not in the game with this id.'
+            };
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {message: `Sorry, we are out of ${message.type}.`};
+    }
+}
+
+function sendMessageToAllPlayers(game, jsonMessage) {
+    for (const player of game.player) {
+        let client = clients.get(player.playerId)
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(jsonMessage));
+        }
     }
 }
 
@@ -95,12 +127,15 @@ wss.on('connection', function connection(ws) {
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
 
         console.log(`Current clients:`, [...clients.keys()]);
+        console.log('Current games:', games)
 
         ws.send(JSON.stringify(sendBackToClient));
     });
 
     ws.on('close', () => {
         clients.delete(playerId);
+        // TODO check if player with playerId is still in a game and remove the player if so
+
         console.log(`Client disconnected: ${playerId}`);
         console.log(`Currently connected clients:`, [...clients.keys()]);
     });
