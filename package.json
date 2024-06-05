@@ -1,4 +1,6 @@
 {
+  "name": "my-project",
+  "version": "1.0.0",
   "dependencies": {
     "express": "^4.19.2",
     "uuid": "^9.0.1",
@@ -6,6 +8,11 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "browserify": "^17.0.0"
+    "browserify": "^17.0.0",
+    "watchify": "^4.0.0"
+  },
+  "scripts": {
+    "build": "browserify index.js -o public/bundle.js",
+    "watch": "watchify index.js -o public/bundle.js -v"
   }
 }

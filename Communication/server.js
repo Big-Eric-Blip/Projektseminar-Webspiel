@@ -7,12 +7,13 @@ const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
 
+
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 const clients = new Map();
 let games = [];
-let board = new Board(16, 4);
+let board = new Board(4, 4);
 
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -34,6 +35,7 @@ function checkClientMessage(message, playerId) {
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType);
             let player = new Player(playerId, message.playerColor, message.playerName);
+            addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
             games.push(game);
             return {
@@ -50,7 +52,10 @@ function checkClientMessage(message, playerId) {
                     for (const player of game.player) {
                         let client = clients.get(player.playerID)
                         if (client.readyState === WebSocket.OPEN) {
-                            client.send(JSON.stringify({type: "playerJoined", numberOfPlayers: game.player.length + 1}));
+                            client.send(JSON.stringify({
+                                type: "playerJoined",
+                                numberOfPlayers: game.player.length + 1
+                            }));
                         }
                     }
                     let player = new Player(playerId, "", "");
@@ -62,9 +67,36 @@ function checkClientMessage(message, playerId) {
                 }
             }
             return {message: `There is no game with game id: ${message.gameId}`};
-        default:
+        
+
+        //TODO: Complete Implementation
+        //TODO: Send GameResult to all Clients (GameUpdate)
+        case "moveToken": 
+            game.moveToken(message.tokenId,message.diceResult);
+            
+
+            return {
+                type: "moveToken",
+                tokenId: tokenId,
+                diceResult: diceResult
+                
+            }
+
+
+            default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {message: `Sorry, we are out of ${message.type}.`};
+    }
+}
+
+function addTokensOnPlayerJoin(message, playerId, game) {
+    for (const fields of board.homeArray) {
+        if (fields[0].color === message.playerColor) {
+            for (let i = 0; i < fields.length; i++) {
+                game.addToken(playerId, fields[i].fieldId, fields[i].xCoord, fields[i].yCoord, message.playerColor);
+            }
+            break;
+        }
     }
 }
 

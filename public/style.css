@@ -1,16 +1,62 @@
 body {
-    background-color: #ffca1a;
+    background-color: #f7ca4d;
     margin-top: 100px;
     font-family: helvetica, sans-serif;
+    height: 100%;
+    margin-left: 0;
+    margin-right: 0
 }
 
+.landing-page {
+    display: grid;
+    height: 100%;
+}
+
+.img1 {
+    padding: 0;
+    display: block;
+    margin: 0 auto;
+    max-height: 100%;
+    max-width: 90%;
+}
+
+.main-area {
+    margin-left: 0;
+    padding-left: 20px;
+}
+
+.panel-left {
+    float: left;
+    width: 200px;
+    height: 1100px;
+    padding: 15px;
+    margin-right: 40px;
+    margin-left: 0;
+    border-right-style: inset;
+    border-top-style: outset;
+    background-color: lightgray;
+}
+
+
+
 #myCanvas {
-    width: 50%;
-    height: 50%;
     border-style: solid;
     border-color: black;
     align-content: center;
     background-color: #ffca1a;
+}
+
+.pre-game {
+    display: block;
+}
+.lobby {
+    display: none;
+}
+.game-running {
+    display: none;
+}
+.game-over {
+    display: none;
 }
 
 .red-button {
@@ -25,8 +71,7 @@ body {
     margin-right: 30px;
 
 }
-.server-communication-button {
-}
+
 .popup-button {
     color: whitesmoke;
     background-color: crimson;
@@ -40,8 +85,29 @@ body {
     margin-left: 20px;
     display: block;
 }
+.panel-button {
+    color: whitesmoke;
+    background-color: crimson;
+    border: none;
+    border-radius:10px;
+    font-size: medium;
+    width: auto;
+    padding: 8px 20px;
+    display: none;
+    margin-bottom: 15px;
+}
+.test-button {
+    color: black;
+    background-color: whitesmoke;
+    border: none;
+    width: auto;
+    border-radius:10px;
+    font-size: medium;
+    padding: 8px 20px;
+    margin-bottom: 15px;
+}
 .game-board {
-    display: flex;
+
     justify-content: center;
     align-items: center;
 }
@@ -52,16 +118,14 @@ body {
    align-items: center; 
    padding: 20px;
    position: fixed;
-   background-color: #ffca1a;
+   background-color: #f7ca4d;
    top: 0;
-    left: 0;
-    width: 100%;
+   width: 100%;
 }
 .site-header__wrapper {
     display:flex;
-    justify-content: space-evenly;
     align-items: center;
-    flex-wrap: wrap;
+
 }
 
 .sticky {
@@ -98,6 +162,11 @@ body {
 .popup-content .button-container button {
     flex: 1;
 }
+#startGameButton {
+    display: none;
+}
+
+
 
 #joinGameInputId {
     width: 80%; /* Adjust width as needed */

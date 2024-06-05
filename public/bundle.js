@@ -1,7 +1,8 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 let currentGame = {
     gameId: "",
-    playerId: ""
+    playerId: "",
+    gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
 
 let socket = null;
@@ -49,6 +50,9 @@ function fromServerMessage(event) {
         case 'playerJoined':
             handlePlayerJoinedResponse(message);
             break;
+        case 'moveToken':
+            handleMoveTokenResponse(message);
+            break;
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
     }
@@ -71,18 +75,16 @@ function sendMessage(message) {
 document.addEventListener('DOMContentLoaded', function () {
     // <id of the button being clicked>: name of the function below
     const buttonFunctions = {
-         //Create Game
-         createGamePopupButton: openCreateGamePopup,
-         closeCreateGamePopupButton: closeCreateGamePopup,
-         createGameButton: createGame,
- 
-         //Join Game
-         joinGamePopupButton: openJoinGamePopup,
-         closeJoinGamePopupButton: closeJoinGamePopup,
-         joinGameButton: joinGame,
- 
-         //Game Buttons
-         rollDiceButton: rollDice, 
+        createGameButton: createGame,
+        rollDiceButton: rollDice,
+        openExamplePopupButton: openExamplePopup,
+        closeExamplePopupButton: closeExamplePopup,
+        createGamePopupButton: openCreateGamePopup,
+        closeCreateGamePopupButton: closeCreateGamePopup,
+        joinGameButton: joinGame,
+        startGameButton: startGame,
+        leaveGameButton: leaveGame,
+        landingPageButton: returnToLandingPage
     };
 
 
@@ -99,8 +101,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function openJoinGamePopup(){
-    document.getElementById('joinGamePopup').style.display = 'block';
+
+
+function openExamplePopup(){
+    document.getElementById('examplePopup').style.display = 'block';
 }
 function closeJoinGamePopup(){
     document.getElementById('joinGamePopup').style.display = 'none';
@@ -113,6 +117,7 @@ function closeCreateGamePopup(){
 }
 
 function createGame() {
+    setGameState("LOBBY")
     // TODO set parameter to not static values
     sendMessage({
         type: 'createGame',
@@ -120,7 +125,75 @@ function createGame() {
         playerName: "Alice",
         playerColor: "red"
     });
+    //the game state influences the CSS of the game
+
 }
+function returnToLandingPage() {
+    setGameState('PRE_GAME')
+}
+//The following function may be not necessary?
+function startGame() {
+    setGameState('GAME_RUNNING')
+    //sendMessage({
+    //    type: 'startGame'
+        //TODO implement full requiredJSON
+    //});
+}
+function leaveGame() {
+    setGameState('GAME_OVER')
+}
+function setGameState(state) {
+    switch (state) {
+        case "PRE_GAME": setPreGame(); break
+        case "LOBBY": setLobby(); break
+        case "GAME_RUNNING": setGameRunning(); break
+        case "GAME_OVER": endGame(); break
+        default: console.log("The game state "+ state+ " is not available")
+    }
+}
+function setPreGame() {
+    currentGame.gameState = "PRE_GAME"
+    const gameOverElements = document.querySelectorAll('.game-over')
+    const preGameElements = document.querySelectorAll('.pre-game')
+    gameOverElements.forEach((element) => element.style.display = 'none')
+    preGameElements.forEach((element) => element.style.display = 'block')
+    //if necessary reset body attributes
+    document.getElementById('body').style.backgroundColor = '#f7ca4d'
+    document.getElementById('body').style.marginTop = '100px'
+    document.getElementById('main-area').style.marginLeft = '0'
+
+}
+
+function setLobby() {
+    currentGame.gameState = "LOBBY"
+    //TODO list all html objects visible in the lobby state
+    const preGameElements = document.querySelectorAll('.pre-game')
+    preGameElements.forEach((element) => element.style.display = 'none')
+    const lobbyElements = document.querySelectorAll('.lobby')
+    lobbyElements.forEach((element) => element.style.display = 'block')
+    document.getElementById('body').style.backgroundColor = 'azure'
+    document.getElementById('body').style.marginTop = '60px'
+    document.getElementById('main-area').style.marginLeft = '240px'
+    //document.getElementById('body').style.width = '80%'
+
+}
+
+function setGameRunning() {
+    currentGame.gameState = "GAME_RUNNING"
+    const lobbyElements = document.querySelectorAll('.lobby')
+    const gameRunningElements = document.querySelectorAll('.game-running')
+    lobbyElements.forEach((element) => element.style.display = 'none')
+    gameRunningElements.forEach((element) => element.style.display = 'block')
+}
+
+function endGame() {
+    currentGame.gameState = "GAME_OVER"
+    const gameRunningElements = document.querySelectorAll('.game-running')
+    const gameOverElements = document.querySelectorAll('.game-over')
+    gameRunningElements.forEach((element) => element.style.display = 'none')
+    gameOverElements.forEach((element) => element.style.display = 'block')
+}
+
 
 function handleCreateGameResponse(response) {
     document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
@@ -130,6 +203,7 @@ function handleCreateGameResponse(response) {
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
     document.getElementById("createGameButton").style.display = 'none';
+
 }
 
 function joinGame() {
@@ -147,6 +221,7 @@ function handleJoinGameResponse(response) {
         currentGame.playerId = response.playerId;
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
+        setGameState('LOBBY');
     } else {
         console.log(response.message);
         serverResponseText.innerHTML = response.message;
@@ -158,16 +233,49 @@ function rollDice() {
 }
 
 
+
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
 
+    const diceResultDiv = document.getElementById('resultDice');
+    if (diceResultDiv) {
+        diceResultDiv.textContent = `${response.dieValue}`;
+    } else {
+        console.error('Element with id "diceResult" not found.');
+    }
 }
+
+
+function moveToken(tokenId, dieValue) {
+
+    sendMessage({
+        type: "moveToken",
+        tokenId: tokenId,
+        dieValue: dieValue
+    })
+
+}
+
+function handleMoveTokenResponse(response){
+    console.log(response)
+    console.log(response.dieValue)
+    console.log(response.tokenId)
+}
+
+
+
+
+
+
+
 
 function handlePlayerJoinedResponse(message) {
     document.getElementById("serverResponse").innerHTML =
         "A new player joined your game. There are now " + message.numberOfPlayers + " players your game."
 }
+
+
 
 },{}],2:[function(require,module,exports){
 class Renderer {
@@ -176,29 +284,33 @@ class Renderer {
         this.ctx = this.canvas.getContext("2d");
         this.small = 35;
         this.big = 45;
-        this.draw();
 
-    }
-    draw() {
-      let big = this.big;
-      let small = this.small;
-      let ctx = this.ctx;
-        /*Felder:
-        blue (x,y): außen (50,50) (50,150) (150,150) (150,50) 
-                    innen (150,550) (250,550) (350,550) (450,550)
-                    erstes (50,450)
-        green (x,y): außen (950,950) (950,1050) (1050,950) (1050,1050) 
-                    innen (650,550) (750,550) (850,550) (950,550)
-                    erstes (1050,650)
-        yellow (x,y): außen (50,950) (50,1050) (150,950) (150,1050) 
-                    innen (550,650) (550,850) (550,750) (550,950)
-                    erstes (450,1050)
-        red (x,y): außen (950,50) (950,50) (950,50) (950,50) 
-                    innen (550,150) (550,250) (550,350) (550,450)
-                    erstes (650,50)
-        */
-        let fields = [
-        
+
+
+        this.tokens = [
+            // blue token
+            { tn: 'bt1', x: 50, y: 50, color: "blue" },
+            { tn: 'bt2', x: 50, y: 150, color: "blue" },
+            { tn: 'bt3', x: 150, y: 50, color: "blue" },
+            { tn: 'bt4', x: 150, y: 150, color: "blue" },
+            // green token
+            { tn: 'gt1', x: 950, y: 950, color: "green" },
+            { tn: 'gt2', x: 950, y: 1050, color: "green" },
+            { tn: 'gt3', x: 1050, y: 950, color: "green" },
+            { tn: 'gt4', x: 1050, y: 1050, color: "green" },
+            // yellow token
+            { tn: 'yt1', x: 50, y: 950, color: "yellow" },
+            { tn: 'yt2', x: 50, y: 1050, color: "yellow" },
+            { tn: 'yt3', x: 150, y: 950, color: "yellow" },
+            { tn: 'yt4', x: 150, y: 1050, color: "yellow" },
+            // red token
+            { tn: 'rt1', x: 950, y: 50, color: "red" },
+            { tn: 'rt2', x: 1050, y: 50, color: "red" },
+            { tn: 'rt3', x: 950, y: 150, color: "red" },
+            { tn: 'rt4', x: 1050, y: 150, color: "red" }
+        ];
+        this.fields = [
+
             // blue home
             { fn: 'ba1', x: 50, y: 50, color: "blue" },
             { fn: 'ba2', x: 50, y: 150, color: "blue" },
@@ -282,55 +394,170 @@ class Renderer {
             { fn: 'wp41', x: 50, y: 550, color: "white" },
         ];
 
-        fields.forEach(function (draw) {
+        this.drawFields();
+        this.drawTokens();
+
+        this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
+
+
+    }
+
+
+    drawFields() {
+        let big = this.big;
+        let ctx = this.ctx;
+
+        this.fields.forEach(function (draw) {
             ctx.beginPath();
             ctx.fillStyle = draw.color;
             ctx.arc(draw.x, draw.y, big, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
         });
+    }
 
-        let token = [
-            // blue token
-            { tn: 'bt1', x: 50, y: 50, color: "blue" },
-            { tn: 'bt2', x: 50, y: 150, color: "blue" },
-            { tn: 'bt3', x: 150, y: 50, color: "blue" },
-            { tn: 'bt4', x: 150, y: 150, color: "blue" },
-            // green token
-            { tn: 'gt1', x: 950, y: 950, color: "green" },
-            { tn: 'gt2', x: 950, y: 1050, color: "green" },
-            { tn: 'gt3', x: 1050, y: 950, color: "green" },
-            { tn: 'gt4', x: 1050, y: 1050, color: "green" },
-            // yellow token
-            { tn: 'yt1', x: 50, y: 950, color: "yellow" },
-            { tn: 'yt2', x: 50, y: 1050, color: "yellow" },
-            { tn: 'yt3', x: 150, y: 950, color: "yellow" },
-            { tn: 'yt4', x: 150, y: 1050, color: "yellow" },
-            // red token
-            { tn: 'rt1', x: 950, y: 50, color: "red" },
-            { tn: 'rt2', x: 1050, y: 50, color: "red" },
-            { tn: 'rt3', x: 950, y: 150, color: "red" },
-            { tn: 'rt4', x: 1050, y: 150, color: "red" }
+    drawTokens() {
+        let small = this.small;
+        let ctx = this.ctx;
 
-        ];
-
-        token.forEach(function (draw){
+        this.tokens.forEach(function (draw) {
             ctx.beginPath();
             ctx.fillStyle = draw.color;
-            ctx.fillRect(draw.x-small/2, draw.y-small/2, small, small);
+            ctx.fillRect(draw.x - small / 2, draw.y - small / 2, small, small);
 
-            ctx.strokeStyle = "black"; // Set the stroke color to black
-            ctx.strokeRect(draw.x-small/2, draw.y-small/2, small, small); // Drawing the rectangle border
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(draw.x - small / 2, draw.y - small / 2, small, small);
             ctx.stroke();
-        })
-       
-    };
+        });
+    }
+
+    onCanvasClick(event) {
+        const rect = this.canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+
+        this.tokens.forEach(token => {
+            if (this.isPointInRect({ x: clickX, y: clickY }, token)) {
+                console.log(`Game piece clicked:`, token);
+                this.moveToken(token);
+            }
+        });
+    }
+
+    isPointInRect(point, token) {
+        return (
+            point.x >= token.x - this.small / 2 &&
+            point.x <= token.x + this.small / 2 &&
+            point.y >= token.y - this.small / 2 &&
+            point.y <= token.y + this.small / 2
+        );
+    }
+
+
+  moveToken(token) {
+        console.log('Moving token:', token);
+
+        console.log('Token is valid. Proceeding with movement.');
+        const diceResultDiv = document.getElementById('resultDice');
+        const resultDice = parseInt(diceResultDiv.innerText);
+        console.log('Dice result:', resultDice);
+        const currentIndex = this.fields.findIndex(field => field.x === token.x && field.y === token.y);
+        console.log('Current index:', currentIndex);
+        const newIndex = (currentIndex + resultDice) % this.fields.length;
+        console.log('New index:', newIndex);
+        const newField = this.fields[newIndex];
+        console.log('New field:', newField);
+
+
+        token.x = newField.x;
+        token.y = newField.y;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawFields();
+        this.drawTokens();
+
+    }  
+
+
+/* 
+   moveToken(token) {
+        console.log('Moving token:', token);
+    
+        console.log('Token is valid. Proceeding with movement.');
+        const diceResultDiv = document.getElementById('resultDice');
+        const resultDice = parseInt(diceResultDiv.innerText);
+        console.log('Dice result:', resultDice);
+    
+        // Stellen Sie sicher, dass this.fields korrekt initialisiert ist
+        if (!this.fields || !Array.isArray(this.fields)) {
+            console.error('this.fields is not properly initialized:', this.fields);
+            return;
+        }
+    
+        // Überprüfen Sie, ob alle Felder korrekt initialisiert sind
+        this.fields.forEach((field, index) => {
+            if (!field || !field.fieldID) {
+                console.error(`Field at index ${index} is not properly initialized:`, field);
+            }
+        });
+    
+        // Zugriff auf das Board-Objekt
+        const board = this.board; // Stellen Sie sicher, dass das Board-Objekt korrekt initialisiert und zugewiesen ist
+        if (!board) {
+            console.error('Board object is not initialized.');
+            return;
+        }
+    
+        // Aktuelle Position des Tokens bestimmen
+        const currentField = board.gameArray.find(field => field.x === token.x && field.y === token.y);
+    
+        if (!currentField) {
+            // Token befindet sich noch im homeArray, setze auf Startposition
+            const startingFieldID = board.getStartingPosition(token.color);
+            const startingField = board.gameArray.find(field => field.fieldID === startingFieldID);
+            console.log('Setting token to starting field:', startingField);
+    
+            if (startingField) {
+                token.x = startingField.x;
+                token.y = startingField.y;
+            } else {
+                console.error('Starting field not found for color:', token.color);
+            }
+        } else {
+            // Token befindet sich bereits im gameArray, bewege um das Würfelergebnis weiter
+            const newField = board.getNextPosition(currentField.fieldID, resultDice);
+            console.log('New field:', newField);
+    
+            if (newField) {
+                token.x = newField.x;
+                token.y = newField.y;
+            } else {
+                console.error('New field not found.');
+            }
+        }
+    
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawFields();
+        this.drawTokens();
+    } 
+    
+
+ */
+
+
+
 
 }
-document.addEventListener("DOMContentLoaded", function() {
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
     const renderer = new Renderer("myCanvas");
-    renderer.draw();
+    
 });
+
 },{}],3:[function(require,module,exports){
 const client = require('./Communication/client');
 const board =  require('./View/Renderer');
