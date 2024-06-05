@@ -12,9 +12,8 @@
 <header class="site-header pre-game" id="mainHeader">
     <div class="wrapper site-header__wrapper">
         <nav class="nav">
-            <button class="server-communication-button red-button" id="createGamePopupButton">Create game</button>
-            <button class="red-button">Join game</button>
-
+            <button id="createGamePopupButton" class="server-communication-button red-button">Create game</button>
+            <button id="joinGamePopupButton" class="server-communication-button red-button">Join game</button>
             <button class="red-button">Settings</button>
         </nav>
     </div>
@@ -36,27 +35,92 @@
 </aside>
 
 <div class="main-area" id="main-area">
-<button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
-<input type="text" id="joinGameInputId" placeholder="Enter game id">
 <!---->
   <div id="resultDice">Hier wird ergebnis angezeigt</div>
   <br>
   <br>
 
+<!-- Begin Join Game Popup-->
+<div class="popup" id="joinGamePopup">
+    <div class="popup-content">
+        <h2>Join an existing game</h2>
+        <h3>Please insert your URL/ID-Code:</h3>
+            <input type="text" id="joinGameInputId" placeholder="Enter game id">
+            <br><br>
+            <div class="button-container">
+                <button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
+                <button id="closeJoinGamePopupButton" class="server-communication-button popup-button" >Back</button>
+            </div>     
+    </div>
+</div>
+<!-- End Join Game Popup-->
+
 <!-- Begin Create Game Popup-->
 <div class="popup" id="createGamePopup">
     <div class="popup-content">
         <h2>Create a new game</h2>
-        <p>Placeholder: Select the number of players (max 4)</p>
-        <p>Select your own color</p>
-        <p>Select your die skin</p>
+        <form>
+            <h3>Select your Name</h3>
+            <input type="text" id="adminNameInput" placeholder="Enter name">
+            <h3>Choose your Color</h3>
+            <label>
+                <input type="radio" name="playerColor" value="1">
+                <img src="pictures/figureBlue.png" alt="Blue">
+            </label>
+            <label>
+                <input type="radio" name="playerColor" value="2" checked>
+                <img src="./pictures/figureGreen.png" alt="Green">
+            </label>
+            <label>
+                <input type="radio" name="playerColor" value="3">
+                <img src="./pictures/figureRed.png" alt="Red">
+            </label>
+            <label>
+                <input type="radio" name="playerColor" value="3">
+                <img src="./pictures/figureYellow.png" alt="Yellow">
+            </label>
+        </form>
+        <h3>Choose your Die Skin</h3>
+        <form>
+            <label>
+                <input type="radio" name="dieOption" value="1">
+                <img src="./pictures/dieBl.png" alt="Blue Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="2" checked>
+                <img src="./pictures/dieBlck.png" alt="Black Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="3">
+                <img src="./pictures/diePurp.png" alt="Purple Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="4">
+                <img src="./pictures/dieGrn.png" alt="Green Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="5">
+                <img src="./pictures/dieYlw.png" alt="Yellow Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="6">
+                <img src="./pictures/dieTurq.png" alt="Turquoise Die">
+            </label>
+            <label>
+                <input type="radio" name="dieOption" value="7">
+                <img src="./pictures/dieRed.png" alt="Red Die">
+            </label>
+        </form>
         <br>
         <h3 id="serverResponse"></h3>
         <p id="gameId"></p>
         <br>
         <br>
-        <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
-        <button id="closeCreateGamePopupButton" class="server-communication-button popup-button" >Back</button>
+        <div class="button-container">
+            <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
+            <button id="closeCreateGamePopupButton" class="server-communication-button popup-button" >Back</button>
+        </div>
+        
         <!--The two <br> elements are currently necessary for the formatting-->
         <br>
         <br>
@@ -73,6 +137,7 @@
 <div class="landing-page pre-game"><img class='img1' src="./pictures/background_landing_page.png" alt="Logo of 'Stay cool, buddy!'">
 </div>
 </div>
+<br>
 </body>
 
 </html>
