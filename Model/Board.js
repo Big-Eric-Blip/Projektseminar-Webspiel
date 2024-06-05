@@ -54,7 +54,7 @@ class Board {
 
         this.goalArray = [
             [
-                // blue safe (Starting position 0)
+            // blue safe (Starting position 0)
                 new Field('bi1', 150, 550, "blue", 'GOAL'),
                 new Field('bi2', 250, 550, "blue", 'GOAL'),
                 new Field('bi3', 350, 550, "blue", 'GOAL'),
@@ -108,8 +108,8 @@ class Board {
                 new Field('rt3', 1050, 50, "red", 'HOME'),
                 new Field('rt4', 1050, 150, "red", 'HOME')]
         ]
-
-        function getStartingPosition(color) {
+    }
+        getStartingPosition(color){
             switch (color) {
                 case "blue":
                     return "wp1"
@@ -120,13 +120,84 @@ class Board {
                 case "yellow":
                     return "wp32"
                 default:
-                    return "This is an invalid color"
-            }
+                    return "This is an invalid color";
+            };
         }
 
-    }
+        //To be used, when Token is already positioned on Field (GameArray) 
+        getNextPosition(currentFieldId, dieValue, traversedDistance){
+ 
+            let currentIndex = this.gameArray.findIndex(field => field.fieldId === currentFieldId);
+            let fieldId = "test"
+            let nextIndex = (currentIndex + dieValue)
+
+
+            if(traversedDistance + dieValue > 40){
+
+                let goalArrayIndex = (traversedDistance+dieValue)-40
+                return "goalArrayIndex"
+                
+                
+            }else{
+                if(currentIndex+dieValue>39){
+                    nextIndex= (currentIndex+dieValue)-40
+                }
+                fieldId= this.gameArray[nextIndex].getFieldId()
+                console.log(fieldId)
+            }
+            return fieldId
+            
+
+            
+
+            
+        }
+
+/* 
+        const currentIndex = this.gameArray.findIndex(field => field.fieldId === currentFieldId);
+        if (currentIndex === -1) return null; // Invalid fieldID
+        const newIndex = (currentIndex + dieValue) % this.gameArray.length;
+        return this.gameArray[newIndex]; */
+
+
+
+
+        getFieldType(fieldId){
+
+            let workingArray
+
+            switch(currentFieldId.substring(2)){
+                
+                case "p":
+                    workingArray = gameArray
+                    break;
+                case "i":
+                    workingArray = goalArray
+                    break;
+                case "t":
+                    workingArray = homeArray
+                    break;
+                default: 
+                    return "unknown"
+
+            }
+
+            return fieldId
+
+        }
+
+
+
+    
 
 
 }
 
+
+
 module.exports = Board;
+
+/* 
+let board = new Board(16,4)
+board.getNextPosition("wp40",3,38)
+ */
