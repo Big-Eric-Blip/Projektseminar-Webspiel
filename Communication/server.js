@@ -136,7 +136,8 @@ wss.on('connection', function connection(ws) {
 
     ws.on('close', () => {
         clients.delete(playerId);
-        // TODO check if player with playerId is still in a game and remove the player if so
+        // check if the client is still in a game
+        leaveGameOnCloseWindow(playerId);
 
         console.log(`Client disconnected: ${playerId}`);
         console.log(`Currently connected clients:`, [...clients.keys()]);
@@ -144,6 +145,17 @@ wss.on('connection', function connection(ws) {
 
 
 });
+
+function leaveGameOnCloseWindow(playerId) {
+    for (const game of games) {
+        for (const player of game.player) {
+            if (player.playerId === playerId) {
+                checkClientMessage({type: 'leaveGame', gameId: game.gameId}, playerId);
+                return;
+            }
+        }
+    }
+}
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
