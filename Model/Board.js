@@ -134,6 +134,32 @@ class Board {
 
         }
 
+    //To be used, when Token is already positioned on Field (GameArray)
+    getNextPosition(currentFieldId, dieValue, traversedDistance){
+        let currentIndex = this.gameArray.findIndex(field => field.fieldId === currentFieldId);
+        let fieldId = "test"
+        let nextIndex = (currentIndex + dieValue)
+        if(traversedDistance + dieValue > 40){
+            let goalArrayIndex = (traversedDistance+dieValue)-40
+            return "goalArray"
+        }else{
+            if(currentIndex+dieValue>39){
+                nextIndex= (currentIndex+dieValue)-40
+            }
+            fieldId= this.gameArray[nextIndex].fieldId
+            console.log(fieldId)
+        }
+        return fieldId
+    }
+    getNextGoalPosition(currentFieldId, dieValue, goalArrayIndex){
+        let currentIndex = this.goalArray[goalArrayIndex].findIndex(field => field.fieldId === currentFieldId)
+        if (currentIndex + dieValue < 4) {
+            return this.goalArray[goalArrayIndex][currentIndex+dieValue].fieldId
+        } else {
+            return false
+        }
+    }
+
 
 
 
