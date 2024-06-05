@@ -54,7 +54,7 @@ class Board {
 
         this.goalArray = [
             [
-            // blue safe (Starting position 0)
+                // blue safe (Starting position 0)
                 new Field('bi1', 150, 550, "blue", 'GOAL'),
                 new Field('bi2', 250, 550, "blue", 'GOAL'),
                 new Field('bi3', 350, 550, "blue", 'GOAL'),
@@ -109,59 +109,63 @@ class Board {
                 new Field('rt4', 1050, 150, "red", 'HOME')]
         ]
     }
-        getStartingPosition(color){
-            switch (color) {
-                case "blue":
-                    return "wp1"
-                case "red":
-                    return "wp11"
-                case "green":
-                    return "wp21"
-                case "yellow":
-                    return "wp32"
-                default:
-                    return "This is an invalid color";
-            }
+
+    getStartingPosition(color) {
+        switch (color) {
+            case "blue":
+                return "wp1"
+            case "red":
+                return "wp11"
+            case "green":
+                return "wp21"
+            case "yellow":
+                return "wp32"
+            default:
+                return "This is an invalid color";
         }
+    }
 
 
-        getFieldType(fieldId){
-        switch(fieldId.substring(2)) {
-            case 'i': return "GOAL"
-            case 't': return "HOME"
-            case 'p': return "REGULAR"
-            default: return "UNKNOWN"
+    getFieldType(fieldId) {
+        switch (fieldId.substring(2)) {
+            case 'i':
+                return "GOAL"
+            case 't':
+                return "HOME"
+            case 'p':
+                return "REGULAR"
+            default:
+                return "UNKNOWN"
         }
 
-        }
+    }
 
     //To be used, when Token is already positioned on Field (GameArray)
-    getNextPosition(currentFieldId, dieValue, traversedDistance){
+    getNextPosition(currentFieldId, dieValue, traversedDistance) {
         let currentIndex = this.gameArray.findIndex(field => field.fieldId === currentFieldId);
         let fieldId = "test"
         let nextIndex = (currentIndex + dieValue)
-        if(traversedDistance + dieValue > 40){
-            let goalArrayIndex = (traversedDistance+dieValue)-40
+        if (traversedDistance + dieValue > 40) {
+            let goalArrayIndex = (traversedDistance + dieValue) - 40
             return "goalArray"
-        }else{
-            if(currentIndex+dieValue>39){
-                nextIndex= (currentIndex+dieValue)-40
+        } else {
+            if (currentIndex + dieValue > 39) {
+                nextIndex = (currentIndex + dieValue) - 40
             }
-            fieldId= this.gameArray[nextIndex].fieldId
+            fieldId = this.gameArray[nextIndex].fieldId
             console.log(fieldId)
         }
         return fieldId
     }
-    getNextGoalPosition(currentFieldId, dieValue, goalArrayIndex){
+
+    getNextGoalPosition(currentFieldId, dieValue, goalArrayIndex) {
         let currentIndex = this.goalArray[goalArrayIndex].findIndex(field => field.fieldId === currentFieldId)
         if (currentIndex + dieValue < 4) {
-            return this.goalArray[goalArrayIndex][currentIndex+dieValue].fieldId
+            return this.goalArray[goalArrayIndex][currentIndex + dieValue].fieldId
         } else {
             return false
         }
     }
-
-
 
 
 }

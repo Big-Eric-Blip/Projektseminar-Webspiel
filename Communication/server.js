@@ -69,23 +69,24 @@ function checkClientMessage(message, playerId) {
                 }
             }
             return {message: `There is no game with game id: ${message.gameId}`};
-        
-
         //TODO: Complete Implementation
         //TODO: Send GameResult to all Clients (GameUpdate)
-        case "moveToken": 
-            game.moveToken(message.tokenId,message.diceResult);
-            
-
+        //action: MOVE
+        case "action_moveToken":
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.moveToken(message.tokenId, message.diceResult);
+                }
+            }
             return {
                 type: "moveToken",
                 tokenId: tokenId,
                 diceResult: diceResult
-                
+
             }
+        //available actions: MOVE, ROLL_DIE, NONE, BEAT, LEAVE_HOUSE, ENTER_GOAL, MOVE_GOAL
 
-
-            default:
+        default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {message: `Sorry, we are out of ${message.type}.`};
     }
@@ -96,8 +97,10 @@ function addTokensOnPlayerJoin(message, playerId, game) {
         if (fields[0].color === message.playerColor) {
             for (let i = 0; i < fields.length; i++) {
                 //TODO: match Tokenid with front end!
-                let tokenId = color + (i+1)
+                let tokenId = message.playerColor + (i + 1)
                 game.addToken(tokenId, playerId, fields[i].fieldId, message.playerColor);
+                //old constructor
+                //game.addToken(playerId, fields[i].fieldId, fields[i].xCoord, fields[i].yCoord, message.playerColor);
             }
             break;
         }

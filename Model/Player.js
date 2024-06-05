@@ -1,13 +1,13 @@
 class Player {
 
     /**
-     * 
+     *
      * @param {*} playerId
-     * @param {*} color 
+     * @param {*} color
      * @param {*} name
 
      * */
-    constructor(playerId, color, name){
+    constructor(playerId, color, name) {
         this.color = color
         this.playerId = playerId
         this.name = name
@@ -16,15 +16,15 @@ class Player {
 
     //TODO: implement getters and setters
 
-    setPlayersTurn(change){
-        if(change === "true" || change ==="false") {
+    setPlayersTurn(change) {
+        if (change === "true" || change === "false") {
             this.playersTurn = change
-        }
-        else {
-            console.log("Error: the player's turn for "+ this.playerId + " is neither TRUE NOR FALSE")
+        } else {
+            console.log("Error: the player's turn for " + this.playerId + " is neither TRUE NOR FALSE")
         }
     }
-    getColor(){
+
+    getColor() {
         return this.color;
     }
 
