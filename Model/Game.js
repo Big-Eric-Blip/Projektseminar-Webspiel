@@ -23,6 +23,11 @@ class Game {
         this.tokens.push(new Token(playerId, fieldId, xCoord, yCoord, color));
     }
 
+    moveToken(tokenId,dieValue){
+        this.tokens(tokenId)
+
+    }
+
     removePlayer(playerId) {
         for (let i = 0; i < this.player.length; i++) {
             if (this.player[i].playerId === playerId) {

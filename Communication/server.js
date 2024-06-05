@@ -92,6 +92,17 @@ function checkClientMessage(message, playerId) {
                 type: 'message', message: 'There is no game with game id: ' + message.gameId +
                     '. Meaning you are not in the game with this id.'
             };
+        case "moveToken": 
+            game.moveToken(message.tokenId,message.diceResult);
+            
+
+            return {
+                type: "moveToken",
+                tokenId: tokenId,
+                diceResult: diceResult
+                
+            }
+
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {type: 'message', message: `Sorry, we are out of ${message.type}.`};

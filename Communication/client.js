@@ -49,6 +49,9 @@ function fromServerMessage(event) {
         case 'playerJoined':
             handlePlayerJoinedResponse(message);
             break;
+        case 'moveToken':
+            handleMoveTokenResponse(message);
+            break;
         case 'aPlayerLeftGame':
             handleAPlayerLeftGame(message);
             break;
@@ -80,18 +83,23 @@ function sendMessage(message) {
 document.addEventListener('DOMContentLoaded', function () {
     // <id of the button being clicked>: name of the function below
     const buttonFunctions = {
-        createGameButton: createGame,
-        rollDiceButton: rollDice,
+        //Create Game
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         joinGameButton: joinGame,
         startGameButton: startGame,
         leaveGameButton: leaveGame,
-        landingPageButton: returnToLandingPage
+        landingPageButton: returnToLandingPage,
+        createGameButton: createGame,
+
+        //Join Game
+        joinGamePopupButton: openJoinGamePopup,
+        closeJoinGamePopupButton: closeJoinGamePopup,
+
+        //Game Buttons
+        rollDiceButton: rollDice, 
     };
 
-
-    //also add "popup buttons into this?"
     const buttons = document.querySelectorAll('.server-communication-button');
 
     buttons.forEach(button => {
@@ -104,7 +112,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function openCreateGamePopup() {
+function openJoinGamePopup(){
+    document.getElementById('joinGamePopup').style.display = 'block';
+}
+function closeJoinGamePopup(){
+    document.getElementById('joinGamePopup').style.display = 'none';
+}
+function openCreateGamePopup(){
     document.getElementById('createGamePopup').style.display = 'block';
 }
 
@@ -114,6 +128,7 @@ function closeCreateGamePopup() {
 
 function createGame() {
     setGameState("LOBBY")
+    const selectedColor = document.querySelector('input[name="playerColor"]:checked');
     // TODO set parameter to not static values
     sendMessage({
         type: 'createGame',
@@ -245,6 +260,7 @@ function rollDice() {
     sendMessage({type: 'rollDice'});
 }
 
+
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
@@ -256,6 +272,30 @@ function handleRollDiceResponse(response) {
         console.error('Element with id "diceResult" not found.');
     }
 }
+
+
+function moveToken(tokenId, dieValue) {
+
+    sendMessage({
+        type: "moveToken",
+        tokenId: tokenId,
+        dieValue: dieValue
+    })
+
+}
+
+function handleMoveTokenResponse(response){
+    console.log(response)
+    console.log(response.dieValue)
+    console.log(response.tokenId)
+}
+
+
+
+
+
+
+
 
 function handlePlayerJoinedResponse(message) {
     document.getElementById("serverResponse").innerHTML =
