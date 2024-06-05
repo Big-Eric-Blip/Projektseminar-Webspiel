@@ -22,10 +22,9 @@ class Game {
         this.player.push(newPlayer);
     }
 
-    removePlayer(playerId) {
-        //TODO implement this method
-        //remove player from game: save their points or not?
-    }
+    //addToken(playerId, fieldId, xCoord, yCoord, color) {
+    //    this.tokens.push(new Token(playerId, fieldId, xCoord, yCoord, color));
+    //}
 
     updatePlayersTurn() {
         //TODO implement this method
@@ -131,7 +130,6 @@ class Game {
                               'LEAVE_HOUSE',this.playersTokens[i].tokenId,startingPosition,
                               this.currentDieValue))
                       }
-
                 }
                 //make sure they can move again!
             } else if (this.currentDieValue <6 && this.currentDieValue >0) {

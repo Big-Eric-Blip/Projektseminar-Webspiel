@@ -50,6 +50,9 @@ function fromServerMessage(event) {
         case 'playerJoined':
             handlePlayerJoinedResponse(message);
             break;
+        case 'moveToken':
+            handleMoveTokenResponse(message);
+            break;
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
     }
@@ -72,20 +75,23 @@ function sendMessage(message) {
 document.addEventListener('DOMContentLoaded', function () {
     // <id of the button being clicked>: name of the function below
     const buttonFunctions = {
-        createGameButton: createGame,
-        rollDiceButton: rollDice,
-        openExamplePopupButton: openExamplePopup,
-        closeExamplePopupButton: closeExamplePopup,
+        //Create Game
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         joinGameButton: joinGame,
         startGameButton: startGame,
         leaveGameButton: leaveGame,
-        landingPageButton: returnToLandingPage
+        landingPageButton: returnToLandingPage,
+        createGameButton: createGame,
+
+        //Join Game
+        joinGamePopupButton: openJoinGamePopup,
+        closeJoinGamePopupButton: closeJoinGamePopup,
+
+        //Game Buttons
+        rollDiceButton: rollDice, 
     };
 
-
-    //also add "popup buttons into this?"
     const buttons = document.querySelectorAll('.server-communication-button');
 
     buttons.forEach(button => {
@@ -98,13 +104,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
-
-function openExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'block';
+function openJoinGamePopup(){
+    document.getElementById('joinGamePopup').style.display = 'block';
 }
-function closeExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'none';
+function closeJoinGamePopup(){
+    document.getElementById('joinGamePopup').style.display = 'none';
 }
 function openCreateGamePopup(){
     document.getElementById('createGamePopup').style.display = 'block';
@@ -115,6 +119,7 @@ function closeCreateGamePopup(){
 
 function createGame() {
     setGameState("LOBBY")
+    const selectedColor = document.querySelector('input[name="playerColor"]:checked');
     // TODO set parameter to not static values
     sendMessage({
         type: 'createGame',
@@ -230,6 +235,7 @@ function rollDice() {
 }
 
 
+
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
@@ -241,6 +247,30 @@ function handleRollDiceResponse(response) {
         console.error('Element with id "diceResult" not found.');
     }
 }
+
+
+function moveToken(tokenId, dieValue) {
+
+    sendMessage({
+        type: "moveToken",
+        tokenId: tokenId,
+        dieValue: dieValue
+    })
+
+}
+
+function handleMoveTokenResponse(response){
+    console.log(response)
+    console.log(response.dieValue)
+    console.log(response.tokenId)
+}
+
+
+
+
+
+
+
 
 function handlePlayerJoinedResponse(message) {
     document.getElementById("serverResponse").innerHTML =
@@ -426,8 +456,7 @@ class Renderer {
     }
 
 
-
-    moveToken(token) {
+  moveToken(token) {
         console.log('Moving token:', token);
 
         console.log('Token is valid. Proceeding with movement.');
@@ -441,6 +470,7 @@ class Renderer {
         const newField = this.fields[newIndex];
         console.log('New field:', newField);
 
+
         token.x = newField.x;
         token.y = newField.y;
 
@@ -448,7 +478,77 @@ class Renderer {
         this.drawFields();
         this.drawTokens();
 
-    }
+    }  
+
+
+/* 
+   moveToken(token) {
+        console.log('Moving token:', token);
+    
+        console.log('Token is valid. Proceeding with movement.');
+        const diceResultDiv = document.getElementById('resultDice');
+        const resultDice = parseInt(diceResultDiv.innerText);
+        console.log('Dice result:', resultDice);
+    
+        // Stellen Sie sicher, dass this.fields korrekt initialisiert ist
+        if (!this.fields || !Array.isArray(this.fields)) {
+            console.error('this.fields is not properly initialized:', this.fields);
+            return;
+        }
+    
+        // Überprüfen Sie, ob alle Felder korrekt initialisiert sind
+        this.fields.forEach((field, index) => {
+            if (!field || !field.fieldID) {
+                console.error(`Field at index ${index} is not properly initialized:`, field);
+            }
+        });
+    
+        // Zugriff auf das Board-Objekt
+        const board = this.board; // Stellen Sie sicher, dass das Board-Objekt korrekt initialisiert und zugewiesen ist
+        if (!board) {
+            console.error('Board object is not initialized.');
+            return;
+        }
+    
+        // Aktuelle Position des Tokens bestimmen
+        const currentField = board.gameArray.find(field => field.x === token.x && field.y === token.y);
+    
+        if (!currentField) {
+            // Token befindet sich noch im homeArray, setze auf Startposition
+            const startingFieldID = board.getStartingPosition(token.color);
+            const startingField = board.gameArray.find(field => field.fieldID === startingFieldID);
+            console.log('Setting token to starting field:', startingField);
+    
+            if (startingField) {
+                token.x = startingField.x;
+                token.y = startingField.y;
+            } else {
+                console.error('Starting field not found for color:', token.color);
+            }
+        } else {
+            // Token befindet sich bereits im gameArray, bewege um das Würfelergebnis weiter
+            const newField = board.getNextPosition(currentField.fieldID, resultDice);
+            console.log('New field:', newField);
+    
+            if (newField) {
+                token.x = newField.x;
+                token.y = newField.y;
+            } else {
+                console.error('New field not found.');
+            }
+        }
+    
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawFields();
+        this.drawTokens();
+    } 
+    
+
+ */
+
+
+
+
 }
 
 

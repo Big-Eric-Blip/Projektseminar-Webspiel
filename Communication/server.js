@@ -69,7 +69,23 @@ function checkClientMessage(message, playerId) {
                 }
             }
             return {message: `There is no game with game id: ${message.gameId}`};
-        default:
+        
+
+        //TODO: Complete Implementation
+        //TODO: Send GameResult to all Clients (GameUpdate)
+        case "moveToken": 
+            game.moveToken(message.tokenId,message.diceResult);
+            
+
+            return {
+                type: "moveToken",
+                tokenId: tokenId,
+                diceResult: diceResult
+                
+            }
+
+
+            default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {message: `Sorry, we are out of ${message.type}.`};
     }

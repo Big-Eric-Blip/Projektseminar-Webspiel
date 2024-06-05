@@ -54,7 +54,7 @@ class Board {
 
         this.goalArray = [
             [
-                // blue safe (Starting position 0)
+            // blue safe (Starting position 0)
                 new Field('bi1', 150, 550, "blue", 'GOAL'),
                 new Field('bi2', 250, 550, "blue", 'GOAL'),
                 new Field('bi3', 350, 550, "blue", 'GOAL'),
@@ -109,7 +109,7 @@ class Board {
                 new Field('rt4', 1050, 150, "red", 'HOME')]
         ]
     }
-        getStartingPosition(color) {
+        getStartingPosition(color){
             switch (color) {
                 case "blue":
                     return "wp1"
@@ -120,9 +120,10 @@ class Board {
                 case "yellow":
                     return "wp32"
                 default:
-                    return "This is an invalid color"
+                    return "This is an invalid color";
             }
         }
+
 
         getFieldType(fieldId){
         switch(fieldId.substring(2)) {
@@ -166,3 +167,8 @@ class Board {
 }
 
 module.exports = Board;
+
+/*
+let board = new Board(16,4)
+board.getNextPosition("wp40",3,38)
+ */

@@ -154,10 +154,13 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   }
 
-#joinGameInputId {
-    margin-top: 5px;
-    margin-left: 20px;
-    float: right;
+  .popup-content .button-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.popup-content .button-container button {
+    flex: 1;
 }
 #startGameButton {
     display: none;
@@ -165,6 +168,50 @@ body {
 
 
 
+#joinGameInputId {
+    width: 80%; /* Adjust width as needed */
+    padding: 10px; /* Add padding for spacing */
+    font-size: 16px; /* Adjust font size as needed */
+    margin: 0 auto; /* Center the input horizontally */
+    display: block; /* Ensure the input is a block element */
+    box-sizing: border-box; /* Include padding and border in total width */
+}
 
+#adminNameInput {
+    width: 80%; /* Adjust width as needed */
+    padding: 10px; /* Add padding for spacing */
+    font-size: 16px; /* Adjust font size as needed */
+    margin: 0 auto; /* Center the input horizontally */
+    display: block; /* Ensure the input is a block element */
+    box-sizing: border-box; /* Include padding and border in total width */
+}
 
+label {
+    display: inline-block;
+    margin: 10px;
+    cursor: pointer;
+}
 
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"] + img {
+    border: 2px solid transparent;
+    transition: border 0.3s;
+    width: 50px;  
+    height: 50px; 
+    object-fit: cover; 
+}
+
+input[type="radio"]:checked + img {
+    border: 2px solid blue;
+}
+
+.dropdown-container {
+    margin: 20px;
+}
+.dropdown-button {
+    padding: 10px 20px;
+    font-size: 16px;
+}

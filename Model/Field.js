@@ -24,6 +24,9 @@ class Field {
    getYCoord() {
     return this.yCoord
    }
+   getFieldId() {
+    return this.fieldId
+   }
    getFieldType() {
        return this.type
    }
