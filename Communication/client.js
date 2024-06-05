@@ -259,11 +259,12 @@ function handleRollDiceResponse(response) {
 
 function handlePlayerJoinedResponse(message) {
     document.getElementById("serverResponse").innerHTML =
-        "A new player joined your game. There are now " + message.numberOfPlayers + " players your game."
+        "A new player joined your game. There are now " + message.numberOfPlayers + " players in your game."
 }
 
 function handleAPlayerLeftGame(message) {
     console.log(message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer + ' player) left the game.')
+    console.log("There are now " + message.numberOfPlayers + " players in your game.")
 }
 
 function handleLeftGame(message) {

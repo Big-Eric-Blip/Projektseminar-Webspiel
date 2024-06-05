@@ -47,14 +47,16 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     if (game.player.length >= board.maxPlayers) {
-                        return {message: `The game you've tried to join is full. There is no space for another player.`};
+                        return {
+                            type: 'message',
+                            message: `The game you've tried to join is full. There is no space for another player.`
+                        };
                     }
                     sendMessageToAllPlayers(game, {
                         type: "playerJoined",
                         numberOfPlayers: game.player.length + 1
                     });
                     let player = new Player(playerId, "", "");
-                    // TODO addTokensOnPlayerJoin
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
@@ -62,8 +64,7 @@ function checkClientMessage(message, playerId) {
                     };
                 }
             }
-            // TODO check if type: is missing
-            return {message: `There is no game with game id: ${message.gameId}`};
+            return {type: 'message', message: `There is no game with game id: ${message.gameId}`};
         case 'leaveGame':
             console.log("leaveGame");
             for (let i = 0; i < games.length; i++) {
@@ -72,12 +73,13 @@ function checkClientMessage(message, playerId) {
                     // if the game is empty delete the game
                     if (games[i].player.length === 0) {
                         games.splice(i, 1);
-                    // TODO else if (games[i].player.length === 1) trigger winning screen
+                        // TODO else if (games[i].player.length === 1) trigger winning screen
                     } else {
                         sendMessageToAllPlayers(games[i], {
                             type: 'aPlayerLeftGame',
                             colorOfLeavingPlayer: leavingPlayer.color,
-                            nameOfLeavingPlayer: leavingPlayer.name
+                            nameOfLeavingPlayer: leavingPlayer.name,
+                            numberOfPlayers: games[i].player.length
                         });
                     }
                     return {
@@ -92,7 +94,7 @@ function checkClientMessage(message, playerId) {
             };
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
-            return {message: `Sorry, we are out of ${message.type}.`};
+            return {type: 'message', message: `Sorry, we are out of ${message.type}.`};
     }
 }
 
