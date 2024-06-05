@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
         joinGameButton: joinGame,
         startGameButton: startGame,
         leaveGameButton: leaveGame,
-        landingPageButton: returnToLandingPage
+        landingPageButton: returnToLandingPage,
         createGameButton: createGame,
 
         //Join Game
