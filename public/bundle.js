@@ -282,10 +282,11 @@ class Renderer {
     constructor(canvasID) {
         this.canvas = document.getElementById(canvasID);
         this.ctx = this.canvas.getContext("2d");
-        this.small = 35;
-        this.big = 45;
+       /* this.small = 35;
+        this.big = 45;*/
 
-
+        this.resizeCanvas();
+        window.addEventListener('resize', this.resizeCanvas.bind(this));
 
         this.tokens = [
             // blue token
@@ -402,15 +403,22 @@ class Renderer {
 
     }
 
+    resizeCanvas() {
+        const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+        this.canvas.width = size;
+        this.canvas.height = size;
+        this.drawFields();
+        this.drawTokens();
+    }
 
     drawFields() {
-        let big = this.big;
+       // let big = this.big;
         let ctx = this.ctx;
 
         this.fields.forEach(function (draw) {
             ctx.beginPath();
             ctx.fillStyle = draw.color;
-            ctx.arc(draw.x, draw.y, big, 0, Math.PI * 2);
+            ctx.arc(field.x / 12 * this.canvas.width, field.y / 12 * this.canvas.height, size / 2, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
         });
@@ -423,10 +431,10 @@ class Renderer {
         this.tokens.forEach(function (draw) {
             ctx.beginPath();
             ctx.fillStyle = draw.color;
-            ctx.fillRect(draw.x - small / 2, draw.y - small / 2, small, small);
+            ctx.fillRect(token.x / 12 * this.canvas.width - size / 2, token.y / 12 * this.canvas.height - size / 2, size, size);
 
             ctx.strokeStyle = "black";
-            ctx.strokeRect(draw.x - small / 2, draw.y - small / 2, small, small);
+            ctx.strokeRect(token.x / 12 * this.canvas.width - size / 2, token.y / 12 * this.canvas.height - size / 2, size, size);
             ctx.stroke();
         });
     }
@@ -435,7 +443,7 @@ class Renderer {
         const rect = this.canvas.getBoundingClientRect();
         const clickX = event.clientX - rect.left;
         const clickY = event.clientY - rect.top;
-
+        
         this.tokens.forEach(token => {
             if (this.isPointInRect({ x: clickX, y: clickY }, token)) {
                 console.log(`Game piece clicked:`, token);
