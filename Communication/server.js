@@ -66,7 +66,6 @@ function checkClientMessage(message, playerId) {
             }
             return {type: 'message', message: `There is no game with game id: ${message.gameId}`};
         case 'leaveGame':
-            console.log("leaveGame");
             for (let i = 0; i < games.length; i++) {
                 if (games[i].gameId === message.gameId) {
                     const leavingPlayer = games[i].removePlayer(playerId);
@@ -92,16 +91,19 @@ function checkClientMessage(message, playerId) {
                 type: 'message', message: 'There is no game with game id: ' + message.gameId +
                     '. Meaning you are not in the game with this id.'
             };
-        case "moveToken": 
-            game.moveToken(message.tokenId,message.diceResult);
-            
-
-            return {
-                type: "moveToken",
-                tokenId: tokenId,
-                diceResult: diceResult
-                
-            }
+        case "moveToken":
+            console.log(message);
+            // TODO following code doesn't work. Has to be reworked.
+            // game.moveToken(message.tokenId,message.diceResult);
+            //
+            //
+            // return {
+            //     type: "moveToken",
+            //     tokenId: tokenId,
+            //     diceResult: diceResult
+            //
+            // }
+            break;
 
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
