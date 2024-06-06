@@ -38,7 +38,6 @@ body {
 }
 
 
-
 #myCanvas {
     border-style: solid;
     border-color: black;
@@ -52,12 +51,15 @@ body {
 .pre-game {
     display: block;
 }
+
 .lobby {
     display: none;
 }
+
 .game-running {
     display: none;
 }
+
 .game-over {
     display: none;
 }
@@ -66,7 +68,7 @@ body {
     color: whitesmoke;
     background-color: crimson;
     border: none;
-    border-radius:10px;
+    border-radius: 10px;
     font-size: large;
     width: auto;
     padding: 10px 20px;
@@ -80,7 +82,7 @@ body {
     background-color: crimson;
     border: none;
     float: right;
-    border-radius:10px;
+    border-radius: 10px;
     font-size: medium;
     width: auto;
     padding: 8px 20px;
@@ -88,27 +90,30 @@ body {
     margin-left: 20px;
     display: block;
 }
+
 .panel-button {
     color: whitesmoke;
     background-color: crimson;
     border: none;
-    border-radius:10px;
+    border-radius: 10px;
     font-size: medium;
     width: auto;
     padding: 8px 20px;
     display: none;
     margin-bottom: 15px;
 }
+
 .test-button {
     color: black;
     background-color: whitesmoke;
     border: none;
     width: auto;
-    border-radius:10px;
+    border-radius: 10px;
     font-size: medium;
     padding: 8px 20px;
     margin-bottom: 15px;
 }
+
 .game-board {
 
     justify-content: center;
@@ -116,17 +121,18 @@ body {
 }
 
 .site-header {
-   display: flex;
-   justify-content: space-evenly;
-   align-items: center; 
-   padding: 20px;
-   position: fixed;
-   background-color: #f7ca4d;
-   top: 0;
-   width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 20px;
+    position: fixed;
+    background-color: #f7ca4d;
+    top: 0;
+    width: 100%;
 }
+
 .site-header__wrapper {
-    display:flex;
+    display: flex;
     align-items: center;
 
 }
@@ -135,9 +141,9 @@ body {
     position: fixed;
     top: 0;
     width: 100%
-  }
+}
 
-  .popup {
+.popup {
     display: none;
     position: fixed;
     top: 0;
@@ -145,29 +151,81 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-  }
-  
-  .popup-content {
-    background-color: rgba(217,217,217,255);
+}
+
+.popup-content {
+    overflow-y:auto;
+    background-color: rgba(217, 217, 217, 255);
     width: 50%;
     max-width: 800px;
+    max-height: 75vh;
     margin: 100px auto;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  }
-
-#joinGameInputId {
-    margin-top: 5px;
-    margin-left: 20px;
-    float: right;
 }
+
+.popup-content .button-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.popup-content .button-container button {
+    flex: 1;
+}
+
 #startGameButton {
     display: none;
 }
 
 
+#joinGameInputId {
+    width: 80%; /* Adjust width as needed */
+    padding: 10px; /* Add padding for spacing */
+    font-size: 16px; /* Adjust font size as needed */
+    margin: 0 auto; /* Center the input horizontally */
+    display: block; /* Ensure the input is a block element */
+    box-sizing: border-box; /* Include padding and border in total width */
+}
 
+#adminNameInput {
+    width: 80%; /* Adjust width as needed */
+    padding: 10px; /* Add padding for spacing */
+    font-size: 16px; /* Adjust font size as needed */
+    margin: 0 auto; /* Center the input horizontally */
+    display: block; /* Ensure the input is a block element */
+    box-sizing: border-box; /* Include padding and border in total width */
+}
 
+label {
+    display: inline-block;
+    margin: 10px;
+    cursor: pointer;
+}
 
+input[type="radio"] {
+    display: none;
+}
 
+input[type="radio"] + img {
+    border: 2px solid transparent;
+    transition: border 0.3s;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+input[type="radio"]:checked + img {
+    border: 2px solid blue;
+}
+
+.dropdown-container {
+    margin: 20px;
+}
+
+.dropdown-button {
+    padding: 10px 20px;
+    font-size: 16px;
+}

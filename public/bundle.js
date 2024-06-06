@@ -53,6 +53,15 @@ function fromServerMessage(event) {
         case 'moveToken':
             handleMoveTokenResponse(message);
             break;
+        case 'aPlayerLeftGame':
+            handleAPlayerLeftGame(message);
+            break;
+        case 'leftGame':
+            handleLeftGame(message);
+            break;
+        case 'message':
+            handleServerMessage(message);
+            break;
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
     }
@@ -75,20 +84,23 @@ function sendMessage(message) {
 document.addEventListener('DOMContentLoaded', function () {
     // <id of the button being clicked>: name of the function below
     const buttonFunctions = {
-        createGameButton: createGame,
-        rollDiceButton: rollDice,
-        openExamplePopupButton: openExamplePopup,
-        closeExamplePopupButton: closeExamplePopup,
+        //Create Game
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         joinGameButton: joinGame,
         startGameButton: startGame,
         leaveGameButton: leaveGame,
-        landingPageButton: returnToLandingPage
+        landingPageButton: returnToLandingPage,
+        createGameButton: createGame,
+
+        //Join Game
+        joinGamePopupButton: openJoinGamePopup,
+        closeJoinGamePopupButton: closeJoinGamePopup,
+
+        //Game Buttons
+        rollDiceButton: rollDice,
     };
 
-
-    //also add "popup buttons into this?"
     const buttons = document.querySelectorAll('.server-communication-button');
 
     buttons.forEach(button => {
@@ -101,23 +113,25 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
-
-function openExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'block';
+function openJoinGamePopup() {
+    document.getElementById('joinGamePopup').style.display = 'block';
 }
-function closeExamplePopup(){
-    document.getElementById('examplePopup').style.display = 'none';
+
+function closeJoinGamePopup() {
+    document.getElementById('joinGamePopup').style.display = 'none';
 }
-function openCreateGamePopup(){
+
+function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
 }
-function closeCreateGamePopup(){
+
+function closeCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'none';
 }
 
 function createGame() {
     setGameState("LOBBY")
+    const selectedColor = document.querySelector('input[name="playerColor"]:checked');
     // TODO set parameter to not static values
     sendMessage({
         type: 'createGame',
@@ -128,35 +142,53 @@ function createGame() {
     //the game state influences the CSS of the game
 
 }
+
 function returnToLandingPage() {
     setGameState('PRE_GAME')
 }
+
 //The following function may be not necessary?
 function startGame() {
     setGameState('GAME_RUNNING')
     //sendMessage({
     //    type: 'startGame'
-        //TODO implement full requiredJSON
+    //TODO implement full requiredJSON
     //});
 }
+
 function leaveGame() {
     setGameState('GAME_OVER')
+    sendMessage({
+        type: 'leaveGame',
+        gameId: currentGame.gameId
+    });
 }
+
 function setGameState(state) {
     switch (state) {
-        case "PRE_GAME": setPreGame(); break
-        case "LOBBY": setLobby(); break
-        case "GAME_RUNNING": setGameRunning(); break
-        case "GAME_OVER": endGame(); break
-        default: console.log("The game state "+ state+ " is not available")
+        case "PRE_GAME":
+            setPreGame();
+            break
+        case "LOBBY":
+            setLobby();
+            break
+        case "GAME_RUNNING":
+            setGameRunning();
+            break
+        case "GAME_OVER":
+            endGame();
+            break
+        default:
+            console.log("The game state " + state + " is not available")
     }
 }
+
 function setPreGame() {
     currentGame.gameState = "PRE_GAME"
     const gameOverElements = document.querySelectorAll('.game-over')
     const preGameElements = document.querySelectorAll('.pre-game')
     gameOverElements.forEach((element) => element.style.display = 'none')
-    preGameElements.forEach((element) => element.style.display = 'block')
+    preGameElements.forEach((element) => element.style.display = 'flex')
     //if necessary reset body attributes
     document.getElementById('body').style.backgroundColor = '#f7ca4d'
     document.getElementById('body').style.marginTop = '100px'
@@ -193,7 +225,6 @@ function endGame() {
     gameRunningElements.forEach((element) => element.style.display = 'none')
     gameOverElements.forEach((element) => element.style.display = 'block')
 }
-
 
 function handleCreateGameResponse(response) {
     document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
@@ -233,7 +264,6 @@ function rollDice() {
 }
 
 
-
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
@@ -257,148 +287,161 @@ function moveToken(tokenId, dieValue) {
 
 }
 
-function handleMoveTokenResponse(response){
+function handleMoveTokenResponse(response) {
     console.log(response)
     console.log(response.dieValue)
     console.log(response.tokenId)
 }
 
-
-
-
-
-
-
-
 function handlePlayerJoinedResponse(message) {
     document.getElementById("serverResponse").innerHTML =
-        "A new player joined your game. There are now " + message.numberOfPlayers + " players your game."
+        "A new player joined your game. There are now " + message.numberOfPlayers + " players in your game."
 }
 
+function handleAPlayerLeftGame(message) {
+    const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
+        ' player) left the game.\n There are now '  + message.numberOfPlayers + ' player' +
+        (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
+    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    console.log(serverResponseText)
+    console.log("There are now " + message.numberOfPlayers + " players in your game.")
+}
 
+function handleLeftGame(message) {
+    const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
+    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("gameId").innerHTML = "";
+    console.log(serverResponseText);
+}
 
+function handleServerMessage(response) {
+    // TODO show message in game in grey block on the left or maybe implement chat and show it there
+    const serverResponseText = response.message;
+    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    console.log(serverResponseText);
+}
 },{}],2:[function(require,module,exports){
 class Renderer {
     constructor(canvasID) {
         /* this.small = 35;
-         this.big = 45;*/
+        this.big = 45;*/
+        this.scale;
 
-
-        window.addEventListener('resize', this.resizeCanvas.bind(this));
+        
 
         this.tokens = [
             // blue token
-            {tn: 'bt1', x: 50, y: 50, color: "blue"},
-            {tn: 'bt2', x: 50, y: 150, color: "blue"},
-            {tn: 'bt3', x: 150, y: 50, color: "blue"},
-            {tn: 'bt4', x: 150, y: 150, color: "blue"},
+            { tn: 'bt1', x: 50, y: 50, color: "blue" },
+            { tn: 'bt2', x: 50, y: 150, color: "blue" },
+            { tn: 'bt3', x: 150, y: 50, color: "blue" },
+            { tn: 'bt4', x: 150, y: 150, color: "blue" },
             // green token
-            {tn: 'gt1', x: 950, y: 950, color: "green"},
-            {tn: 'gt2', x: 950, y: 1050, color: "green"},
-            {tn: 'gt3', x: 1050, y: 950, color: "green"},
-            {tn: 'gt4', x: 1050, y: 1050, color: "green"},
+            { tn: 'gt1', x: 950, y: 950, color: "green" },
+            { tn: 'gt2', x: 950, y: 1050, color: "green" },
+            { tn: 'gt3', x: 1050, y: 950, color: "green" },
+            { tn: 'gt4', x: 1050, y: 1050, color: "green" },
             // yellow token
-            {tn: 'yt1', x: 50, y: 950, color: "yellow"},
-            {tn: 'yt2', x: 50, y: 1050, color: "yellow"},
-            {tn: 'yt3', x: 150, y: 950, color: "yellow"},
-            {tn: 'yt4', x: 150, y: 1050, color: "yellow"},
+            { tn: 'yt1', x: 50, y: 950, color: "yellow" },
+            { tn: 'yt2', x: 50, y: 1050, color: "yellow" },
+            { tn: 'yt3', x: 150, y: 950, color: "yellow" },
+            { tn: 'yt4', x: 150, y: 1050, color: "yellow" },
             // red token
-            {tn: 'rt1', x: 950, y: 50, color: "red"},
-            {tn: 'rt2', x: 1050, y: 50, color: "red"},
-            {tn: 'rt3', x: 950, y: 150, color: "red"},
-            {tn: 'rt4', x: 1050, y: 150, color: "red"}
+            { tn: 'rt1', x: 950, y: 50, color: "red" },
+            { tn: 'rt2', x: 1050, y: 50, color: "red" },
+            { tn: 'rt3', x: 950, y: 150, color: "red" },
+            { tn: 'rt4', x: 1050, y: 150, color: "red" }
         ];
         this.fields = [
 
             // blue home
-            {fn: 'ba1', x: 50, y: 50, color: "blue"},
-            {fn: 'ba2', x: 50, y: 150, color: "blue"},
-            {fn: 'ba3', x: 150, y: 50, color: "blue"},
-            {fn: 'ba4', x: 150, y: 150, color: "blue"},
+            { fn: 'ba1', x: 50, y: 50, color: "blue" },
+            { fn: 'ba2', x: 50, y: 150, color: "blue" },
+            { fn: 'ba3', x: 150, y: 50, color: "blue" },
+            { fn: 'ba4', x: 150, y: 150, color: "blue" },
             // blue safe
-            {fn: 'bi1', x: 150, y: 550, color: "blue"},
-            {fn: 'bi2', x: 250, y: 550, color: "blue"},
-            {fn: 'bi3', x: 350, y: 550, color: "blue"},
-            {fn: 'bi4', x: 450, y: 550, color: "blue"},
+            { fn: 'bi1', x: 150, y: 550, color: "blue" },
+            { fn: 'bi2', x: 250, y: 550, color: "blue" },
+            { fn: 'bi3', x: 350, y: 550, color: "blue" },
+            { fn: 'bi4', x: 450, y: 550, color: "blue" },
             // green home
-            {fn: 'ga1', x: 950, y: 950, color: "green"},
-            {fn: 'ga2', x: 950, y: 1050, color: "green"},
-            {fn: 'ga3', x: 1050, y: 950, color: "green"},
-            {fn: 'ga4', x: 1050, y: 1050, color: "green"},
+            { fn: 'ga1', x: 950, y: 950, color: "green" },
+            { fn: 'ga2', x: 950, y: 1050, color: "green" },
+            { fn: 'ga3', x: 1050, y: 950, color: "green" },
+            { fn: 'ga4', x: 1050, y: 1050, color: "green" },
             //green safe
-            {fn: 'gi1', x: 650, y: 550, color: "green"},
-            {fn: 'gi2', x: 750, y: 550, color: "green"},
-            {fn: 'gi3', x: 850, y: 550, color: "green"},
-            {fn: 'gi4', x: 950, y: 550, color: "green"},
+            { fn: 'gi1', x: 650, y: 550, color: "green" },
+            { fn: 'gi2', x: 750, y: 550, color: "green" },
+            { fn: 'gi3', x: 850, y: 550, color: "green" },
+            { fn: 'gi4', x: 950, y: 550, color: "green" },
             //yellow home
-            {fn: 'ya1', x: 50, y: 950, color: "yellow"},
-            {fn: 'ya2', x: 50, y: 1050, color: "yellow"},
-            {fn: 'ya3', x: 150, y: 950, color: "yellow"},
-            {fn: 'ya4', x: 150, y: 1050, color: "yellow"},
+            { fn: 'ya1', x: 50, y: 950, color: "yellow" },
+            { fn: 'ya2', x: 50, y: 1050, color: "yellow" },
+            { fn: 'ya3', x: 150, y: 950, color: "yellow" },
+            { fn: 'ya4', x: 150, y: 1050, color: "yellow" },
             // yellow safe
-            {fn: 'yi1', x: 550, y: 650, color: "yellow"},
-            {fn: 'yi2', x: 550, y: 750, color: "yellow"},
-            {fn: 'yi3', x: 550, y: 850, color: "yellow"},
-            {fn: 'yi4', x: 550, y: 950, color: "yellow"},
+            { fn: 'yi1', x: 550, y: 650, color: "yellow" },
+            { fn: 'yi2', x: 550, y: 750, color: "yellow" },
+            { fn: 'yi3', x: 550, y: 850, color: "yellow" },
+            { fn: 'yi4', x: 550, y: 950, color: "yellow" },
             // red home
-            {fn: 'ra1', x: 950, y: 50, color: "red"},
-            {fn: 'ra2', x: 1050, y: 50, color: "red"},
-            {fn: 'ra3', x: 950, y: 150, color: "red"},
-            {fn: 'ra4', x: 1050, y: 150, color: "red"},
+            { fn: 'ra1', x: 950, y: 50, color: "red" },
+            { fn: 'ra2', x: 1050, y: 50, color: "red" },
+            { fn: 'ra3', x: 950, y: 150, color: "red" },
+            { fn: 'ra4', x: 1050, y: 150, color: "red" },
             // red safe
-            {fn: 'ri1', x: 550, y: 150, color: "red"},
-            {fn: 'ri2', x: 550, y: 250, color: "red"},
-            {fn: 'ri3', x: 550, y: 350, color: "red"},
-            {fn: 'ri4', x: 550, y: 450, color: "red"},
+            { fn: 'ri1', x: 550, y: 150, color: "red" },
+            { fn: 'ri2', x: 550, y: 250, color: "red" },
+            { fn: 'ri3', x: 550, y: 350, color: "red" },
+            { fn: 'ri4', x: 550, y: 450, color: "red" },
             // white or first of color
-            {fn: 'wp1', x: 50, y: 450, color: "blue"},
-            {fn: 'wp2', x: 150, y: 450, color: "white"},
-            {fn: 'wp3', x: 250, y: 450, color: "white"},
-            {fn: 'wp4', x: 350, y: 450, color: "white"},
-            {fn: 'wp5', x: 450, y: 450, color: "white"},
-            {fn: 'wp6', x: 450, y: 350, color: "white"},
-            {fn: 'wp7', x: 450, y: 250, color: "white"},
-            {fn: 'wp8', x: 450, y: 150, color: "white"},
-            {fn: 'wp9', x: 450, y: 50, color: "white"},
-            {fn: 'wp10', x: 550, y: 50, color: "white"},
-            {fn: 'wp11', x: 650, y: 50, color: "red"},
-            {fn: 'wp12', x: 650, y: 150, color: "white"},
-            {fn: 'wp13', x: 650, y: 250, color: "white"},
-            {fn: 'wp14', x: 650, y: 350, color: "white"},
-            {fn: 'wp15', x: 650, y: 450, color: "white"},
-            {fn: 'wp16', x: 750, y: 450, color: "white"},
-            {fn: 'wp17', x: 850, y: 450, color: "white"},
-            {fn: 'wp18', x: 950, y: 450, color: "white"},
-            {fn: 'wp19', x: 1050, y: 450, color: "white"},
-            {fn: 'wp20', x: 1050, y: 550, color: "white"},
-            {fn: 'wp21', x: 1050, y: 650, color: "green"},
-            {fn: 'wp22', x: 950, y: 650, color: "white"},
-            {fn: 'wp24', x: 850, y: 650, color: "white"},
-            {fn: 'wp25', x: 750, y: 650, color: "white"},
-            {fn: 'wp26', x: 650, y: 650, color: "white"},
-            {fn: 'wp27', x: 650, y: 750, color: "white"},
-            {fn: 'wp28', x: 650, y: 850, color: "white"},
-            {fn: 'wp29', x: 650, y: 950, color: "white"},
-            {fn: 'wp30', x: 650, y: 1050, color: "white"},
-            {fn: 'wp31', x: 550, y: 1050, color: "white"},
-            {fn: 'wp32', x: 450, y: 1050, color: "yellow"},
-            {fn: 'wp33', x: 450, y: 950, color: "white"},
-            {fn: 'wp34', x: 450, y: 850, color: "white"},
-            {fn: 'wp35', x: 450, y: 750, color: "white"},
-            {fn: 'wp36', x: 450, y: 650, color: "white"},
-            {fn: 'wp37', x: 350, y: 650, color: "white"},
-            {fn: 'wp38', x: 250, y: 650, color: "white"},
-            {fn: 'wp39', x: 150, y: 650, color: "white"},
-            {fn: 'wp40', x: 50, y: 650, color: "white"},
-            {fn: 'wp41', x: 50, y: 550, color: "white"},
+            { fn: 'wp1', x: 50, y: 450, color: "blue" },
+            { fn: 'wp2', x: 150, y: 450, color: "white" },
+            { fn: 'wp3', x: 250, y: 450, color: "white" },
+            { fn: 'wp4', x: 350, y: 450, color: "white" },
+            { fn: 'wp5', x: 450, y: 450, color: "white" },
+            { fn: 'wp6', x: 450, y: 350, color: "white" },
+            { fn: 'wp7', x: 450, y: 250, color: "white" },
+            { fn: 'wp8', x: 450, y: 150, color: "white" },
+            { fn: 'wp9', x: 450, y: 50, color: "white" },
+            { fn: 'wp10', x: 550, y: 50, color: "white" },
+            { fn: 'wp11', x: 650, y: 50, color: "red" },
+            { fn: 'wp12', x: 650, y: 150, color: "white" },
+            { fn: 'wp13', x: 650, y: 250, color: "white" },
+            { fn: 'wp14', x: 650, y: 350, color: "white" },
+            { fn: 'wp15', x: 650, y: 450, color: "white" },
+            { fn: 'wp16', x: 750, y: 450, color: "white" },
+            { fn: 'wp17', x: 850, y: 450, color: "white" },
+            { fn: 'wp18', x: 950, y: 450, color: "white" },
+            { fn: 'wp19', x: 1050, y: 450, color: "white" },
+            { fn: 'wp20', x: 1050, y: 550, color: "white" },
+            { fn: 'wp21', x: 1050, y: 650, color: "green" },
+            { fn: 'wp22', x: 950, y: 650, color: "white" },
+            { fn: 'wp24', x: 850, y: 650, color: "white" },
+            { fn: 'wp25', x: 750, y: 650, color: "white" },
+            { fn: 'wp26', x: 650, y: 650, color: "white" },
+            { fn: 'wp27', x: 650, y: 750, color: "white" },
+            { fn: 'wp28', x: 650, y: 850, color: "white" },
+            { fn: 'wp29', x: 650, y: 950, color: "white" },
+            { fn: 'wp30', x: 650, y: 1050, color: "white" },
+            { fn: 'wp31', x: 550, y: 1050, color: "white" },
+            { fn: 'wp32', x: 450, y: 1050, color: "yellow" },
+            { fn: 'wp33', x: 450, y: 950, color: "white" },
+            { fn: 'wp34', x: 450, y: 850, color: "white" },
+            { fn: 'wp35', x: 450, y: 750, color: "white" },
+            { fn: 'wp36', x: 450, y: 650, color: "white" },
+            { fn: 'wp37', x: 350, y: 650, color: "white" },
+            { fn: 'wp38', x: 250, y: 650, color: "white" },
+            { fn: 'wp39', x: 150, y: 650, color: "white" },
+            { fn: 'wp40', x: 50, y: 650, color: "white" },
+            { fn: 'wp41', x: 50, y: 550, color: "white" },
         ];
 
 
         this.canvas = document.getElementById(canvasID);
         this.ctx = this.canvas.getContext("2d");
 
-        // this.drawFields();
-        // this.drawTokens();
+        this.drawFields();
+        this.drawTokens();
         // this.resizeCanvas();
 
         this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
@@ -407,24 +450,30 @@ class Renderer {
     }
 
     resizeCanvas() {
-        const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+        const size = Math.min(window.innerWidth, window.innerHeight) ;
         this.canvas.width = size;
         this.canvas.height = size;
+        this.scale = size / 1100;  // Assume 1100 is the reference size for the positions defined
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawFields();
         this.drawTokens();
+        
     }
 
     drawFields() {
+        let scale = this.scale * 3
         // let big = this.big;
         let ctx = this.ctx;
         let canvas = this.canvas;
         // TODO change size to dynamic value
-        let size = 10;
+        let size = 45 * this.scale;
 
-        this.fields.forEach(function (field) {
+
+        this.fields.forEach((field) => {
             ctx.beginPath();
             ctx.fillStyle = field.color;
-            ctx.arc(field.x / 12 * canvas.width, field.y / 12 * canvas.height, size / 2, 0, Math.PI * 2);
+            ctx.arc(field.x * this.scale, field.y * this.scale, size, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
         });
@@ -435,26 +484,32 @@ class Renderer {
         let ctx = this.ctx;
         let canvas = this.canvas;
         // TODO change size to dynamic value
-        let size = 10;
+        let size = 35 * this.scale;
 
-        this.tokens.forEach(function (token) {
+        this.tokens.forEach((token) => {
             ctx.beginPath();
             ctx.fillStyle = token.color;
-            ctx.fillRect(token.x / 12 * canvas.width - size / 2, token.y / 12 * canvas.height - size / 2, size, size);
-
+            ctx.fillRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
             ctx.strokeStyle = "black";
-            ctx.strokeRect(token.x / 12 * canvas.width - size / 2, token.y / 12 * canvas.height - size / 2, size, size);
+            ctx.strokeRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
             ctx.stroke();
         });
     }
 
     onCanvasClick(event) {
+
         const rect = this.canvas.getBoundingClientRect();
-        const clickX = event.clientX - rect.left;
-        const clickY = event.clientY - rect.top;
+        console.log(rect)
+        const clickX = (event.clientX - rect.left)/ this.scale;;
+        console.log(clickX)
+        const clickY = (event.clientY - rect.top)/ this.scale;
+        console.log(clickY)
+        const clickPoint = { x: clickX, y: clickY };
+        
+        console.log(clickPoint);
 
         this.tokens.forEach(token => {
-            if (this.isPointInRect({x: clickX, y: clickY}, token)) {
+            if (this.isPointInRect(clickPoint, token)) {
                 console.log(`Game piece clicked:`, token);
                 this.moveToken(token);
             }
@@ -462,12 +517,21 @@ class Renderer {
     }
 
     isPointInRect(point, token) {
-        return (
-            point.x >= token.x - this.small / 2 &&
-            point.x <= token.x + this.small / 2 &&
-            point.y >= token.y - this.small / 2 &&
-            point.y <= token.y + this.small / 2
-        );
+        const tokenSize = 35 * this.scale;
+        console.log(tokenSize)
+    const tokenX = token.x * this.scale ;
+    console.log("Tokenx: " + tokenX)
+    const tokenY = token.y * this.scale;
+        console.log("Tokeny: " + tokenY)
+    // Überprüfe, ob der Klick innerhalb des Bereichs des Tokens liegt
+    return (
+        point.x >= tokenX - tokenSize /2 &&
+        
+        point.x <= tokenX + tokenSize  /2 &&
+        point.y >= tokenY - tokenSize /2 &&
+        point.y <= tokenY + tokenSize /2
+    );
+        
     }
 
 
@@ -476,7 +540,7 @@ class Renderer {
 
         console.log('Token is valid. Proceeding with movement.');
         const diceResultDiv = document.getElementById('resultDice');
-        const resultDice = parseInt(diceResultDiv.innerText);
+        const resultDice =  parseInt(diceResultDiv.innerText);
         console.log('Dice result:', resultDice);
         const currentIndex = this.fields.findIndex(field => field.x === token.x && field.y === token.y);
         console.log('Current index:', currentIndex);
@@ -493,11 +557,12 @@ class Renderer {
         this.drawFields();
         this.drawTokens();
 
+        
     }
 
 
     /*
-       moveToken(token) {
+    moveToken(token) {
             console.log('Moving token:', token);
 
             console.log('Token is valid. Proceeding with movement.');
@@ -559,7 +624,7 @@ class Renderer {
         }
 
 
-     */
+    */
 
 
 }

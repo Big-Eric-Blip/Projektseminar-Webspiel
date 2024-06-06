@@ -2,13 +2,13 @@ class Player {
 
     /**
      * 
-     * @param {*} playerID 
+     * @param {*} playerId
      * @param {*} color 
      * @param {*} name 
      */
-    constructor(playerID, color, name){
+    constructor(playerId, color, name){
         this.color = color
-        this.playerID = playerID
+        this.playerId = playerId
         this.name = name
         this.playersTurn = false
     }

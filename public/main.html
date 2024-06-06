@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Stay cool, buddy!</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="bundle.js"></script>
+    <meta charset="utf-8">
+    <title>Stay cool, buddy!</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="bundle.js"></script>
+
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <header class="site-header pre-game" id="mainHeader">
     <div class="wrapper site-header__wrapper">
         <nav class="nav">
-            <button class="server-communication-button red-button" id="createGamePopupButton">Create game</button>
-            <button class="red-button">Join game</button>
+            <button id="createGamePopupButton" class="server-communication-button red-button">Create game</button>
+            <button id="joinGamePopupButton" class="server-communication-button red-button">Join game</button>
             <button class="red-button">Settings</button>
         </nav>
     </div>
@@ -25,27 +26,103 @@
     <button id="rollDiceButton" class="server-communication-button panel-button game-running">Roll the Dice</button>
     <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave Game</button>
     <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
+    <h3 id="serverResponse"></h3>
+    <p id="gameId"></p>
 </aside>
 <div class="main-area" id="main-area">
-    <button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
-    <input type="text" id="joinGameInputId" placeholder="Enter game id">
+    <!---->
     <div id="resultDice">Hier wird ergebnis angezeigt</div>
+    <br>
+    <br>
+
+    <!-- Begin Join Game Popup-->
+    <div class="popup" id="joinGamePopup">
+        <div class="popup-content">
+            <h2>Join an existing game</h2>
+            <h3>Please insert your URL/ID-Code:</h3>
+            <input type="text" id="joinGameInputId" placeholder="Enter game id">
+            <div class="button-container">
+                <button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
+                <button id="closeJoinGamePopupButton" class="server-communication-button popup-button">Back</button>
+            </div>
+        </div>
+    </div>
+    <!-- End Join Game Popup-->
+
+    <!-- Begin Create Game Popup-->
     <div class="popup" id="createGamePopup">
         <div class="popup-content">
             <h2>Create a new game</h2>
-            <p>Placeholder: Select the number of players (max 4)</p>
-            <p>Select your own color</p>
-            <p>Select your die skin</p>
-            <h3 id="serverResponse"></h3>
-            <p id="gameId"></p>
-            <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
-            <button id="closeCreateGamePopupButton" class="server-communication-button popup-button">Back</button>
+            <form>
+                <h3>Select your Name</h3>
+                <input type="text" id="adminNameInput" placeholder="Enter name">
+                <h3>Choose your Color</h3>
+                <label>
+                    <input type="radio" name="playerColor" value="1">
+                    <img src="pictures/figureBlue.png" alt="Blue">
+                </label>
+                <label>
+                    <input type="radio" name="playerColor" value="2" checked>
+                    <img src="./pictures/figureGreen.png" alt="Green">
+                </label>
+                <label>
+                    <input type="radio" name="playerColor" value="3">
+                    <img src="./pictures/figureRed.png" alt="Red">
+                </label>
+                <label>
+                    <input type="radio" name="playerColor" value="3">
+                    <img src="./pictures/figureYellow.png" alt="Yellow">
+                </label>
+            </form>
+            <h3>Choose your Die Skin</h3>
+            <form>
+                <label>
+                    <input type="radio" name="dieOption" value="1">
+                    <img src="./pictures/dieBl.png" alt="Blue Die">
+                </label>
+                <label>
+                    <input type="radio" name="dieOption" value="2" checked>
+                    <img src="./pictures/dieBlck.png" alt="Black Die">
+                </label>
+                <label>
+                    <input type="radio" name="dieOption" value="3">
+                    <img src="./pictures/diePurp.png" alt="Purple Die">
+                </label>
+                <label>
+                    <input type="radio" name="dieOption" value="4">
+                    <img src="./pictures/dieGrn.png" alt="Green Die">
+                </label>
+                <label>
+                    <input type="radio" name="dieOption" value="5">
+                    <img src="./pictures/dieYlw.png" alt="Yellow Die">
+                </label>
+                <label>
+                    <input type="radio" name="dieOption" value="6">
+                    <img src="./pictures/dieTurq.png" alt="Turquoise Die">
+                </label>
+                <label>
+                    <input type="radio" name="dieOption" value="7">
+                    <img src="./pictures/dieRed.png" alt="Red Die">
+                </label>
+            </form>
+            <div class="button-container">
+                <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
+                <button id="closeCreateGamePopupButton" class="server-communication-button popup-button">Back</button>
+            </div>
         </div>
     </div>
+    <!-- End Create Game Popup-->
+
+    <button class="pre-game test-button">test pre game visibility</button>
+
+
     <div class="game-board lobby game-running" id="board">
-        <canvas id="myCanvas"></canvas>
+        <canvas id="myCanvas" width="1100" height="1100"></canvas>
     </div>
-    <div class="landing-page pre-game"><img class='img1' src="./pictures/background_landing_page.png" alt="Logo of 'Stay cool, buddy!'"></div>
+    <div class="landing-page pre-game"><img class='img1' src="./pictures/background_landing_page.png"
+                                            alt="Logo of 'Stay cool, buddy!'">
+    </div>
 </div>
+<br>
 </body>
 </html>

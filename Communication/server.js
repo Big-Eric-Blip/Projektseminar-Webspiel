@@ -47,17 +47,15 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     if (game.player.length >= board.maxPlayers) {
-                        return {message: `The game you've tried to join is full. There is no space for another player.`};
+                        return {
+                            type: 'message',
+                            message: `The game you've tried to join is full. There is no space for another player.`
+                        };
                     }
-                    for (const player of game.player) {
-                        let client = clients.get(player.playerID)
-                        if (client.readyState === WebSocket.OPEN) {
-                            client.send(JSON.stringify({
-                                type: "playerJoined",
-                                numberOfPlayers: game.player.length + 1
-                            }));
-                        }
-                    }
+                    sendMessageToAllPlayers(game, {
+                        type: "playerJoined",
+                        numberOfPlayers: game.player.length + 1
+                    });
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
@@ -66,26 +64,59 @@ function checkClientMessage(message, playerId) {
                     };
                 }
             }
-            return {message: `There is no game with game id: ${message.gameId}`};
-        
-
-        //TODO: Complete Implementation
-        //TODO: Send GameResult to all Clients (GameUpdate)
-        case "moveToken": 
-            game.moveToken(message.tokenId,message.diceResult);
-            
-
-            return {
-                type: "moveToken",
-                tokenId: tokenId,
-                diceResult: diceResult
-                
+            return {type: 'message', message: `There is no game with game id: ${message.gameId}`};
+        case 'leaveGame':
+            for (let i = 0; i < games.length; i++) {
+                if (games[i].gameId === message.gameId) {
+                    const leavingPlayer = games[i].removePlayer(playerId);
+                    // if the game is empty delete the game
+                    if (games[i].player.length === 0) {
+                        games.splice(i, 1);
+                        // TODO else if (games[i].player.length === 1) trigger winning screen
+                    } else {
+                        sendMessageToAllPlayers(games[i], {
+                            type: 'aPlayerLeftGame',
+                            colorOfLeavingPlayer: leavingPlayer.color,
+                            nameOfLeavingPlayer: leavingPlayer.name,
+                            numberOfPlayers: games[i].player.length
+                        });
+                    }
+                    return {
+                        type: 'leftGame',
+                        gameId: message.gameId
+                    }
+                }
             }
+            return {
+                type: 'message', message: 'There is no game with game id: ' + message.gameId +
+                    '. Meaning you are not in the game with this id.'
+            };
+        case "moveToken":
+            console.log(message);
+            // TODO following code doesn't work. Has to be reworked.
+            // game.moveToken(message.tokenId,message.diceResult);
+            //
+            //
+            // return {
+            //     type: "moveToken",
+            //     tokenId: tokenId,
+            //     diceResult: diceResult
+            //
+            // }
+            break;
 
-
-            default:
+        default:
             console.log(`Sorry, we are out of ${message.type}.`);
-            return {message: `Sorry, we are out of ${message.type}.`};
+            return {type: 'message', message: `Sorry, we are out of ${message.type}.`};
+    }
+}
+
+function sendMessageToAllPlayers(game, jsonMessage) {
+    for (const player of game.player) {
+        let client = clients.get(player.playerId)
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(jsonMessage));
+        }
     }
 }
 
@@ -111,18 +142,33 @@ wss.on('connection', function connection(ws) {
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
 
         console.log(`Current clients:`, [...clients.keys()]);
+        console.log('Current games:', games)
 
         ws.send(JSON.stringify(sendBackToClient));
     });
 
     ws.on('close', () => {
         clients.delete(playerId);
+        // check if the client is still in a game
+        leaveGameOnCloseWindow(playerId);
+
         console.log(`Client disconnected: ${playerId}`);
         console.log(`Currently connected clients:`, [...clients.keys()]);
     });
 
 
 });
+
+function leaveGameOnCloseWindow(playerId) {
+    for (const game of games) {
+        for (const player of game.player) {
+            if (player.playerId === playerId) {
+                checkClientMessage({type: 'leaveGame', gameId: game.gameId}, playerId);
+                return;
+            }
+        }
+    }
+}
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
