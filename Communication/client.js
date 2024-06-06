@@ -185,7 +185,7 @@ function setPreGame() {
     const gameOverElements = document.querySelectorAll('.game-over')
     const preGameElements = document.querySelectorAll('.pre-game')
     gameOverElements.forEach((element) => element.style.display = 'none')
-    preGameElements.forEach((element) => element.style.display = 'block')
+    preGameElements.forEach((element) => element.style.display = 'flex')
     //if necessary reset body attributes
     document.getElementById('body').style.backgroundColor = '#f7ca4d'
     document.getElementById('body').style.marginTop = '100px'
