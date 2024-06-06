@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
         closeJoinGamePopupButton: closeJoinGamePopup,
 
         //Game Buttons
-        rollDiceButton: rollDice, 
+        rollDiceButton: rollDice,
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -113,13 +113,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function openJoinGamePopup(){
+function openJoinGamePopup() {
     document.getElementById('joinGamePopup').style.display = 'block';
 }
-function closeJoinGamePopup(){
+
+function closeJoinGamePopup() {
     document.getElementById('joinGamePopup').style.display = 'none';
 }
-function openCreateGamePopup(){
+
+function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
 }
 
@@ -285,18 +287,11 @@ function moveToken(tokenId, dieValue) {
 
 }
 
-function handleMoveTokenResponse(response){
+function handleMoveTokenResponse(response) {
     console.log(response)
     console.log(response.dieValue)
     console.log(response.tokenId)
 }
-
-
-
-
-
-
-
 
 function handlePlayerJoinedResponse(message) {
     document.getElementById("serverResponse").innerHTML =
@@ -304,17 +299,26 @@ function handlePlayerJoinedResponse(message) {
 }
 
 function handleAPlayerLeftGame(message) {
-    console.log(message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer + ' player) left the game.')
+    const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
+        ' player) left the game.\n There are now '  + message.numberOfPlayers + ' player' +
+        (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
+    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    console.log(serverResponseText)
     console.log("There are now " + message.numberOfPlayers + " players in your game.")
 }
 
 function handleLeftGame(message) {
-    console.log('You left the game (' + message.gameId + ').')
+    const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
+    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("gameId").innerHTML = "";
+    console.log(serverResponseText);
 }
 
 function handleServerMessage(response) {
     // TODO show message in game in grey block on the left or maybe implement chat and show it there
-    console.log(response.message);
+    const serverResponseText = response.message;
+    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    console.log(serverResponseText);
 }
 },{}],2:[function(require,module,exports){
 class Renderer {
