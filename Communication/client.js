@@ -58,6 +58,9 @@ function fromServerMessage(event) {
         case 'leftGame':
             handleLeftGame(message);
             break;
+        case 'gameStarted':
+            handleGameStarted(message);
+            break;
         case 'message':
             handleServerMessage(message);
             break;
@@ -146,13 +149,13 @@ function returnToLandingPage() {
     setGameState('PRE_GAME')
 }
 
-//The following function may be not necessary?
 function startGame() {
     setGameState('GAME_RUNNING')
-    //sendMessage({
-    //    type: 'startGame'
+    sendMessage({
+        type: 'startGame',
+        gameId: currentGame.gameId
+    });
     //TODO implement full requiredJSON
-    //});
 }
 
 function leaveGame() {
@@ -299,7 +302,7 @@ function handlePlayerJoinedResponse(message) {
 
 function handleAPlayerLeftGame(message) {
     const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
-        ' player) left the game.\n There are now '  + message.numberOfPlayers + ' player' +
+        ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
         (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
     document.getElementById("serverResponse").innerHTML = serverResponseText;
     console.log(serverResponseText)
@@ -311,6 +314,10 @@ function handleLeftGame(message) {
     document.getElementById("serverResponse").innerHTML = serverResponseText;
     document.getElementById("gameId").innerHTML = "";
     console.log(serverResponseText);
+}
+
+function handleGameStarted(message) {
+//     todo show in responsetext or something like that
 }
 
 function handleServerMessage(response) {

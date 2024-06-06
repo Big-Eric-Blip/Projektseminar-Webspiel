@@ -33,7 +33,7 @@ function checkClientMessage(message, playerId) {
             };
         case 'createGame':
             const gameId = uuidv4();
-            let game = new Game(gameId, [], message.boardType);
+            let game = new Game(gameId, [], message.boardType, "LOBBY");
             let player = new Player(playerId, message.playerColor, message.playerName);
             addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
@@ -91,6 +91,17 @@ function checkClientMessage(message, playerId) {
                 type: 'message', message: 'There is no game with game id: ' + message.gameId +
                     '. Meaning you are not in the game with this id.'
             };
+        case 'startGame':
+        //     transfer game status
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.status = "GAME_RUNNING";
+                //     todo send all players that the game started
+                //     todo check in joinGame case if game is in status LOBBY
+
+                }
+            }
+            break;
         case "moveToken":
             console.log(message);
             // TODO following code doesn't work. Has to be reworked.
