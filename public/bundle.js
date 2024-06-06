@@ -327,7 +327,7 @@ class Renderer {
         this.big = 45;*/
         this.scale;
 
-        
+
 
         this.tokens = [
             // blue token
@@ -445,24 +445,27 @@ class Renderer {
         // this.resizeCanvas();
 
         this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
-
+        this.canvas.addEventListener('resize', this.resizeCanvas(this));
 
     }
 
     resizeCanvas() {
-        const size = Math.min(window.innerWidth, window.innerHeight) ;
+        const size = Math.min(window.innerWidth, window.innerHeight);
+        
         this.canvas.width = size;
+        console.log("weite: "+this.canvas.width)
         this.canvas.height = size;
+        console.log(this.canvas.height)
         this.scale = size / 1100;  // Assume 1100 is the reference size for the positions defined
-
+        console.log("Scale " +this.scale)
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawFields();
         this.drawTokens();
-        
+        console.log(tokens)
     }
 
     drawFields() {
-        let scale = this.scale * 3
+
         // let big = this.big;
         let ctx = this.ctx;
         let canvas = this.canvas;
@@ -498,14 +501,18 @@ class Renderer {
 
     onCanvasClick(event) {
 
-        const rect = this.canvas.getBoundingClientRect();
+        let rect = this.canvas.getBoundingClientRect();
         console.log(rect)
-        const clickX = (event.clientX - rect.left)/ this.scale;;
+        let clickX = (event.clientX - rect.left) / this.scale;
+
+
         console.log(clickX)
-        const clickY = (event.clientY - rect.top)/ this.scale;
+        let clickY = (event.clientY - rect.top) / this.scale;
+
+
         console.log(clickY)
-        const clickPoint = { x: clickX, y: clickY };
-        
+        let clickPoint = { x: clickX, y: clickY };
+
         console.log(clickPoint);
 
         this.tokens.forEach(token => {
@@ -517,21 +524,21 @@ class Renderer {
     }
 
     isPointInRect(point, token) {
-        const tokenSize = 35 * this.scale;
+        let tokenSize = 35 * this.scale;
         console.log(tokenSize)
-    const tokenX = token.x * this.scale ;
-    console.log("Tokenx: " + tokenX)
-    const tokenY = token.y * this.scale;
+        let tokenX = token.x * this.scale;
+        console.log("Tokenx: " + tokenX)
+        let tokenY = token.y * this.scale;
         console.log("Tokeny: " + tokenY)
-    // Überprüfe, ob der Klick innerhalb des Bereichs des Tokens liegt
-    return (
-        point.x >= tokenX - tokenSize /2 &&
-        
-        point.x <= tokenX + tokenSize  /2 &&
-        point.y >= tokenY - tokenSize /2 &&
-        point.y <= tokenY + tokenSize /2
-    );
-        
+        // Überprüfe, ob der Klick innerhalb des Bereichs des Tokens liegt
+        return (
+            point.x >= tokenX - tokenSize / 2 &&
+
+            point.x <= tokenX + tokenSize / 2 &&
+            point.y >= tokenY - tokenSize / 2 &&
+            point.y <= tokenY + tokenSize / 2
+        );
+
     }
 
 
@@ -540,7 +547,7 @@ class Renderer {
 
         console.log('Token is valid. Proceeding with movement.');
         const diceResultDiv = document.getElementById('resultDice');
-        const resultDice =  parseInt(diceResultDiv.innerText);
+        const resultDice = parseInt(diceResultDiv.innerText);
         console.log('Dice result:', resultDice);
         const currentIndex = this.fields.findIndex(field => field.x === token.x && field.y === token.y);
         console.log('Current index:', currentIndex);
@@ -557,7 +564,7 @@ class Renderer {
         this.drawFields();
         this.drawTokens();
 
-        
+
     }
 
 
