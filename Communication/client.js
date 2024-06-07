@@ -318,6 +318,9 @@ function handleLeftGame(message) {
 
 function handleGameStarted(message) {
 //     todo show in responsetext or something like that
+console.log(message)
+
+
 }
 
 function handleServerMessage(response) {

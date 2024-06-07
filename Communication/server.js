@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
-const {v4: uuidv4} = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
@@ -10,7 +10,7 @@ const Board = require('../Model/Board');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({server});
+const wss = new WebSocket.Server({ server });
 const clients = new Map();
 let games = [];
 let board = new Board(4, 4);
@@ -46,6 +46,12 @@ function checkClientMessage(message, playerId) {
         case 'joinGame':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
+                    if (game.status !== "LOBBY") {
+                        return {
+                            type: 'message',
+                            message: `The game has already started.`
+                        };
+                    }
                     if (game.player.length >= board.maxPlayers) {
                         return {
                             type: 'message',
@@ -64,7 +70,7 @@ function checkClientMessage(message, playerId) {
                     };
                 }
             }
-            return {type: 'message', message: `There is no game with game id: ${message.gameId}`};
+            return { type: 'message', message: `There is no game with game id: ${message.gameId}` };
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
                 if (games[i].gameId === message.gameId) {
@@ -92,12 +98,21 @@ function checkClientMessage(message, playerId) {
                     '. Meaning you are not in the game with this id.'
             };
         case 'startGame':
-        //     transfer game status
+            //     transfer game status
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.status = "GAME_RUNNING";
-                //     todo send all players that the game started
-                //     todo check in joinGame case if game is in status LOBBY
+                    //     todo send all players that the game started
+                    sendMessageToAllPlayers(game, {
+                        type: 'gameStarted',
+                        gameId: game.gameId,
+                        message: 'The game started!'
+                    });
+                    return{
+                        type: "message",
+                        message: "You started the game."
+                    }
+                    //     todo check in joinGame case if game is in status LOBBY
 
                 }
             }
@@ -118,7 +133,7 @@ function checkClientMessage(message, playerId) {
 
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
-            return {type: 'message', message: `Sorry, we are out of ${message.type}.`};
+            return { type: 'message', message: `Sorry, we are out of ${message.type}.` };
     }
 }
 
@@ -174,7 +189,7 @@ function leaveGameOnCloseWindow(playerId) {
     for (const game of games) {
         for (const player of game.player) {
             if (player.playerId === playerId) {
-                checkClientMessage({type: 'leaveGame', gameId: game.gameId}, playerId);
+                checkClientMessage({ type: 'leaveGame', gameId: game.gameId }, playerId);
                 return;
             }
         }
