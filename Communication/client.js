@@ -229,7 +229,7 @@ function endGame() {
 }
 
 function handleCreateGameResponse(response) {
-    document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
+    document.getElementById("inGameServerResponse").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
     const gameId = document.getElementById("gameId");
@@ -249,15 +249,16 @@ function joinGame() {
 }
 
 function handleJoinGameResponse(response) {
-    let serverResponseText = document.getElementById("serverResponse");
     if (response.playerId) {
         currentGame.playerId = response.playerId;
+        let serverResponseText = document.getElementById("inGameServerResponse");
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
         setGameState('LOBBY');
     } else {
-        console.log(response.message);
+        let serverResponseText = document.getElementById("joinGamePopupServerResponse");
         serverResponseText.innerHTML = response.message;
+        console.log(response.message);
     }
 }
 
@@ -296,7 +297,7 @@ function handleMoveTokenResponse(response) {
 }
 
 function handlePlayerJoinedResponse(message) {
-    document.getElementById("serverResponse").innerHTML =
+    document.getElementById("inGameServerResponse").innerHTML =
         "A new player joined your game. There are now " + message.numberOfPlayers + " players in your game."
 }
 
@@ -304,28 +305,27 @@ function handleAPlayerLeftGame(message) {
     const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
         ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
         (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
-    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
     console.log(serverResponseText)
     console.log("There are now " + message.numberOfPlayers + " players in your game.")
 }
 
 function handleLeftGame(message) {
     const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
-    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
     document.getElementById("gameId").innerHTML = "";
     console.log(serverResponseText);
 }
 
 function handleGameStarted(message) {
 //     todo show in responsetext or something like that
-console.log(message)
-
+    console.log(message)
 
 }
 
 function handleServerMessage(response) {
     // TODO show message in game in grey block on the left or maybe implement chat and show it there
     const serverResponseText = response.message;
-    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
     console.log(serverResponseText);
 }
