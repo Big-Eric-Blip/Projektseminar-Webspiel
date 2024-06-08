@@ -196,6 +196,15 @@ body {
     box-sizing: border-box; /* Include padding and border in total width */
 }
 
+#clientNameInput {
+    width: 80%; /* Adjust width as needed */
+    padding: 10px; /* Add padding for spacing */
+    font-size: 16px; /* Adjust font size as needed */
+    margin: 0 auto; /* Center the input horizontally */
+    display: block; /* Ensure the input is a block element */
+    box-sizing: border-box; /* Include padding and border in total width */
+}
+
 label {
     display: inline-block;
     margin: 10px;

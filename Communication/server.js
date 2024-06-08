@@ -65,6 +65,7 @@ function checkClientMessage(message, playerId) {
                 }
             }
             return {type: 'message', message: `There is no game with game id: ${message.gameId}`};
+
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
                 if (games[i].gameId === message.gameId) {

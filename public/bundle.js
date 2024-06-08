@@ -75,7 +75,7 @@ function sendMessage(message) {
         // Wait for the socket to open before sending the message
         socket.addEventListener('open', function () {
             socket.send(JSON.stringify(message));
-        }, {once: true});
+        }, { once: true });
     } else {
         socket.send(JSON.stringify(message));
     }
@@ -87,15 +87,21 @@ document.addEventListener('DOMContentLoaded', function () {
         //Create Game
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
-        joinGameButton: joinGame,
-        startGameButton: startGame,
-        leaveGameButton: leaveGame,
-        landingPageButton: returnToLandingPage,
         createGameButton: createGame,
 
         //Join Game
         joinGamePopupButton: openJoinGamePopup,
         closeJoinGamePopupButton: closeJoinGamePopup,
+        joinGameButton: joinGame,
+        
+        //Succesfull Join
+        startJoinedGameButton: startJoinedGame,
+        cancelButton: cancel,
+
+        //Lobby
+        startGameButton: startGame,
+        leaveGameButton: leaveGame,
+        landingPageButton: returnToLandingPage,
 
         //Game Buttons
         rollDiceButton: rollDice,
@@ -129,18 +135,37 @@ function closeCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'none';
 }
 
+function cancel() {
+    //ToDo checken
+    leaveGame()
+    document.getElementById('succesfullJoinPopup').style.display = 'none';
+    setGameState("PRE_GAME")
+    document.getElementById('myCanvas').style.display = 'none';
+}
+
 function createGame() {
-    setGameState("LOBBY")
-    const selectedColor = document.querySelector('input[name="playerColor"]:checked');
-    // TODO set parameter to not static values
-    sendMessage({
-        type: 'createGame',
-        boardType: "default",
-        playerName: "Alice",
-        playerColor: "red"
-    });
+
+    const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
+    const playerName = document.getElementById('adminNameInput').value;
+    if (playerName != '') {
+
+        setGameState("LOBBY")
+        document.getElementById('createGamePopup').style.display = 'none';
+
+        sendMessage({
+            type: 'createGame',
+            boardType: "default",
+            playerName: playerName,
+            playerColor: selectedColor
+        });
+    }
+
     //the game state influences the CSS of the game
 
+}
+
+function startJoinedGame(){
+    console.log("test123")
 }
 
 function returnToLandingPage() {
@@ -246,9 +271,49 @@ function joinGame() {
     });
 }
 
+
 function handleJoinGameResponse(response) {
     let serverResponseText = document.getElementById("serverResponse");
     if (response.playerId) {
+        document.getElementById('joinGamePopup').style.display = 'none'
+        document.getElementById('succesfullJoinPopup').style.display = 'block'
+
+
+        // Function to select a random enabled radio button
+        function selectRandomEnabledRadioButton() {
+            let radioButtons = document.querySelectorAll('input[name="playerColor"]');
+            let enabledRadioButtons = Array.from(radioButtons).filter(rb => !rb.disabled);
+
+            if (enabledRadioButtons.length > 0) {
+                let randomIndex = Math.floor(Math.random() * enabledRadioButtons.length);
+                enabledRadioButtons[randomIndex].checked = true;
+            }
+        }
+
+        //ToDo: Establish conditions for already selected colors
+        /*
+        if (blue taken) {
+            document.getElementById('blueOption').querySelector('input').disabled = true
+            document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
+        }
+
+        if (yellow taken) {
+            document.getElementById('yellowOption').querySelector('input').disabled = true
+            document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
+        }
+
+        if (green taken) {
+            document.getElementById('greenOption').querySelector('input').disabled = true
+            document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
+        }
+
+        if (red taken) {
+            document.getElementById('redOption').querySelector('input').disabled = true
+            document.getElementById('redImage').src = "pictures/figureRedCross.png"
+
+        }
+        */
+
         currentGame.playerId = response.playerId;
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
@@ -260,7 +325,7 @@ function handleJoinGameResponse(response) {
 }
 
 function rollDice() {
-    sendMessage({type: 'rollDice'});
+    sendMessage({ type: 'rollDice' });
 }
 
 
@@ -300,7 +365,7 @@ function handlePlayerJoinedResponse(message) {
 
 function handleAPlayerLeftGame(message) {
     const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
-        ' player) left the game.\n There are now '  + message.numberOfPlayers + ' player' +
+        ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
         (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
     document.getElementById("serverResponse").innerHTML = serverResponseText;
     console.log(serverResponseText)
