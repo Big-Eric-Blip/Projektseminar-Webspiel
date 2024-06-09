@@ -2,7 +2,7 @@ class Renderer {
     constructor(canvasID) {
         /* this.small = 35;
         this.big = 45;*/
-        this.scale;
+        this.scale = 1;
 
 
 
@@ -122,7 +122,7 @@ class Renderer {
         // this.resizeCanvas();
 
         this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
-        this.canvas.addEventListener('resize', this.resizeCanvas(this));
+        //this.canvas.addEventListener('resize', this.resizeCanvas.bind(this));
 
     }
 
@@ -136,9 +136,13 @@ class Renderer {
         this.scale = size / 1100;  // Assume 1100 is the reference size for the positions defined
         console.log("Scale " +this.scale)
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          // Die Felder neu zeichnen und die Klickpositionen aktualisieren
+    
         this.drawFields();
         this.drawTokens();
-        console.log(tokens)
+        console.log(token)
+        this.canvas.removeEventListener('click', this.onCanvasClick.bind(this));
+    this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
     }
 
     drawFields() {
@@ -168,6 +172,7 @@ class Renderer {
 
         this.tokens.forEach((token) => {
             ctx.beginPath();
+            ctx.scale(1, 1)
             ctx.fillStyle = token.color;
             ctx.fillRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
             ctx.strokeStyle = "black";
@@ -176,7 +181,7 @@ class Renderer {
         });
     }
 
-    onCanvasClick(event) {
+    /*onCanvasClick(event) {
 
         let rect = this.canvas.getBoundingClientRect();
         console.log(rect)
@@ -216,6 +221,33 @@ class Renderer {
             point.y <= tokenY + tokenSize / 2
         );
 
+    }*/
+    onCanvasClick(event) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const clickX = (event.clientX - rect.left) * scaleX;
+        const clickY = (event.clientY - rect.top) * scaleY;
+    
+        const clickPoint = { x: clickX, y: clickY };
+    
+        this.tokens.forEach(token => {
+            // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
+            const tokenSize = 35 * this.scale;
+            const tokenX = token.x;
+            const tokenY = token.y;
+    
+            // Überprüfen, ob der Klick innerhalb des Bereichs des Tokens liegt
+            if (
+                clickPoint.x >= tokenX - tokenSize / 2 &&
+                clickPoint.x <= tokenX + tokenSize / 2 &&
+                clickPoint.y >= tokenY - tokenSize / 2 &&
+                clickPoint.y <= tokenY + tokenSize / 2
+            ) {
+                console.log(`Game piece clicked:`, token);
+                this.moveToken(token);
+            }
+        });
     }
 
 
@@ -317,7 +349,5 @@ class Renderer {
 document.addEventListener("DOMContentLoaded", function () {
     const renderer = new Renderer("myCanvas");
 
-    renderer.drawFields();
-    renderer.drawTokens();
-    renderer.resizeCanvas();
+  
 });
