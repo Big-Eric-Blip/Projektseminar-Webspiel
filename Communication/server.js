@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
-const {v4: uuidv4} = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
@@ -10,7 +10,7 @@ const Board = require('../Model/Board');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({server});
+const wss = new WebSocket.Server({ server });
 const clients = new Map();
 let games = [];
 let board = new Board(4, 4);
@@ -56,15 +56,42 @@ function checkClientMessage(message, playerId) {
                         type: "playerJoined",
                         numberOfPlayers: game.player.length + 1
                     });
+                    let takenColors = []
+                    for (const player of game.player) {
+                        if (player.color !== "") {
+                            takenColors.push(player.color)
+                        }
+                    }
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
-                        playerId: playerId
+                        playerId: playerId,
+                        takenColors: takenColors
                     };
                 }
             }
-            return {type: 'message', message: `There is no game with game id: ${message.gameId}`};
+            return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
+
+        case 'pickColor':
+            for (const game of games) {
+                console.log("game: ",game)
+                if (game.gameId === message.gameId) {
+                    for (const player of game.player) {
+                        console.log("player:", player.playerId)
+                        console.log("message:", message.playerId)
+                        if (player.playerId == message.playerId) {
+                            player.playerColor = message.playerColor
+                            player.playerName = message.playerName
+                        } else {
+                            return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
+                        }
+                    }
+                } else {
+                    return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
+                }
+            }
+            return { type: 'pickedColor', message: `Successfully picked color!` }
 
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
@@ -108,7 +135,7 @@ function checkClientMessage(message, playerId) {
 
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
-            return {type: 'message', message: `Sorry, we are out of ${message.type}.`};
+            return { type: 'message', message: `Sorry, we are out of ${message.type}.` };
     }
 }
 
@@ -164,7 +191,7 @@ function leaveGameOnCloseWindow(playerId) {
     for (const game of games) {
         for (const player of game.player) {
             if (player.playerId === playerId) {
-                checkClientMessage({type: 'leaveGame', gameId: game.gameId}, playerId);
+                checkClientMessage({ type: 'leaveGame', gameId: game.gameId }, playerId);
                 return;
             }
         }

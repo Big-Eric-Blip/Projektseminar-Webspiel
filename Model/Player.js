@@ -2,9 +2,9 @@ class Player {
 
     /**
      * 
-     * @param {*} playerId
-     * @param {*} color 
-     * @param {*} name 
+     * @param {string} playerId
+     * @param {string} color 
+     * @param {string} name 
      */
     constructor(playerId, color, name){
         this.color = color
