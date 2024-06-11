@@ -115,6 +115,7 @@ class Game {
      * This function calculates the currently available game actions.
      * It does NOT execute any actions by itself. The actions are then triggered
      * in the next step by the client
+     * Available actions: LEAVE_HOUSE, ENTER_GOAL, BEAT, MOVE, MOVE_GOAL, ENTER_GOAL
      * @param board on which the game actions are performed
      */
     calculateAvailableGameActions(board) {
@@ -126,7 +127,6 @@ class Game {
         //calculate new values
         let currentPlayer = this.getCurrentPlayer()
         let playersTokens = this.getPlayersTokens(currentPlayer)
-        // available actions: MOVE, ROLL_DIE, NONE, BEAT, LEAVE_HOUSE, ENTER_GOAL, MOVE_GOAL
         //die value available?
         if (this.currentDieValue > 0) {
             //available moves: MOVE, NONE, BEAT
@@ -139,7 +139,7 @@ class Game {
                         let startingPosition = board.getStartingPosition(currentPlayer.getColor())
                         //check if field starting position is empty or contains other token
                         let fieldCheck = this.isFieldEmpty(startingPosition)
-                        if(fieldCheck || fieldCheck === currentPlayer.getPlayerId()) {
+                        if (fieldCheck || fieldCheck === currentPlayer.getPlayerId()) {
                             this.gameActions.push(new GameAction(currentPlayer.playerId,
                                 'LEAVE_HOUSE', this.playersTokens[i].tokenId, startingPosition,
                                 this.currentDieValue))
@@ -209,6 +209,7 @@ class Game {
 
         return false;
     }
+
     removePlayer(playerId) {
         for (let i = 0; i < this.player.length; i++) {
             if (this.player[i].playerId === playerId) {
