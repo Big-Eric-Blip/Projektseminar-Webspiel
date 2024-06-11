@@ -4,9 +4,11 @@ let currentGame = {
     gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
 
+
 let socket = null;
 let isSocketOpen = false;
 const url = "ws://127.0.0.1:3000";
+const Renderer = require('../View/Renderer');
 
 function initWebSocketConnection() {
     socket = new WebSocket(url);
@@ -229,11 +231,17 @@ function handleCreateGameResponse(response) {
     document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
+    
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
     document.getElementById("createGameButton").style.display = 'none';
-
+    renderer.fields = response.fields;
+    document.addEventListener("DOMContentLoaded", function () {
+        const renderer = new Renderer("myCanvas");
+    });   
+    renderer.drawFields();
+    renderer.drawTokens();
 }
 
 function joinGame() {
