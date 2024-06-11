@@ -21,6 +21,9 @@ class Token {
     updateTraversedDistance(increment) {
         this.traversedDistance = this.traversedDistance + increment;
     }
+    getTokensPlayerId() {
+        return this.playerId
+    }
 }
 
 

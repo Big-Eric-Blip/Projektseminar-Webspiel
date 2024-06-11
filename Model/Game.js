@@ -76,7 +76,8 @@ class Game {
     isFieldEmpty(fieldId) {
         for (let i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i].fieldId === fieldId) {
-                return this.tokens[i].tokenId
+                //return this.tokens[i].tokenId
+                return this.tokens[i]
             }
         }
         return true;
@@ -136,9 +137,13 @@ class Game {
                 for (let i = 0; i < this.playersTokens.length; i++) {
                     if (board.getFieldType(this.playersTokens[i].fieldId) === 'HOME') {
                         let startingPosition = board.getStartingPosition(currentPlayer.getColor())
-                        this.gameActions.push(new GameAction(currentPlayer.playerId,
-                            'LEAVE_HOUSE', this.playersTokens[i].tokenId, startingPosition,
-                            this.currentDieValue))
+                        //check if field starting position is empty or contains other token
+                        let fieldCheck = this.isFieldEmpty(startingPosition)
+                        if(fieldCheck || fieldCheck === currentPlayer.getPlayerId()) {
+                            this.gameActions.push(new GameAction(currentPlayer.playerId,
+                                'LEAVE_HOUSE', this.playersTokens[i].tokenId, startingPosition,
+                                this.currentDieValue))
+                        }
                     }
                 }
                 //make sure they can move again!
@@ -196,6 +201,7 @@ class Game {
 
     moveToken(playerId, tokenId) {
         //TODO implement this function
+
     }
 
     enterGoalArray(playerId, tokenId) {

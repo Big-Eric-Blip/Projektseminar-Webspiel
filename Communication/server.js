@@ -72,7 +72,8 @@ function checkClientMessage(message, playerId) {
         //TODO: Complete Implementation
         //TODO: Send GameResult to all Clients (GameUpdate)
         //action: MOVE
-        case "action_moveToken":
+        case "actionMoveToken":
+            // get correct game object
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.moveToken(message.tokenId, message.diceResult);
