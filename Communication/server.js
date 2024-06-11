@@ -35,14 +35,18 @@ function checkClientMessage(message, playerId) {
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType);
             let player = new Player(playerId, message.playerColor, message.playerName);
+            
             addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
             games.push(game);
+            
             return {
                 type: 'createGame',
                 gameId: gameId,
-                playerId: playerId
+                playerId: playerId,
+                fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
             };
+
         case 'joinGame':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
@@ -119,6 +123,8 @@ function sendMessageToAllPlayers(game, jsonMessage) {
         }
     }
 }
+
+
 
 function addTokensOnPlayerJoin(message, playerId, game) {
     for (const fields of board.homeArray) {
