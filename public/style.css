@@ -38,6 +38,7 @@ body {
 }
 
 
+
 #myCanvas {
     border-style: solid;
     border-color: black;
@@ -79,7 +80,7 @@ body {
     background-color: crimson;
     border: none;
     float: right;
-    border-radius: 10px;
+    border-radius:10px;
     font-size: medium;
     width: auto;
     padding: 8px 20px;
@@ -151,9 +152,11 @@ body {
 }
 
 .popup-content {
+    overflow-y:auto;
     background-color: rgba(217, 217, 217, 255);
     width: 50%;
     max-width: 800px;
+    max-height: 75vh;
     margin: 100px auto;
     padding: 20px;
     border-radius: 8px;
@@ -164,6 +167,7 @@ body {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    margin-top: 2rem;
 }
 
 .popup-content .button-container button {
@@ -173,6 +177,7 @@ body {
 #startGameButton {
     display: none;
 }
+
 
 
 #joinGameInputId {
