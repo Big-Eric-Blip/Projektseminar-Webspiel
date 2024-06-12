@@ -8,12 +8,14 @@ class Game {
      * @param {string} gameId
      * @param {Player[]} player
      * @param {string} boardType
+     * @param {string} status can be: "LOBBY", "GAME_RUNNING", "GAME_OVER"
      */
-    constructor(gameId, player, boardType) {
+    constructor(gameId, player, boardType, status) {
         this.gameId = gameId;
         this.player = player;
         this.boardType = boardType;
         this.tokens = [];
+        this.status = status;
         this.gameActions = [];
         this.currentDieValue = 0
         this.playersTokens = []
