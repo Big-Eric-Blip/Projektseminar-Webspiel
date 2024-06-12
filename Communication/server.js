@@ -75,23 +75,22 @@ function checkClientMessage(message, playerId) {
 
         case 'pickColor':
             for (const game of games) {
-                console.log("game: ",game)
+                console.log("game: ", game)
                 if (game.gameId === message.gameId) {
                     for (const player of game.player) {
                         console.log("player:", player.playerId)
                         console.log("message:", message.playerId)
-                        if (player.playerId == message.playerId) {
+                        if (player.playerId === message.playerId) {
                             player.playerColor = message.playerColor
                             player.playerName = message.playerName
-                        } else {
-                            return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
+                            return { type: 'pickedColor', message: `Successfully picked color!` }
                         }
                     }
-                } else {
-                    return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
+                    return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
                 }
             }
-            return { type: 'pickedColor', message: `Successfully picked color!` }
+            return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
+
 
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {

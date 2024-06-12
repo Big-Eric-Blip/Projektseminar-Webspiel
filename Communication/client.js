@@ -322,7 +322,6 @@ function startJoinedGame() {
 }
 
 function handlePickedColor(response) {
-    console.log(response.message)
     currentGame.playerColor = response.playerColor
     currentGame.playerName = response.playerName
     document.getElementById('succesfullJoinPopup').style.display = 'none'
