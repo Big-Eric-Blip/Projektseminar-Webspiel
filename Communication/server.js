@@ -113,7 +113,7 @@ function checkClientMessage(message, playerId) {
                     });
                     return {
                         type: "message",
-                        message: "You started the game."
+                        message: "You´ve started the game."
                     }
                     //     todo check in joinGame case if game is in status LOBBY
 

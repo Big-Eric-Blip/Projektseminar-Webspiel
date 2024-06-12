@@ -237,7 +237,7 @@ function handleCreateGameResponse(response) {
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
     document.getElementById("createGameButton").style.display = 'none';
-
+    document.getElementById('leaveGameButton').style.display = 'block';
 }
 
 function joinGame() {
@@ -256,6 +256,8 @@ function handleJoinGameResponse(response) {
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
         setGameState('LOBBY');
+        document.getElementById('startGameButton').style.display = 'none';
+        document.getElementById('leaveGameButton').style.display = 'block';
     } else {
         let serverResponseText = document.getElementById("joinGamePopupServerResponse");
         serverResponseText.innerHTML = response.message;
@@ -321,6 +323,8 @@ function handleLeftGame(message) {
 function handleGameStarted(message) {
 //     todo show in responsetext or something like that
     console.log(message)
+    document.getElementById("inGameServerResponse").innerHTML = message.message;
+    document.getElementById('rollDiceButton').style.display = 'block';
 
 }
 
