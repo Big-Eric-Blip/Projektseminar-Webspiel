@@ -3,7 +3,7 @@ let currentGame = {
     playerId: "",
     gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
-let availableGameActions
+let availableGameActions = new Set;
 
 let socket = null;
 let isSocketOpen = false;

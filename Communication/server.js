@@ -7,7 +7,6 @@ const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
 const Die = require('../Model/Die')
-//const GameAction = require('../Model/GameAction');
 
 const app = express();
 const server = http.createServer(app);
@@ -134,8 +133,7 @@ function checkClientMessage(message, playerId) {
             //
             // }
             break;
-
-            default:
+        default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {type: 'message', message: `Sorry, we are out of ${message.type}.`};
     }

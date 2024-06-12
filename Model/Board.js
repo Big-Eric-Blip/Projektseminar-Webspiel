@@ -110,6 +110,11 @@ class Board {
         ]
     }
 
+    /**
+     * Determines the fieldId of the starting positions for a given color
+     * @param color of the player
+     * @return {string} the fieldId of the starting field for the given {color}
+     */
     getStartingPosition(color) {
         switch (color) {
             case "blue":
