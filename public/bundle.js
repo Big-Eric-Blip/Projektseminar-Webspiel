@@ -61,6 +61,9 @@ function fromServerMessage(event) {
         case 'leftGame':
             handleLeftGame(message);
             break;
+        case 'gameStarted':
+            handleGameStarted(message);
+            break;
         case 'message':
             handleServerMessage(message);
             break;
@@ -149,13 +152,13 @@ function returnToLandingPage() {
     setGameState('PRE_GAME')
 }
 
-//The following function may be not necessary?
 function startGame() {
     setGameState('GAME_RUNNING')
-    //sendMessage({
-    //    type: 'startGame'
+    sendMessage({
+        type: 'startGame',
+        gameId: currentGame.gameId
+    });
     //TODO implement full requiredJSON
-    //});
 }
 
 function leaveGame() {
@@ -229,7 +232,7 @@ function endGame() {
 }
 
 function handleCreateGameResponse(response) {
-    document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
+    document.getElementById("inGameServerResponse").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
     
@@ -243,6 +246,7 @@ function handleCreateGameResponse(response) {
     });   
     renderer.drawFields();
     renderer.drawTokens();
+    document.getElementById('leaveGameButton').style.display = 'block';
 }
 
 function joinGame() {
@@ -255,15 +259,18 @@ function joinGame() {
 }
 
 function handleJoinGameResponse(response) {
-    let serverResponseText = document.getElementById("serverResponse");
     if (response.playerId) {
         currentGame.playerId = response.playerId;
+        let serverResponseText = document.getElementById("inGameServerResponse");
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
         setGameState('LOBBY');
+        document.getElementById('startGameButton').style.display = 'none';
+        document.getElementById('leaveGameButton').style.display = 'block';
     } else {
-        console.log(response.message);
+        let serverResponseText = document.getElementById("joinGamePopupServerResponse");
         serverResponseText.innerHTML = response.message;
+        console.log(response.message);
     }
 }
 
@@ -302,30 +309,38 @@ function handleMoveTokenResponse(response) {
 }
 
 function handlePlayerJoinedResponse(message) {
-    document.getElementById("serverResponse").innerHTML =
+    document.getElementById("inGameServerResponse").innerHTML =
         "A new player joined your game. There are now " + message.numberOfPlayers + " players in your game."
 }
 
 function handleAPlayerLeftGame(message) {
     const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
-        ' player) left the game.\n There are now '  + message.numberOfPlayers + ' player' +
+        ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
         (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
-    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
     console.log(serverResponseText)
     console.log("There are now " + message.numberOfPlayers + " players in your game.")
 }
 
 function handleLeftGame(message) {
     const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
-    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
     document.getElementById("gameId").innerHTML = "";
     console.log(serverResponseText);
+}
+
+function handleGameStarted(message) {
+//     todo show in responsetext or something like that
+    console.log(message)
+    document.getElementById("inGameServerResponse").innerHTML = message.message;
+    document.getElementById('rollDiceButton').style.display = 'block';
+
 }
 
 function handleServerMessage(response) {
     // TODO show message in game in grey block on the left or maybe implement chat and show it there
     const serverResponseText = response.message;
-    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
     console.log(serverResponseText);
 }
 },{"../View/Renderer":2}],2:[function(require,module,exports){

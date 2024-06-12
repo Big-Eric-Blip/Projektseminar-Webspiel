@@ -33,7 +33,7 @@ function checkClientMessage(message, playerId) {
             };
         case 'createGame':
             const gameId = uuidv4();
-            let game = new Game(gameId, [], message.boardType);
+            let game = new Game(gameId, [], message.boardType, "LOBBY");
             let player = new Player(playerId, message.playerColor, message.playerName);
             
             addTokensOnPlayerJoin(message, playerId, game);
@@ -50,9 +50,15 @@ function checkClientMessage(message, playerId) {
         case 'joinGame':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
+                    if (game.status !== "LOBBY") {
+                        return {
+                            type: 'joinGame',
+                            message: `The game has already started.`
+                        };
+                    }
                     if (game.player.length >= board.maxPlayers) {
                         return {
-                            type: 'message',
+                            type: 'joinGame',
                             message: `The game you've tried to join is full. There is no space for another player.`
                         };
                     }
@@ -68,7 +74,10 @@ function checkClientMessage(message, playerId) {
                     };
                 }
             }
-            return {type: 'message', message: `There is no game with game id: ${message.gameId}`};
+            return {
+                type: 'joinGame',
+                message: `There is no game with game id: ${(message.gameId === "" ? "empty game id" : message.gameId)}`
+            };
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
                 if (games[i].gameId === message.gameId) {
@@ -95,6 +104,26 @@ function checkClientMessage(message, playerId) {
                 type: 'message', message: 'There is no game with game id: ' + message.gameId +
                     '. Meaning you are not in the game with this id.'
             };
+        case 'startGame':
+            //     transfer game status
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.status = "GAME_RUNNING";
+                    //     todo send all players that the game started
+                    sendMessageToAllPlayers(game, {
+                        type: 'gameStarted',
+                        gameId: game.gameId,
+                        message: 'The game started!'
+                    });
+                    return {
+                        type: "message",
+                        message: "You´ve started the game."
+                    }
+                    //     todo check in joinGame case if game is in status LOBBY
+
+                }
+            }
+            break;
         case "moveToken":
             console.log(message);
             // TODO following code doesn't work. Has to be reworked.
