@@ -79,7 +79,7 @@ function sendMessage(message) {
         // Wait for the socket to open before sending the message
         socket.addEventListener('open', function () {
             socket.send(JSON.stringify(message));
-        }, {once: true});
+        }, { once: true });
     } else {
         socket.send(JSON.stringify(message));
     }
@@ -234,7 +234,7 @@ function handleCreateGameResponse(response) {
     document.getElementById("inGameServerResponse").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
-    
+
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
@@ -242,7 +242,7 @@ function handleCreateGameResponse(response) {
     renderer.fields = response.fields;
     document.addEventListener("DOMContentLoaded", function () {
         const renderer = new Renderer("myCanvas");
-    });   
+    });
     renderer.drawFields();
     renderer.drawTokens();
     document.getElementById('leaveGameButton').style.display = 'block';
@@ -255,26 +255,39 @@ function joinGame() {
         type: 'joinGame',
         gameId: currentGame.gameId
     });
+
 }
 
 function handleJoinGameResponse(response) {
     if (response.playerId) {
         currentGame.playerId = response.playerId;
+
         let serverResponseText = document.getElementById("inGameServerResponse");
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            const renderer = new Renderer("myCanvas");
+            
+        });
+        renderer.fields = response.fields;
+            renderer.drawFields();
+            renderer.drawTokens();
+        console.log(renderer.fields)
+        
     } else {
         let serverResponseText = document.getElementById("joinGamePopupServerResponse");
         serverResponseText.innerHTML = response.message;
         console.log(response.message);
     }
+
 }
 
 function rollDice() {
-    sendMessage({type: 'rollDice'});
+    sendMessage({ type: 'rollDice' });
 }
 
 
@@ -329,7 +342,7 @@ function handleLeftGame(message) {
 }
 
 function handleGameStarted(message) {
-//     todo show in responsetext or something like that
+    //     todo show in responsetext or something like that
     console.log(message)
     document.getElementById("inGameServerResponse").innerHTML = message.message;
     document.getElementById('rollDiceButton').style.display = 'block';

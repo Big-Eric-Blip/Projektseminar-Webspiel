@@ -64,19 +64,22 @@ function checkClientMessage(message, playerId) {
                     }
                     sendMessageToAllPlayers(game, {
                         type: "playerJoined",
-                        numberOfPlayers: game.player.length + 1
+                        numberOfPlayers: game.player.length + 1,
+                        fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     });
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
-                        playerId: playerId
+                        playerId: playerId,
+                        fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     };
                 }
             }
             return {
                 type: 'joinGame',
-                message: `There is no game with game id: ${(message.gameId === "" ? "empty game id" : message.gameId)}`
+                message: `There is no game with game id: ${(message.gameId === "" ? "empty game id" : message.gameId)}`,
+
             };
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
