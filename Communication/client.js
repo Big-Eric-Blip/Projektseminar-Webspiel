@@ -312,18 +312,22 @@ function handleJoinGameResponse(response) {
 }
 
 function startJoinedGame() {
+    const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
+    const playerName = document.getElementById('clientNameInput').value
+    //console.log(selectedColor)
+    
     sendMessage({
         type: 'pickColor',
         gameId: currentGame.gameId,
-        playerColor: document.querySelector('input[name="playerColor"]:checked').value,
-        playerName: document.getElementById('clientNameInput').value,
+        playerColor: selectedColor,
+        playerName: playerName,
         playerId: currentGame.playerId
     });
 }
 
 function handlePickedColor(response) {
-    currentGame.playerColor = response.playerColor
     currentGame.playerName = response.playerName
+    currentGame.playerColor = response.playerColor
     document.getElementById('succesfullJoinPopup').style.display = 'none'
 }
 
