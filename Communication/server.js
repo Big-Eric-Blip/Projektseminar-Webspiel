@@ -7,7 +7,6 @@ const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
 
-
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
@@ -112,22 +111,27 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.status = "GAME_RUNNING";
-                    //     todo send all players that the game started
                     sendMessageToAllPlayers(game, {
                         type: 'gameStarted',
                         gameId: game.gameId,
                         message: 'The game started!'
                     });
+                    game.initializePlayersTurn()
+                    game.calculateAvailableGameActions(board)
                     return {
-                        type: "message",
-                        message: "You´ve started the game."
+                        type: "updateGame",
+                        message: "You´ve started the game.",
+                        status: game.status,
+                        gameId: game.gameId,
+                        gameActions: JSON.stringify(game.gameActions),
+                        tokens: JSON.stringify(game.tokens)
                     }
                     //     todo check in joinGame case if game is in status LOBBY
 
                 }
             }
             break;
-        case "moveToken":
+        case "action_MOVE":
             console.log(message);
             // TODO following code doesn't work. Has to be reworked.
             // game.moveToken(message.tokenId,message.diceResult);
@@ -140,10 +144,13 @@ function checkClientMessage(message, playerId) {
             //
             // }
             break;
+        case "action_LEAVE_HOUSE":
+            //TODO implement
+            break;
 
         default:
-            console.log(`Sorry, we are out of ${message.type}.`);
-            return {type: 'message', message: `Sorry, we are out of ${message.type}.`};
+            console.log(`Server: Sorry, we are out of ${message.type}.`);
+            return {type: 'message', message: `Server: Sorry, we are out of ${message.type}.`};
     }
 }
 
@@ -162,7 +169,8 @@ function addTokensOnPlayerJoin(message, playerId, game) {
     for (const fields of board.homeArray) {
         if (fields[0].color === message.playerColor) {
             for (let i = 0; i < fields.length; i++) {
-                game.addToken(playerId, fields[i].fieldId, fields[i].xCoord, fields[i].yCoord, message.playerColor);
+                let tokenId = message.playerColor + (i + 1)
+                game.addToken(tokenId, playerId, fields[i].fieldId, message.playerColor);
             }
             break;
         }
@@ -178,10 +186,8 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(fromClientMessage) {
         console.log(`Received message from ${playerId}: ${fromClientMessage}`);
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
-
         console.log(`Current clients:`, [...clients.keys()]);
         console.log('Current games:', games)
-
         ws.send(JSON.stringify(sendBackToClient));
     });
 

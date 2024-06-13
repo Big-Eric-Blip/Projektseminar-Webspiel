@@ -1,7 +1,7 @@
 class Field {
     /**
      * 
-     * @param {*} fieldId 
+     * @param {*} fieldId
      * @param {*} color 
      * @param {*} type : available types: START, REGULAR, GOAL
      * @param {*} xCoord 
@@ -26,6 +26,9 @@ class Field {
    }
    getFieldId() {
     return this.fieldId
+   }
+   getFieldType() {
+       return this.type
    }
 }
 
