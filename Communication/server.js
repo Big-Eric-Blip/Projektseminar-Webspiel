@@ -6,7 +6,6 @@ const {v4: uuidv4} = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
-const Die = require('../Model/Die')
 
 const app = express();
 const server = http.createServer(app);
@@ -113,21 +112,19 @@ function checkClientMessage(message, playerId) {
                     game.initializePlayersTurn()
                     game.calculateAvailableGameActions(board)
                     return {
-                       //type: "message",
                         type: "updateGame",
                         message: "You´ve started the game.",
                         status: game.status,
                         gameId: game.gameId,
                         gameActions: JSON.stringify(game.gameActions),
                         tokens: JSON.stringify(game.tokens)
-
                     }
                     //     todo check in joinGame case if game is in status LOBBY
 
                 }
             }
             break;
-        case "action_moveToken":
+        case "action_MOVE":
             console.log(message);
             // TODO following code doesn't work. Has to be reworked.
             // game.moveToken(message.tokenId,message.diceResult);
@@ -140,8 +137,8 @@ function checkClientMessage(message, playerId) {
             //
             // }
             break;
-        case "action_leaveHouse":
-
+        case "action_LEAVE_HOUSE":
+            //TODO implement
             break;
 
         default:
@@ -163,11 +160,8 @@ function addTokensOnPlayerJoin(message, playerId, game) {
     for (const fields of board.homeArray) {
         if (fields[0].color === message.playerColor) {
             for (let i = 0; i < fields.length; i++) {
-                //TODO: match Tokenid with front end!
                 let tokenId = message.playerColor + (i + 1)
                 game.addToken(tokenId, playerId, fields[i].fieldId, message.playerColor);
-                //old constructor
-                //game.addToken(playerId, fields[i].fieldId, fields[i].xCoord, fields[i].yCoord, message.playerColor);
             }
             break;
         }
@@ -183,10 +177,8 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(fromClientMessage) {
         console.log(`Received message from ${playerId}: ${fromClientMessage}`);
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
-
         console.log(`Current clients:`, [...clients.keys()]);
         console.log('Current games:', games)
-
         ws.send(JSON.stringify(sendBackToClient));
     });
 

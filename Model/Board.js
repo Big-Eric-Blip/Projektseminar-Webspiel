@@ -124,7 +124,7 @@ class Board {
             case "green":
                 return "wp21"
             case "yellow":
-                return "wp32"
+                return "wp31"
             default:
                 return "This is an invalid color";
         }
@@ -145,7 +145,13 @@ class Board {
 
     }
 
-    //To be used, when Token is already positioned on Field (GameArray)
+    /**
+     * Gets the next position of a token for a given die value
+     * @param {string} currentFieldId the current token position
+     * @param {number} dieValue the number of fields to be advanced
+     * @param {number} traversedDistance the distance the token has already travelled, max 40
+     * @return {*|string|string} the fieldId of the field where the token is positioned next
+     */
     getNextPosition(currentFieldId, dieValue, traversedDistance) {
         let currentIndex = this.gameArray.findIndex(field => field.fieldId === currentFieldId);
         let fieldId = "test"
@@ -172,12 +178,6 @@ class Board {
         }
     }
 
-
 }
 
 module.exports = Board;
-
-/*
-let board = new Board(16,4)
-board.getNextPosition("wp40",3,38)
- */

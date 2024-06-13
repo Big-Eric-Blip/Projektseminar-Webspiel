@@ -279,7 +279,7 @@ function rollDice() {
 function chooseGameAction(gameAction) {
     let action = 'text'
     sendMessage({
-        type: 'action_' + action,
+        type: 'action_' + action, //for example: action_ROLL_DIE
 
 
     })
@@ -323,9 +323,8 @@ function handleGameUpdate(message) {
     let tokens = message.tokens
     let gameId = message.gameId
     availableGameActions.add(gameActions)
-        //message: "You´ve started the game.",
-    //update board
-    //render sth
+    //message: "You´ve started the game.",
+    //TODO: update board with current token positions
 
     //availableGameActions = message.
 
