@@ -69,7 +69,7 @@ function fromServerMessage(event) {
             handleGameUpdate(message);
             break;
         default:
-            console.log(`Sorry, we are out of ${message.type}.`);
+            console.log(`Client: Sorry, we are out of ${message.type}.`);
     }
 }
 
@@ -159,7 +159,6 @@ function startGame() {
         type: 'startGame',
         gameId: currentGame.gameId
     });
-    //TODO implement full requiredJSON
 }
 
 function leaveGame() {
@@ -315,9 +314,8 @@ function moveToken(tokenId, dieValue) {
  */
 function handleGameUpdate(message) {
     console.log(message)
-    let gameState = message.status
-    if (gameState !== currentGame.gameState) {
-        setGameState(gameState)
+    if (message.status !== currentGame.gameState) {
+        setGameState(message.status)
     }
     //update available game actions
     let gameActions = message.gameActions

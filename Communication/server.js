@@ -105,7 +105,6 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.status = "GAME_RUNNING";
-                    //     todo send all players that the game started
                     sendMessageToAllPlayers(game, {
                         type: 'gameStarted',
                         gameId: game.gameId,
@@ -146,8 +145,8 @@ function checkClientMessage(message, playerId) {
             break;
 
         default:
-            console.log(`Sorry, we are out of ${message.type}.`);
-            return {type: 'message', message: `Sorry, we are out of ${message.type}.`};
+            console.log(`Server: Sorry, we are out of ${message.type}.`);
+            return {type: 'message', message: `Server: Sorry, we are out of ${message.type}.`};
     }
 }
 
