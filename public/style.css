@@ -21,19 +21,19 @@ body {
 }
 
 .main-area {
-    margin-left: 0;
-    padding-left: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
 }
 
 .panel-left {
     float: left;
     width: 200px;
-    height: 1100px;
+    height: 100%;
     padding: 15px;
     margin-right: 40px;
-    margin-left: 0;
     border-right-style: inset;
-    border-top-style: outset;
     background-color: lightgray;
 }
 
@@ -41,8 +41,10 @@ body {
 #myCanvas {
     border-style: solid;
     border-color: black;
-    align-content: center;
     background-color: #ffca1a;
+    width: 70%;
+    height: 70%;
+    
 }
 
 .pre-game {
