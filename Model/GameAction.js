@@ -1,5 +1,4 @@
 class GameAction {
-    //available actions: MOVE, ROLLDIE
     constructor(playerId, action, tokenId, fieldId, amount) {
         this.playerId = playerId
         this.action = action

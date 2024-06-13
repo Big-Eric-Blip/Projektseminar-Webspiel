@@ -111,16 +111,24 @@ function checkClientMessage(message, playerId) {
                         gameId: game.gameId,
                         message: 'The game started!'
                     });
+                    game.initializePlayersTurn()
+                    game.calculateAvailableGameActions(board)
                     return {
-                        type: "message",
-                        message: "You´ve started the game."
+                       //type: "message",
+                        type: "updateGame",
+                        message: "You´ve started the game.",
+                        status: game.status,
+                        gameId: game.gameId,
+                        gameActions: JSON.stringify(game.gameActions),
+                        tokens: JSON.stringify(game.tokens)
+
                     }
                     //     todo check in joinGame case if game is in status LOBBY
 
                 }
             }
             break;
-        case "moveToken":
+        case "action_moveToken":
             console.log(message);
             // TODO following code doesn't work. Has to be reworked.
             // game.moveToken(message.tokenId,message.diceResult);
@@ -133,6 +141,10 @@ function checkClientMessage(message, playerId) {
             //
             // }
             break;
+        case "action_leaveHouse":
+
+            break;
+
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
             return {type: 'message', message: `Sorry, we are out of ${message.type}.`};

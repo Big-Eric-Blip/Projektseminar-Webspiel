@@ -65,6 +65,9 @@ function fromServerMessage(event) {
         case 'message':
             handleServerMessage(message);
             break;
+        case 'updateGame':
+            handleGameUpdate(message);
+            break;
         default:
             console.log(`Sorry, we are out of ${message.type}.`);
     }
@@ -269,6 +272,19 @@ function rollDice() {
     sendMessage({type: 'rollDice'});
 }
 
+/**
+ * Sends a message to the server to initiate the execution of the chosen game action
+ * @param gameAction
+ */
+function chooseGameAction(gameAction) {
+    let action = 'text'
+    sendMessage({
+        type: 'action_' + action,
+
+
+    })
+}
+
 
 function handleRollDiceResponse(response) {
     console.log(response);
@@ -290,6 +306,29 @@ function moveToken(tokenId, dieValue) {
         tokenId: tokenId,
         dieValue: dieValue
     })
+
+}
+
+/**
+ * Gets the game update from the server and
+ * @param message
+ */
+function handleGameUpdate(message) {
+    console.log(message)
+    let gameState = message.status
+    if (gameState !== currentGame.gameState) {
+        setGameState(gameState)
+    }
+    //update available game actions
+    let gameActions = message.gameActions
+    let tokens = message.tokens
+    let gameId = message.gameId
+    availableGameActions.add(gameActions)
+        //message: "You´ve started the game.",
+    //update board
+    //render sth
+
+    //availableGameActions = message.
 
 }
 
@@ -321,7 +360,7 @@ function handleLeftGame(message) {
 }
 
 function handleGameStarted(message) {
-//     todo show in responsetext or something like that
+//     todo show in response text or something like that
     console.log(message)
     document.getElementById("inGameServerResponse").innerHTML = message.message;
     document.getElementById('rollDiceButton').style.display = 'block';

@@ -30,18 +30,35 @@ class Game {
         //TODO implement this method
     }
 
+    /**
+     * Randomly chooses one player to start the game by setting the player's playersTurn attribute to {true}
+     */
+    initializePlayersTurn() {
+        let numberOfPlayers = this.player.length
+        let turn = Math.floor(Math.random() * (numberOfPlayers)) + 1;
+        this.player[turn-1].setPlayersTurn(true)
+        console.log("Player " + this.player[turn-1].getPlayerId() + " has player's turn set to TRUE")
+    }
+
     updateCurrentDieValue(value) {
         this.currentDieValue = value
     }
 
-    getCurrentPlayer() {
+    /**
+     * Helper function for calculateGameAction
+     * @return {number} the index of the player whose turn it currently is
+     */
+    getCurrentPlayerIndex() {
         return this.player.findIndex(player => player.playersTurn === true)
     }
 
-    getCurrentDieValue() {
-        return this.currentDieValue
-    }
-
+    /**
+     * Add a new token to the token array in Game
+     * @param tokenId the id of the token
+     * @param playerId the id of the player that owns the token
+     * @param fieldId the fieldId the token is currently placed on
+     * @param color the color of the token
+     */
     addToken(tokenId, playerId, fieldId, color) {
         this.tokens.push(new Token(tokenId, playerId, fieldId, color));
     }
@@ -106,7 +123,7 @@ class Game {
         let gCount = 0
         while (gLoop < neededFields) {
             //getGoalArrayIndex() returns
-            if (this.isFieldEmpty(board.goalArray[this.getGoalArrayIndex(this.getCurrentPlayer())][gLoop])) {
+            if (this.isFieldEmpty(board.goalArray[this.getGoalArrayIndex(this.getCurrentPlayerIndex())][gLoop])) {
                 gCount++
             } else {
                 break;
@@ -128,7 +145,7 @@ class Game {
         this.gameActions = []
 
         //calculate new values
-        let currentPlayer = this.getCurrentPlayer()
+        let currentPlayer = this.player[this.getCurrentPlayerIndex()]
         //die value available?
         if (this.currentDieValue === 0) {
             // it's the player's turn to roll the die
@@ -269,6 +286,3 @@ class Game {
 
 module.exports = Game;
 
-let board = new Board(4,4)
-let player = new Array()
-let game = new Game('test', player, 'classic', 'PREGAME')
