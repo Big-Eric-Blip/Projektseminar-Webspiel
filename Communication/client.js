@@ -314,15 +314,15 @@ function handleJoinGameResponse(response) {
 function startJoinedGame() {
     const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
     const playerName = document.getElementById('clientNameInput').value
-    //console.log(selectedColor)
-    
-    sendMessage({
-        type: 'pickColor',
-        gameId: currentGame.gameId,
-        playerColor: selectedColor,
-        playerName: playerName,
-        playerId: currentGame.playerId
-    });
+    if (playerName!= '' && selectedColor!= ''){
+        sendMessage({
+            type: 'pickColor',
+            gameId: currentGame.gameId,
+            playerColor: selectedColor,
+            playerName: playerName,
+            playerId: currentGame.playerId
+        });
+    }
 }
 
 function handlePickedColor(response) {

@@ -58,7 +58,6 @@ function checkClientMessage(message, playerId) {
                     });
                     let takenColors = []
                     for (const player of game.player) {
-                        console.log(player.color)
                         if (player.color !== "") {
                             takenColors.push(player.color)
                         }
@@ -76,11 +75,8 @@ function checkClientMessage(message, playerId) {
 
         case 'pickColor':
             for (const game of games) {
-                console.log("game: ", game)
                 if (game.gameId === message.gameId) {
                     for (const player of game.player) {
-                        console.log( player.color)
-                        //console.log("message:", message.playerId)
                         if (player.playerId === message.playerId) {
                             player.color = message.playerColor
                             player.name = message.playerName
