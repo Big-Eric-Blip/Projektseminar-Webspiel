@@ -34,14 +34,18 @@ function checkClientMessage(message, playerId) {
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType, "LOBBY");
             let player = new Player(playerId, message.playerColor, message.playerName);
+            
             addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
             games.push(game);
+            
             return {
                 type: 'createGame',
                 gameId: gameId,
-                playerId: playerId
+                playerId: playerId,
+                fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
             };
+
         case 'joinGame':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
@@ -59,19 +63,22 @@ function checkClientMessage(message, playerId) {
                     }
                     sendMessageToAllPlayers(game, {
                         type: "playerJoined",
-                        numberOfPlayers: game.player.length + 1
+                        numberOfPlayers: game.player.length + 1,
+                        fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     });
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
-                        playerId: playerId
+                        playerId: playerId,
+                        fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     };
                 }
             }
             return {
                 type: 'joinGame',
-                message: `There is no game with game id: ${(message.gameId === "" ? "empty game id" : message.gameId)}`
+                message: `There is no game with game id: ${(message.gameId === "" ? "empty game id" : message.gameId)}`,
+
             };
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
@@ -155,6 +162,8 @@ function sendMessageToAllPlayers(game, jsonMessage) {
         }
     }
 }
+
+
 
 function addTokensOnPlayerJoin(message, playerId, game) {
     for (const fields of board.homeArray) {
