@@ -6,10 +6,13 @@ let currentGame = {
     playerName: "",
     gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
+let availableGameActions = new Set;
+
 
 let socket = null;
 let isSocketOpen = false;
 const url = "ws://127.0.0.1:3000";
+const Renderer = require('../View/Renderer');
 
 function initWebSocketConnection() {
     socket = new WebSocket(url);
@@ -61,13 +64,19 @@ function fromServerMessage(event) {
         case 'leftGame':
             handleLeftGame(message);
             break;
+        case 'gameStarted':
+            handleGameStarted(message);
+            break;
         case 'pickedColor':
             handlePickedColor(message)
         case 'message':
             handleServerMessage(message);
             break;
+        case 'updateGame':
+            handleGameUpdate(message);
+            break;
         default:
-            console.log(`Sorry, we are out of ${message.type}.`);
+            console.log(`Client: Sorry, we are out of ${message.type}.`);
     }
 }
 
@@ -172,13 +181,12 @@ function returnToLandingPage() {
     setGameState('PRE_GAME')
 }
 
-//The following function may be not necessary?
 function startGame() {
     setGameState('GAME_RUNNING')
-    //sendMessage({
-    //    type: 'startGame'
-    //TODO implement full requiredJSON
-    //});
+    sendMessage({
+        type: 'startGame',
+        gameId: currentGame.gameId
+    });
 }
 
 function leaveGame() {
@@ -252,14 +260,21 @@ function endGame() {
 }
 
 function handleCreateGameResponse(response) {
-    document.getElementById("serverResponse").innerHTML = "Nice. You've created a game."
+    document.getElementById("inGameServerResponse").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
+
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
     document.getElementById("createGameButton").style.display = 'none';
-
+    renderer.fields = response.fields;
+    document.addEventListener("DOMContentLoaded", function () {
+        const renderer = new Renderer("myCanvas");
+    });
+    renderer.drawFields();
+    renderer.drawTokens();
+    document.getElementById('leaveGameButton').style.display = 'block';
 }
 
 function joinGame() {
@@ -269,11 +284,11 @@ function joinGame() {
         type: 'joinGame',
         gameId: currentGame.gameId
     });
+
 }
 
 
 function handleJoinGameResponse(response) {
-    let serverResponseText = document.getElementById("serverResponse");
     if (response.playerId) {
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
@@ -303,12 +318,27 @@ function handleJoinGameResponse(response) {
 
 
         currentGame.playerId = response.playerId;
+
+        let serverResponseText = document.getElementById("inGameServerResponse");
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
         setGameState('LOBBY');
+        document.getElementById('startGameButton').style.display = 'none';
+        document.getElementById('leaveGameButton').style.display = 'block';
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const renderer = new Renderer("myCanvas");
+
+        });
+        renderer.fields = response.fields;
+            renderer.drawFields();
+            renderer.drawTokens();
+        console.log(renderer.fields)
+
     } else {
-        console.log(response.message);
+        let serverResponseText = document.getElementById("joinGamePopupServerResponse");
         serverResponseText.innerHTML = response.message;
+        console.log(response.message);
     }
 }
 
@@ -337,6 +367,19 @@ function rollDice() {
     sendMessage({ type: 'rollDice' });
 }
 
+/**
+ * Sends a message to the server to initiate the execution of the chosen game action
+ * @param gameAction
+ */
+function chooseGameAction(gameAction) {
+    let action = 'text'
+    sendMessage({
+        type: 'action_' + action, //for example: action_ROLL_DIE
+
+
+    })
+}
+
 
 function handleRollDiceResponse(response) {
     console.log(response);
@@ -361,6 +404,27 @@ function moveToken(tokenId, dieValue) {
 
 }
 
+/**
+ * Gets the game update from the server and
+ * @param message
+ */
+function handleGameUpdate(message) {
+    console.log(message)
+    if (message.status !== currentGame.gameState) {
+        setGameState(message.status)
+    }
+    //update available game actions
+    let gameActions = message.gameActions
+    let tokens = message.tokens
+    let gameId = message.gameId
+    availableGameActions.add(gameActions)
+    //message: "You´ve started the game.",
+    //TODO: update board with current token positions
+
+    //availableGameActions = message.
+
+}
+
 function handleMoveTokenResponse(response) {
     console.log(response)
     console.log(response.dieValue)
@@ -368,7 +432,7 @@ function handleMoveTokenResponse(response) {
 }
 
 function handlePlayerJoinedResponse(message) {
-    document.getElementById("serverResponse").innerHTML =
+    document.getElementById("inGameServerResponse").innerHTML =
         "A new player joined your game. There are now " + message.numberOfPlayers + " players in your game."
 }
 
@@ -376,31 +440,37 @@ function handleAPlayerLeftGame(message) {
     const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
         ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
         (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
-    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
     console.log(serverResponseText)
     console.log("There are now " + message.numberOfPlayers + " players in your game.")
 }
 
 function handleLeftGame(message) {
     const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
-    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
     document.getElementById("gameId").innerHTML = "";
     console.log(serverResponseText);
+}
+
+function handleGameStarted(message) {
+//     todo show in response text or something like that
+    console.log(message)
+    document.getElementById("inGameServerResponse").innerHTML = message.message;
+    document.getElementById('rollDiceButton').style.display = 'block';
+
 }
 
 function handleServerMessage(response) {
     // TODO show message in game in grey block on the left or maybe implement chat and show it there
     const serverResponseText = response.message;
-    document.getElementById("serverResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
     console.log(serverResponseText);
 }
-},{}],2:[function(require,module,exports){
+},{"../View/Renderer":2}],2:[function(require,module,exports){
 class Renderer {
     constructor(canvasID) {
-        this.canvas = document.getElementById(canvasID);
-        this.ctx = this.canvas.getContext("2d");
-        this.small = 35;
-        this.big = 45;
+
+        this.scale = 1;
 
 
 
@@ -426,152 +496,80 @@ class Renderer {
             { tn: 'rt3', x: 950, y: 150, color: "red" },
             { tn: 'rt4', x: 1050, y: 150, color: "red" }
         ];
-        this.fields = [
-
-            // blue home
-            { fn: 'ba1', x: 50, y: 50, color: "blue" },
-            { fn: 'ba2', x: 50, y: 150, color: "blue" },
-            { fn: 'ba3', x: 150, y: 50, color: "blue" },
-            { fn: 'ba4', x: 150, y: 150, color: "blue" },
-            // blue safe
-            { fn: 'bi1', x: 150, y: 550, color: "blue" },
-            { fn: 'bi2', x: 250, y: 550, color: "blue" },
-            { fn: 'bi3', x: 350, y: 550, color: "blue" },
-            { fn: 'bi4', x: 450, y: 550, color: "blue" },
-            // green home
-            { fn: 'ga1', x: 950, y: 950, color: "green" },
-            { fn: 'ga2', x: 950, y: 1050, color: "green" },
-            { fn: 'ga3', x: 1050, y: 950, color: "green" },
-            { fn: 'ga4', x: 1050, y: 1050, color: "green" },
-            //green safe
-            { fn: 'gi1', x: 650, y: 550, color: "green" },
-            { fn: 'gi2', x: 750, y: 550, color: "green" },
-            { fn: 'gi3', x: 850, y: 550, color: "green" },
-            { fn: 'gi4', x: 950, y: 550, color: "green" },
-            //yellow home
-            { fn: 'ya1', x: 50, y: 950, color: "yellow" },
-            { fn: 'ya2', x: 50, y: 1050, color: "yellow" },
-            { fn: 'ya3', x: 150, y: 950, color: "yellow" },
-            { fn: 'ya4', x: 150, y: 1050, color: "yellow" },
-            // yellow safe
-            { fn: 'yi1', x: 550, y: 650, color: "yellow" },
-            { fn: 'yi2', x: 550, y: 750, color: "yellow" },
-            { fn: 'yi3', x: 550, y: 850, color: "yellow" },
-            { fn: 'yi4', x: 550, y: 950, color: "yellow" },
-            // red home
-            { fn: 'ra1', x: 950, y: 50, color: "red" },
-            { fn: 'ra2', x: 1050, y: 50, color: "red" },
-            { fn: 'ra3', x: 950, y: 150, color: "red" },
-            { fn: 'ra4', x: 1050, y: 150, color: "red" },
-            // red safe
-            { fn: 'ri1', x: 550, y: 150, color: "red" },
-            { fn: 'ri2', x: 550, y: 250, color: "red" },
-            { fn: 'ri3', x: 550, y: 350, color: "red" },
-            { fn: 'ri4', x: 550, y: 450, color: "red" },
-            // white or first of color
-            { fn: 'wp1', x: 50, y: 450, color: "blue" },
-            { fn: 'wp2', x: 150, y: 450, color: "white" },
-            { fn: 'wp3', x: 250, y: 450, color: "white" },
-            { fn: 'wp4', x: 350, y: 450, color: "white" },
-            { fn: 'wp5', x: 450, y: 450, color: "white" },
-            { fn: 'wp6', x: 450, y: 350, color: "white" },
-            { fn: 'wp7', x: 450, y: 250, color: "white" },
-            { fn: 'wp8', x: 450, y: 150, color: "white" },
-            { fn: 'wp9', x: 450, y: 50, color: "white" },
-            { fn: 'wp10', x: 550, y: 50, color: "white" },
-            { fn: 'wp11', x: 650, y: 50, color: "red" },
-            { fn: 'wp12', x: 650, y: 150, color: "white" },
-            { fn: 'wp13', x: 650, y: 250, color: "white" },
-            { fn: 'wp14', x: 650, y: 350, color: "white" },
-            { fn: 'wp15', x: 650, y: 450, color: "white" },
-            { fn: 'wp16', x: 750, y: 450, color: "white" },
-            { fn: 'wp17', x: 850, y: 450, color: "white" },
-            { fn: 'wp18', x: 950, y: 450, color: "white" },
-            { fn: 'wp19', x: 1050, y: 450, color: "white" },
-            { fn: 'wp20', x: 1050, y: 550, color: "white" },
-            { fn: 'wp21', x: 1050, y: 650, color: "green" },
-            { fn: 'wp22', x: 950, y: 650, color: "white" },
-            { fn: 'wp24', x: 850, y: 650, color: "white" },
-            { fn: 'wp25', x: 750, y: 650, color: "white" },
-            { fn: 'wp26', x: 650, y: 650, color: "white" },
-            { fn: 'wp27', x: 650, y: 750, color: "white" },
-            { fn: 'wp28', x: 650, y: 850, color: "white" },
-            { fn: 'wp29', x: 650, y: 950, color: "white" },
-            { fn: 'wp30', x: 650, y: 1050, color: "white" },
-            { fn: 'wp31', x: 550, y: 1050, color: "white" },
-            { fn: 'wp32', x: 450, y: 1050, color: "yellow" },
-            { fn: 'wp33', x: 450, y: 950, color: "white" },
-            { fn: 'wp34', x: 450, y: 850, color: "white" },
-            { fn: 'wp35', x: 450, y: 750, color: "white" },
-            { fn: 'wp36', x: 450, y: 650, color: "white" },
-            { fn: 'wp37', x: 350, y: 650, color: "white" },
-            { fn: 'wp38', x: 250, y: 650, color: "white" },
-            { fn: 'wp39', x: 150, y: 650, color: "white" },
-            { fn: 'wp40', x: 50, y: 650, color: "white" },
-            { fn: 'wp41', x: 50, y: 550, color: "white" },
-        ];
+        this.fields = [];
+        this.canvas = document.getElementById(canvasID);
+        this.ctx = this.canvas.getContext("2d");
 
         this.drawFields();
         this.drawTokens();
 
+
         this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
-
-
     }
 
 
     drawFields() {
-        let big = this.big;
+        console.log(this.fields)
         let ctx = this.ctx;
-
-        this.fields.forEach(function (draw) {
+        let size = 45 * this.scale;
+        this.fields.forEach((field) => {
             ctx.beginPath();
-            ctx.fillStyle = draw.color;
-            ctx.arc(draw.x, draw.y, big, 0, Math.PI * 2);
+            ctx.fillStyle = field.color;
+            ctx.arc(field.xCoord * this.scale, field.yCoord * this.scale, size, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
         });
     }
 
+
     drawTokens() {
-        let small = this.small;
+
         let ctx = this.ctx;
 
-        this.tokens.forEach(function (draw) {
-            ctx.beginPath();
-            ctx.fillStyle = draw.color;
-            ctx.fillRect(draw.x - small / 2, draw.y - small / 2, small, small);
 
+        let size = 35 * this.scale;
+
+        this.tokens.forEach((token) => {
+            ctx.beginPath();
+            ctx.scale(1, 1)
+            ctx.fillStyle = token.color;
+            ctx.fillRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
             ctx.strokeStyle = "black";
-            ctx.strokeRect(draw.x - small / 2, draw.y - small / 2, small, small);
+            ctx.strokeRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
             ctx.stroke();
         });
     }
 
     onCanvasClick(event) {
         const rect = this.canvas.getBoundingClientRect();
-        const clickX = event.clientX - rect.left;
-        const clickY = event.clientY - rect.top;
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const clickX = (event.clientX - rect.left) * scaleX;
+        const clickY = (event.clientY - rect.top) * scaleY;
+
+        const clickPoint = { x: clickX, y: clickY };
 
         this.tokens.forEach(token => {
-            if (this.isPointInRect({ x: clickX, y: clickY }, token)) {
+            // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
+            const tokenSize = 35 * this.scale;
+            const tokenX = token.x;
+            const tokenY = token.y;
+
+            // Überprüfen, ob der Klick innerhalb des Bereichs des Tokens liegt
+            if (
+                clickPoint.x >= tokenX - tokenSize / 2 &&
+                clickPoint.x <= tokenX + tokenSize / 2 &&
+                clickPoint.y >= tokenY - tokenSize / 2 &&
+                clickPoint.y <= tokenY + tokenSize / 2
+            ) {
                 console.log(`Game piece clicked:`, token);
                 this.moveToken(token);
             }
         });
     }
 
-    isPointInRect(point, token) {
-        return (
-            point.x >= token.x - this.small / 2 &&
-            point.x <= token.x + this.small / 2 &&
-            point.y >= token.y - this.small / 2 &&
-            point.y <= token.y + this.small / 2
-        );
-    }
 
-
-  moveToken(token) {
+    moveToken(token) {
         console.log('Moving token:', token);
 
         console.log('Token is valid. Proceeding with movement.');
@@ -586,95 +584,24 @@ class Renderer {
         console.log('New field:', newField);
 
 
-        token.x = newField.x;
-        token.y = newField.y;
+        token.x = newField.xCoord;
+        token.y = newField.yCoord;
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawFields();
         this.drawTokens();
 
-    }  
-
-
-/* 
-   moveToken(token) {
-        console.log('Moving token:', token);
-    
-        console.log('Token is valid. Proceeding with movement.');
-        const diceResultDiv = document.getElementById('resultDice');
-        const resultDice = parseInt(diceResultDiv.innerText);
-        console.log('Dice result:', resultDice);
-    
-        // Stellen Sie sicher, dass this.fields korrekt initialisiert ist
-        if (!this.fields || !Array.isArray(this.fields)) {
-            console.error('this.fields is not properly initialized:', this.fields);
-            return;
-        }
-    
-        // Überprüfen Sie, ob alle Felder korrekt initialisiert sind
-        this.fields.forEach((field, index) => {
-            if (!field || !field.fieldID) {
-                console.error(`Field at index ${index} is not properly initialized:`, field);
-            }
-        });
-    
-        // Zugriff auf das Board-Objekt
-        const board = this.board; // Stellen Sie sicher, dass das Board-Objekt korrekt initialisiert und zugewiesen ist
-        if (!board) {
-            console.error('Board object is not initialized.');
-            return;
-        }
-    
-        // Aktuelle Position des Tokens bestimmen
-        const currentField = board.gameArray.find(field => field.x === token.x && field.y === token.y);
-    
-        if (!currentField) {
-            // Token befindet sich noch im homeArray, setze auf Startposition
-            const startingFieldID = board.getStartingPosition(token.color);
-            const startingField = board.gameArray.find(field => field.fieldID === startingFieldID);
-            console.log('Setting token to starting field:', startingField);
-    
-            if (startingField) {
-                token.x = startingField.x;
-                token.y = startingField.y;
-            } else {
-                console.error('Starting field not found for color:', token.color);
-            }
-        } else {
-            // Token befindet sich bereits im gameArray, bewege um das Würfelergebnis weiter
-            const newField = board.getNextPosition(currentField.fieldID, resultDice);
-            console.log('New field:', newField);
-    
-            if (newField) {
-                token.x = newField.x;
-                token.y = newField.y;
-            } else {
-                console.error('New field not found.');
-            }
-        }
-    
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawFields();
-        this.drawTokens();
-    } 
-    
-
- */
-
-
-
-
+    }
 }
 
 
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
-    const renderer = new Renderer("myCanvas");
-    
-});
+    window.renderer = new Renderer("myCanvas");
 
+
+})
+
+module.exports = Renderer;
 },{}],3:[function(require,module,exports){
 const client = require('./Communication/client');
 const board =  require('./View/Renderer');

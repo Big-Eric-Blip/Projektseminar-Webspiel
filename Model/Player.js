@@ -14,7 +14,23 @@ class Player {
     }
 
     //TODO: implement getters and setters
-    
+
+    setPlayersTurn(change) {
+        if (change === true || change === false) {
+            this.playersTurn = change
+        } else {
+            console.log("Error: the player's turn for " + this.playerId + " is neither TRUE NOR FALSE")
+        }
+    }
+
+    getColor() {
+        return this.color;
+    }
+    getPlayerId() {
+        return this. playerId
+    }
+
+
 
 }
 

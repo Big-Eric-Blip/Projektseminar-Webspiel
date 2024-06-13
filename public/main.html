@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>Stay cool, buddy!</title>
@@ -25,12 +24,7 @@
         </nav>
     </div>
 </header>
-
-<!--Communication panel-->
-
-
 <body id="body">
-<!-- <h1>Stay cool, buddy!</h1>-->
 <aside class="panel-left lobby game-running game-over">
     <button class="lobby test-button" id="testlobby">test lobby visibility</button>
     <button class="game-running test-button">test game running visibility</button>
@@ -39,13 +33,12 @@
     <button id="rollDiceButton" class="server-communication-button panel-button game-running">Roll the Dice</button>
     <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave Game</button>
     <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
-    <h3 id="serverResponse"></h3>
+    <h3 id="inGameServerResponse"></h3>
     <p id="gameId"></p>
 </aside>
-
 <div class="main-area" id="main-area">
     <!---->
-    <div id="resultDice">Hier wird ergebnis angezeigt</div>
+    <div id="resultDice">Hier wird dein Würfelergebnis angezeigt</div>
     <br>
     <br>
 
@@ -55,6 +48,7 @@
             <h2>Join an existing game</h2>
             <h3>Please insert your URL/ID-Code:</h3>
             <input type="text" id="joinGameInputId" placeholder="Enter game id">
+            <h3 id="joinGamePopupServerResponse"></h3>
             <div class="button-container">
                 <button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
                 <button id="closeJoinGamePopupButton" class="server-communication-button popup-button">Back</button>
@@ -209,5 +203,4 @@
 </div>
 <br>
 </body>
-
 </html>
