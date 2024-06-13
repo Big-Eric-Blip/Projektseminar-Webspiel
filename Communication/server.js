@@ -77,7 +77,7 @@ function checkClientMessage(message, playerId) {
                     return {
                         type: 'joinGame',
                         playerId: playerId,
-                        takenColors: takenColors
+                        takenColors: takenColors,
                         fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     };
                 }
