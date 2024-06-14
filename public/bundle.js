@@ -6,6 +6,7 @@ let currentGame = {
 }
 let availableGameActions = new Set;
 
+let dieColor;
 
 let socket = null;
 let isSocketOpen = false;
@@ -141,6 +142,9 @@ function closeCreateGamePopup() {
 function createGame() {
     setGameState("LOBBY")
     const selectedColor = document.querySelector('input[name="playerColor"]:checked');
+    dieColor = document.querySelector('input[name="dieOption"]:checked').value;
+    changeRollDiceImage("./pictures/"+dieColor+".png")
+
     // TODO set parameter to not static values
     sendMessage({
         type: 'createGame',
@@ -150,6 +154,14 @@ function createGame() {
     });
     //the game state influences the CSS of the game
 
+}
+
+// Function to change the roll dice button image
+function changeRollDiceImage(newSrc) {
+    const rollDiceButtonImg = document.querySelector('#rollDiceButton img');
+    if (rollDiceButtonImg) {
+        rollDiceButtonImg.src = newSrc;
+    }
 }
 
 function returnToLandingPage() {
@@ -310,13 +322,38 @@ function chooseGameAction(gameAction) {
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
-
+    dieAnimation(response.dieValue)
+/*
     const diceResultDiv = document.getElementById('resultDice');
     if (diceResultDiv) {
         diceResultDiv.textContent = `${response.dieValue}`;
     } else {
         console.error('Element with id "diceResult" not found.');
-    }
+    }*/
+}
+
+function dieAnimation(final) {
+    const images = [
+        'pictures/'+dieColor+'1.png',
+        'pictures/'+dieColor+'2.png',
+        'pictures/'+dieColor+'3.png',
+        'pictures/'+dieColor+'4.png',
+        'pictures/'+dieColor+'5.png',
+        'pictures/'+dieColor+'6.png'
+    ];
+    let currentIndex = 0;
+    const intervalTime = 100; // Time between image changes in milliseconds
+    const totalDuration = 1000; // Total duration of the animation in milliseconds
+
+    const intervalId = setInterval(() => {
+        changeRollDiceImage(images[currentIndex]);
+        currentIndex = (currentIndex + 1) % images.length;
+    }, intervalTime);
+
+    setTimeout(() => {
+        clearInterval(intervalId);
+        changeRollDiceImage('pictures/'+dieColor+final+'.png');
+    }, totalDuration);
 }
 
 

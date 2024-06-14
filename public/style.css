@@ -180,7 +180,15 @@ body {
     display: none;
 }
 
-
+#rollDiceButton img {
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: medium;
+    width: 90%;
+    height: auto;
+    padding:10px
+}
 
 #joinGameInputId {
     width: 80%; /* Adjust width as needed */
