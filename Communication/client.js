@@ -1,10 +1,9 @@
 let currentGame = {
     gameId: "",
     playerId: "",
-    gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    gameState: "PRE_GAME", //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
-let availableGameActions = new Set;
-
+let availableGameActions = [];
 
 let socket = null;
 let isSocketOpen = false;
@@ -339,13 +338,20 @@ function handleGameUpdate(message) {
         setGameState(message.status)
     }
     //update available game actions
-    let gameActions = message.gameActions
+    let gameActions = JSON.parse(message.gameActions)
     let tokens = message.tokens
     let gameId = message.gameId
-    availableGameActions.add(gameActions)
+    //clear out previously available game actions
+    availableGameActions = []
+    //add gameActions from the message
+    gameActions.forEach(gameAction => {
+        availableGameActions.push({playerId: gameAction.playerId, action: gameAction.action, tokenId:gameAction.tokenId,
+            amount: gameAction.amount, fieldId: gameAction.fieldId})
+        console.log(gameAction)
+    })
     //message: "You´ve started the game.",
     //TODO: update board with current token positions
-
+    console.log(availableGameActions[0].action)
     //availableGameActions = message.
 
 }
