@@ -73,6 +73,7 @@ function checkClientMessage(message, playerId) {
                         }
                     }
                     let player = new Player(playerId, "", "");
+                    addTokensOnPlayerJoin(message, playerId, game);
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
