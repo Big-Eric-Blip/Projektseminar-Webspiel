@@ -1,10 +1,9 @@
+//import { validateMoveToken} from "../Communication/client";
+
 class Renderer {
     constructor(canvasID) {
 
         this.scale = 1;
-
-
-
         this.tokens = [
             // blue token
             { tn: 'bt1', x: 50, y: 50, color: "blue" },
@@ -30,11 +29,15 @@ class Renderer {
         this.fields = [];
         this.canvas = document.getElementById(canvasID);
         this.ctx = this.canvas.getContext("2d");
+        this.currentToken = ""
 
         this.drawFields();
         this.drawTokens();
 
 
+        //this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
+    }
+    listenToTheCanvas() {
         this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
     }
 
@@ -95,8 +98,15 @@ class Renderer {
             ) {
                 console.log(`Game piece clicked:`, token);
                 this.moveToken(token);
+                this.currentToken = token
+                return token.tn
             }
         });
+        return "test false"
+    }
+
+    getCurrentToken(){
+        return this.currentToken
     }
 
 

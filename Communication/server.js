@@ -111,13 +111,15 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.status = "GAME_RUNNING";
+                    game.initializePlayersTurn()
+                    game.calculateAvailableGameActions(board)
                     sendMessageToAllPlayers(game, {
                         type: 'gameStarted',
                         gameId: game.gameId,
-                        message: 'The game started!'
+                        message: 'The game started!',
+                        gameActions: JSON.stringify(game.gameActions),
+                        tokens: JSON.stringify(game.tokens)
                     });
-                    game.initializePlayersTurn()
-                    game.calculateAvailableGameActions(board)
                     return {
                         type: "updateGame",
                         message: "You´ve started the game.",
