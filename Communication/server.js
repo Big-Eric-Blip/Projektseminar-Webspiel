@@ -73,7 +73,6 @@ function checkClientMessage(message, playerId) {
                         }
                     }
                     let player = new Player(playerId, "", "");
-                    addTokensOnPlayerJoin(message, playerId, game);
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
@@ -96,6 +95,7 @@ function checkClientMessage(message, playerId) {
                         if (player.playerId === message.playerId) {
                             player.color = message.playerColor
                             player.name = message.playerName
+                            addTokensOnPlayerJoin(message, playerId, game);
                             return { type: 'pickedColor', message: `Successfully picked color!` }
                         }
                     }
