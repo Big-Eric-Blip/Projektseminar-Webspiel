@@ -132,7 +132,7 @@ class Board {
 
 
     getFieldType(fieldId) {
-        switch (fieldId.substring(2)) {
+        switch (fieldId.substring(1,2)) {
             case 'i':
                 return "GOAL"
             case 't':
