@@ -30,7 +30,9 @@
     <button class="game-running test-button">test game running visibility</button>
     <button class="game-over test-button">test game over visibility</button>
     <button id="startGameButton" class="server-communication-button panel-button lobby">Start Game</button>
-    <button id="rollDiceButton" class="server-communication-button panel-button game-running">Roll the Dice</button>
+    <button id="rollDiceButton" class="server-communication-button game-running">
+        <img src="pictures/dieBl.png" alt="Roll Dice">
+    </button>
     <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave Game</button>
     <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
     <h3 id="inGameServerResponse"></h3>
@@ -38,7 +40,7 @@
 </aside>
 <div class="main-area" id="main-area">
     <!---->
-    <div id="resultDice">Hier wird dein Würfelergebnis angezeigt</div>
+    <!--<div id="resultDice" display='none'>Hier wird dein Würfelergebnis angezeigt</div>-->
     <br>
     <br>
 
@@ -87,31 +89,31 @@
             <h3>Choose your Die Skin</h3>
             <form>
                 <label>
-                    <input type="radio" name="dieOption" value="1">
+                    <input type="radio" name="dieOptionClient" value="dieBl">
                     <img src="./pictures/dieBl.png" alt="Blue Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="2" checked>
+                    <input type="radio" name="dieOptionClient" value="dieBlck" checked>
                     <img src="./pictures/dieBlck.png" alt="Black Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="3">
+                    <input type="radio" name="dieOptionClient" value="diePurp">
                     <img src="./pictures/diePurp.png" alt="Purple Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="4">
+                    <input type="radio" name="dieOptionClient" value="dieGrn">
                     <img src="./pictures/dieGrn.png" alt="Green Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="5">
+                    <input type="radio" name="dieOptionClient" value="dieYlw">
                     <img src="./pictures/dieYlw.png" alt="Yellow Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="6">
+                    <input type="radio" name="dieOptionClient" value="dieTurq">
                     <img src="./pictures/dieTurq.png" alt="Turquoise Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="7">
+                    <input type="radio" name="dieOptionClient" value="dieRed">
                     <img src="./pictures/dieRed.png" alt="Red Die">
                 </label>
             </form>
@@ -152,31 +154,31 @@
             <h3>Choose your Die Skin</h3>
             <form>
                 <label>
-                    <input type="radio" name="dieOption" value="1">
+                    <input type="radio" name="dieOptionServer" value="dieBl">
                     <img src="./pictures/dieBl.png" alt="Blue Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="2" checked>
+                    <input type="radio" name="dieOptionServer" value="dieBlck" checked>
                     <img src="./pictures/dieBlck.png" alt="Black Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="3">
+                    <input type="radio" name="dieOptionServer" value="diePurp">
                     <img src="./pictures/diePurp.png" alt="Purple Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="4">
+                    <input type="radio" name="dieOptionServer" value="dieGrn">
                     <img src="./pictures/dieGrn.png" alt="Green Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="5">
+                    <input type="radio" name="dieOptionServer" value="dieYlw">
                     <img src="./pictures/dieYlw.png" alt="Yellow Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="6">
+                    <input type="radio" name="dieOptionServer" value="dieTurq">
                     <img src="./pictures/dieTurq.png" alt="Turquoise Die">
                 </label>
                 <label>
-                    <input type="radio" name="dieOption" value="7">
+                    <input type="radio" name="dieOptionServer" value="dieRed">
                     <img src="./pictures/dieRed.png" alt="Red Die">
                 </label>
             </form>

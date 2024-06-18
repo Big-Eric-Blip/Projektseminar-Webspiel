@@ -7,6 +7,8 @@ let currentGame = {
 }
 let availableGameActions = [];
 
+let dieColor;
+
 let socket = null;
 let isSocketOpen = false;
 const url = "ws://127.0.0.1:3000";
@@ -158,6 +160,10 @@ function createGame() {
 
     const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
     const playerName = document.getElementById('adminNameInput').value;
+    dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
+    console.log(dieColor);
+    changeRollDiceImage("./pictures/"+dieColor+".png")
+
     if (playerName != '') {
 
         setGameState("LOBBY")
@@ -173,6 +179,14 @@ function createGame() {
 
     //the game state influences the CSS of the game
 
+}
+
+// Function to change the roll dice button image
+function changeRollDiceImage(newSrc) {
+    const rollDiceButtonImg = document.querySelector('#rollDiceButton img');
+    if (rollDiceButtonImg) {
+        rollDiceButtonImg.src = newSrc;
+    }
 }
 
 function returnToLandingPage() {
@@ -343,6 +357,10 @@ function handleJoinGameResponse(response) {
 function startJoinedGame() {
     const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
     const playerName = document.getElementById('clientNameInput').value
+    dieColor = document.querySelector('input[name="dieOptionClient"]:checked').value;
+    changeRollDiceImage("./pictures/"+dieColor+".png")
+    console.log(dieColor);
+
     if (playerName!= '' && selectedColor!= ''){
         sendMessage({
             type: 'pickColor',
@@ -440,13 +458,38 @@ function chooseGameAction(gameAction) {
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
-
+    dieAnimation(response.dieValue)
+/*
     const diceResultDiv = document.getElementById('resultDice');
     if (diceResultDiv) {
         diceResultDiv.textContent = `${response.dieValue}`;
     } else {
         console.error('Element with id "diceResult" not found.');
-    }
+    }*/
+}
+
+function dieAnimation(final) {
+    const images = [
+        'pictures/'+dieColor+'1.png',
+        'pictures/'+dieColor+'2.png',
+        'pictures/'+dieColor+'3.png',
+        'pictures/'+dieColor+'4.png',
+        'pictures/'+dieColor+'5.png',
+        'pictures/'+dieColor+'6.png'
+    ];
+    let currentIndex = 0;
+    const intervalTime = 100; // Time between image changes in milliseconds
+    const totalDuration = 1000; // Total duration of the animation in milliseconds
+
+    const intervalId = setInterval(() => {
+        changeRollDiceImage(images[currentIndex]);
+        currentIndex = (currentIndex + 1) % images.length;
+    }, intervalTime);
+
+    setTimeout(() => {
+        clearInterval(intervalId);
+        changeRollDiceImage('pictures/'+dieColor+final+'.png');
+    }, totalDuration);
 }
 
 

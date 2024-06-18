@@ -101,6 +101,7 @@ body {
     padding: 8px 20px;
     display: none;
     margin-bottom: 15px;
+    margin-top: 15px;
 }
 
 .test-button {
@@ -180,6 +181,16 @@ body {
     display: none;
 }
 
+#rollDiceButton img {
+    color: whitesmoke;
+    background-color: whitesmoke;
+    border: none;
+    border-radius: 10px;
+    font-size: medium;
+    width: 75%;
+    height: auto;
+    padding: 8px 20px;
+}
 
 
 #joinGameInputId {

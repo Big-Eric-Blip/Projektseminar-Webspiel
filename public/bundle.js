@@ -6,8 +6,9 @@ let currentGame = {
     playerName: "",
     gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
-let availableGameActions = new Set;
+let availableGameActions = [];
 
+let dieColor;
 
 let socket = null;
 let isSocketOpen = false;
@@ -160,6 +161,10 @@ function createGame() {
 
     const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
     const playerName = document.getElementById('adminNameInput').value;
+    dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
+    console.log(dieColor);
+    changeRollDiceImage("./pictures/"+dieColor+".png")
+
     if (playerName != '') {
 
         setGameState("LOBBY")
@@ -175,6 +180,14 @@ function createGame() {
 
     //the game state influences the CSS of the game
 
+}
+
+// Function to change the roll dice button image
+function changeRollDiceImage(newSrc) {
+    const rollDiceButtonImg = document.querySelector('#rollDiceButton img');
+    if (rollDiceButtonImg) {
+        rollDiceButtonImg.src = newSrc;
+    }
 }
 
 function returnToLandingPage() {
@@ -345,6 +358,10 @@ function handleJoinGameResponse(response) {
 function startJoinedGame() {
     const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
     const playerName = document.getElementById('clientNameInput').value
+    dieColor = document.querySelector('input[name="dieOptionClient"]:checked').value;
+    changeRollDiceImage("./pictures/"+dieColor+".png")
+    console.log(dieColor);
+
     if (playerName!= '' && selectedColor!= ''){
         sendMessage({
             type: 'pickColor',
@@ -364,12 +381,70 @@ function handlePickedColor(response) {
 
 
 function rollDice() {
-    sendMessage({ type: 'rollDice' });
+    //check if action allowed
+    if(isPlayerEligibleForGameAction('ROLL_DIE')) {
+        sendMessage({ type: 'rollDice' });
+    } else {
+        //send message to the sideboard
+        console.log("It's not your turn.")
+    }
+
+}
+
+/**
+ * Checks if the player of this session is eligible to complete
+ * a given action at this stage of the game
+ * @param {string} action the action the player wants to perform
+ * @return {boolean}
+ */
+function isPlayerEligibleForGameAction(action) {
+    for(let i = 0; i < availableGameActions.length; i++) {
+        if(currentGame.playerId === availableGameActions[i].playerId) {
+            if(availableGameActions[i].action === action) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+/**
+ * Checks whether the player currently has any available game actions
+ * @return {boolean}
+ */
+function isPlayerEligible() {
+    for(let i = 0; i < availableGameActions.length; i++) {
+        if(currentGame.playerId === availableGameActions[i].playerId) {
+                return true
+
+        }
+    }
+    return false
+}
+
+/**
+ * Checks whether the current player can move a given token
+ * if the player is not eligible or the token can't be moved, this is logged to the console
+ * @param {string} tokenId the token to be moved
+ * @return {boolean} true if the token can be moved
+ */
+function validateMoveToken(tokenId) {
+    if(isPlayerEligible()) {
+        for(let i = 0; i<availableGameActions.length;i++) {
+            if(availableGameActions[i].tokenId === tokenId) {
+                return true
+            }
+        }
+        console.log("This move is not possible!")
+    } else {
+        console.log("It's not your turn to play!")
+        return false
+    }
 }
 
 /**
  * Sends a message to the server to initiate the execution of the chosen game action
- * @param gameAction
+ * @param {string} gameAction
  */
 function chooseGameAction(gameAction) {
     let action = 'text'
@@ -384,13 +459,38 @@ function chooseGameAction(gameAction) {
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
-
+    dieAnimation(response.dieValue)
+/*
     const diceResultDiv = document.getElementById('resultDice');
     if (diceResultDiv) {
         diceResultDiv.textContent = `${response.dieValue}`;
     } else {
         console.error('Element with id "diceResult" not found.');
-    }
+    }*/
+}
+
+function dieAnimation(final) {
+    const images = [
+        'pictures/'+dieColor+'1.png',
+        'pictures/'+dieColor+'2.png',
+        'pictures/'+dieColor+'3.png',
+        'pictures/'+dieColor+'4.png',
+        'pictures/'+dieColor+'5.png',
+        'pictures/'+dieColor+'6.png'
+    ];
+    let currentIndex = 0;
+    const intervalTime = 100; // Time between image changes in milliseconds
+    const totalDuration = 1000; // Total duration of the animation in milliseconds
+
+    const intervalId = setInterval(() => {
+        changeRollDiceImage(images[currentIndex]);
+        currentIndex = (currentIndex + 1) % images.length;
+    }, intervalTime);
+
+    setTimeout(() => {
+        clearInterval(intervalId);
+        changeRollDiceImage('pictures/'+dieColor+final+'.png');
+    }, totalDuration);
 }
 
 
@@ -414,14 +514,20 @@ function handleGameUpdate(message) {
         setGameState(message.status)
     }
     //update available game actions
-    let gameActions = message.gameActions
     let tokens = message.tokens
     let gameId = message.gameId
-    availableGameActions.add(gameActions)
-    //message: "You´ve started the game.",
+    let gameActions = JSON.parse(message.gameActions)
+    //clear out previously available game actions
+    availableGameActions = []
+    //add gameActions from the message
+    gameActions.forEach(gameAction => {
+        availableGameActions.push({playerId: gameAction.playerId, action: gameAction.action, tokenId:gameAction.tokenId,
+            amount: gameAction.amount, fieldId: gameAction.fieldId})
+        console.log(gameAction)
+    })
+    //example for how to access values from the array
+    console.log(availableGameActions[0].action)
     //TODO: update board with current token positions
-
-    //availableGameActions = message.
 
 }
 
