@@ -347,10 +347,6 @@ function initRenderer(response) {
     document.addEventListener("DOMContentLoaded", function () {
         const renderer = new Renderer("myCanvas");
     });
-    //renderer.canvas.addEventListener('click', function (e) {
-    //    let res = renderer.onCanvasClick(e)
-    //    console.log("result of canvas experiment: ",res)
-    //});
 
     renderer.canvas.addEventListener('click', function (e) {
         onCanvasClick(e)})

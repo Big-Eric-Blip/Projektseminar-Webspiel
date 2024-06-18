@@ -1,4 +1,3 @@
-//import { validateMoveToken} from "../Communication/client";
 
 class Renderer {
     constructor(canvasID) {
@@ -29,16 +28,10 @@ class Renderer {
         this.fields = [];
         this.canvas = document.getElementById(canvasID);
         this.ctx = this.canvas.getContext("2d");
-        this.currentToken = ""
 
         this.drawFields();
         this.drawTokens();
 
-
-        //this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
-    }
-    listenToTheCanvas() {
-        this.canvas.addEventListener('click', this.onCanvasClick.bind(this));
     }
 
 
@@ -73,73 +66,10 @@ class Renderer {
             ctx.stroke();
         });
     }
-
-    onCanvasClick(event) {
-        const rect = this.canvas.getBoundingClientRect();
-        const scaleX = this.canvas.width / rect.width;
-        const scaleY = this.canvas.height / rect.height;
-        const clickX = (event.clientX - rect.left) * scaleX;
-        const clickY = (event.clientY - rect.top) * scaleY;
-
-        const clickPoint = { x: clickX, y: clickY };
-
-        this.tokens.forEach(token => {
-            // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
-            const tokenSize = 35 * this.scale;
-            const tokenX = token.x;
-            const tokenY = token.y;
-
-            // Überprüfen, ob der Klick innerhalb des Bereichs des Tokens liegt
-            if (
-                clickPoint.x >= tokenX - tokenSize / 2 &&
-                clickPoint.x <= tokenX + tokenSize / 2 &&
-                clickPoint.y >= tokenY - tokenSize / 2 &&
-                clickPoint.y <= tokenY + tokenSize / 2
-            ) {
-                console.log(`Game piece clicked:`, token);
-                this.moveToken(token);
-                this.currentToken = token
-                return token.tn
-            }
-        });
-        return "test false"
-    }
-
-    getCurrentToken(){
-        return this.currentToken
-    }
-
-
-    moveToken(token) {
-        console.log('Moving token:', token);
-
-        console.log('Token is valid. Proceeding with movement.');
-        const diceResultDiv = document.getElementById('resultDice');
-        const resultDice = parseInt(diceResultDiv.innerText);
-        console.log('Dice result:', resultDice);
-        const currentIndex = this.fields.findIndex(field => field.x === token.x && field.y === token.y);
-        console.log('Current index:', currentIndex);
-        const newIndex = (currentIndex + resultDice) % this.fields.length;
-        console.log('New index:', newIndex);
-        const newField = this.fields[newIndex];
-        console.log('New field:', newField);
-
-
-        token.x = newField.xCoord;
-        token.y = newField.yCoord;
-
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawFields();
-        this.drawTokens();
-
-    }
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
     window.renderer = new Renderer("myCanvas");
-
-
 })
 
 module.exports = Renderer;
