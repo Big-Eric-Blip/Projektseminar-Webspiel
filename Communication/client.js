@@ -73,6 +73,8 @@ function fromServerMessage(event) {
             break;
         case 'pickedColor':
             handlePickedColor(message)
+        case 'colorTaken':
+            handleColorTaken(message)
         case 'message':
             handleServerMessage(message);
             break;
@@ -149,6 +151,7 @@ function openCreateGamePopup() {
 }
 
 function closeCreateGamePopup() {
+    document.getElementById('createGameErrorMessage').textContent = '';
     document.getElementById('createGamePopup').style.display = 'none';
 }
 
@@ -179,6 +182,9 @@ function createGame() {
             playerName: playerName,
             playerColor: selectedColor
         });
+    } else {
+        document.getElementById('createGameErrorMessage').textContent = 'Do not forget to Enter a Name!'
+        makeTextBlink('createGameErrorMessage')
     }
 
     //the game state influences the CSS of the game
@@ -191,6 +197,25 @@ function changeRollDiceImage(newSrc) {
     if (rollDiceButtonImg) {
         rollDiceButtonImg.src = newSrc;
     }
+}
+
+function makeTextBlink(elementId) {
+    const element = document.getElementById(elementId);
+    let blinkCount = 0;
+
+    const blinkInterval = setInterval(() => {
+        if (blinkCount >= 5) {
+            clearInterval(blinkInterval);
+        } else {
+            if (element.style.color === 'black') {
+                element.style.color = 'red';
+            } else {
+                element.style.color = 'black';
+            }
+            blinkCount++;
+        }
+    }, 100);
+    blinkCount = 0
 }
 
 function returnToLandingPage() {
@@ -298,6 +323,31 @@ function joinGame() {
 
 }
 
+function handleColorTaken(response) {
+    if (response.color == "blue") {
+        document.getElementById('blueOption').querySelector('input').disabled = true
+        document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
+    }
+
+    if (response.color == "yellow") {
+        document.getElementById('yellowOption').querySelector('input').disabled = true
+        document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
+    }
+
+    if (response.color == "green") {
+        document.getElementById('greenOption').querySelector('input').disabled = true
+        document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
+    }
+
+    if (response.color == "red") {
+        document.getElementById('redOption').querySelector('input').disabled = true
+        document.getElementById('redImage').src = "pictures/figureRedCross.png"
+
+    }
+    document.getElementById('joinGameErrorMessage').textContent = 'This color is already taken! Please choose another one.'
+    makeTextBlink('joinGameErrorMessage')
+}
+
 function handleJoinGameResponse(response) {
     if (response.playerId) {
         document.getElementById('joinGamePopup').style.display = 'none'
@@ -359,20 +409,37 @@ function initRenderer(response) {
 }
 
 function startJoinedGame() {
-    const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
-    const playerName = document.getElementById('clientNameInput').value
-    dieColor = document.querySelector('input[name="dieOptionClient"]:checked').value;
-    changeRollDiceImage("./pictures/" + dieColor + ".png")
-    console.log(dieColor);
+    const selectedColorElement = document.querySelector('input[name="clientColor"]:checked');
+    const selectedColor = selectedColorElement ? selectedColorElement.value : null;
+    const playerName = document.getElementById('clientNameInput').value;
+    const dieColorElement = document.querySelector('input[name="dieOptionClient"]:checked');
+    const dieColor = dieColorElement ? dieColorElement.value : null;
 
-    if (playerName != '' && selectedColor != '') {
+    if (dieColor) {
+        changeRollDiceImage("./pictures/" + dieColor + ".png");
+    }
+
+    if (playerName !== '' && selectedColor !== null) {
         sendMessage({
-            type: 'pickColor',
+            type: 'tryPickColor',
             gameId: currentGame.gameId,
             playerColor: selectedColor,
             playerName: playerName,
             playerId: currentGame.playerId
         });
+    } else {
+        let errorMessage = 'Do not forget to ';
+        if (playerName === '') {
+            errorMessage += 'Enter a Name ';
+        }
+        if (selectedColor === null) {
+            if (playerName === '') {
+                errorMessage += 'and ';
+            }
+            errorMessage += 'Pick an available Color!';
+        }
+        document.getElementById('joinGameErrorMessage').textContent = errorMessage;
+        makeTextBlink('joinGameErrorMessage');
     }
 }
 
