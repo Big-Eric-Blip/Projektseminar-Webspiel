@@ -1,9 +1,9 @@
 let currentGame = {
     gameId: "",
     playerId: "",
-    gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    gameState: "PRE_GAME", //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
-let availableGameActions = new Set;
+let availableGameActions = [];
 
 let dieColor;
 
@@ -301,12 +301,71 @@ function handleJoinGameResponse(response) {
 }
 
 function rollDice() {
-    sendMessage({ type: 'rollDice' });
+    //check if action allowed
+    if(isPlayerEligibleForGameAction('ROLL_DIE')) {
+        sendMessage({ type: 'rollDice' });
+    } else {
+        //send message to the sideboard
+        console.log("It's not your turn.")
+    }
+
+}
+
+/**
+ * Checks if the player of this session is eligible to complete
+ * a given action at this stage of the game
+ * @param {string} action the action the player wants to perform
+ * @return {boolean}
+ */
+function isPlayerEligibleForGameAction(action) {
+    for(let i = 0; i < availableGameActions.length; i++) {
+        if(currentGame.playerId === availableGameActions[i].playerId) {
+            if(action) {}
+            if(availableGameActions[i].action === action) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+/**
+ * Checks whether the player currently has any available game actions
+ * @return {boolean}
+ */
+function isPlayerEligible() {
+    for(let i = 0; i < availableGameActions.length; i++) {
+        if(currentGame.playerId === availableGameActions[i].playerId) {
+                return true
+
+        }
+    }
+    return false
+}
+
+/**
+ * Checks whether the current player can move a given token
+ * if the player is not eligible or the token can't be moved, this is logged to the console
+ * @param {string} tokenId the token to be moved
+ * @return {boolean} true if the token can be moved
+ */
+function validateMoveToken(tokenId) {
+    if(isPlayerEligible()) {
+        for(let i = 0; i<availableGameActions.length;i++) {
+            if(availableGameActions[i].tokenId === tokenId) {
+                return true
+            }
+        }
+        console.log("This move is not possible!")
+    } else {
+        console.log("It's not your turn to play!")
+        return false
+    }
 }
 
 /**
  * Sends a message to the server to initiate the execution of the chosen game action
- * @param gameAction
+ * @param {string} gameAction
  */
 function chooseGameAction(gameAction) {
     let action = 'text'
@@ -376,14 +435,20 @@ function handleGameUpdate(message) {
         setGameState(message.status)
     }
     //update available game actions
-    let gameActions = message.gameActions
     let tokens = message.tokens
     let gameId = message.gameId
-    availableGameActions.add(gameActions)
-    //message: "You´ve started the game.",
+    let gameActions = JSON.parse(message.gameActions)
+    //clear out previously available game actions
+    availableGameActions = []
+    //add gameActions from the message
+    gameActions.forEach(gameAction => {
+        availableGameActions.push({playerId: gameAction.playerId, action: gameAction.action, tokenId:gameAction.tokenId,
+            amount: gameAction.amount, fieldId: gameAction.fieldId})
+        console.log(gameAction)
+    })
+    //example for how to access values from the array
+    console.log(availableGameActions[0].action)
     //TODO: update board with current token positions
-
-    //availableGameActions = message.
 
 }
 
