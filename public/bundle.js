@@ -400,7 +400,6 @@ function rollDice() {
 function isPlayerEligibleForGameAction(action) {
     for(let i = 0; i < availableGameActions.length; i++) {
         if(currentGame.playerId === availableGameActions[i].playerId) {
-            if(action) {}
             if(availableGameActions[i].action === action) {
                 return true
             }
