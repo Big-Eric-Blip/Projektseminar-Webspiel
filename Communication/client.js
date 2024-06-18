@@ -291,6 +291,8 @@ function setGameRunning() {
     const gameRunningElements = document.querySelectorAll('.game-running')
     lobbyElements.forEach((element) => element.style.display = 'none')
     gameRunningElements.forEach((element) => element.style.display = 'block')
+    // Don't show the game id when the game has already started
+    document.getElementById("gameId").innerHTML = ""
 }
 
 function endGame() {
@@ -413,7 +415,7 @@ function startJoinedGame() {
     const selectedColor = selectedColorElement ? selectedColorElement.value : null;
     const playerName = document.getElementById('clientNameInput').value;
     const dieColorElement = document.querySelector('input[name="dieOptionClient"]:checked');
-    const dieColor = dieColorElement ? dieColorElement.value : null;
+    dieColor = dieColorElement ? dieColorElement.value : null;
 
     if (dieColor) {
         changeRollDiceImage("./pictures/" + dieColor + ".png");
