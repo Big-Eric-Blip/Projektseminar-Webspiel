@@ -64,14 +64,14 @@
         <!-- Begin Succesfull Join Popup-->
     <div class="popup" id="succesfullJoinPopup">
         <div class="popup-content">
-            <h2>Join Succesfull!</h2>
+            <h2>Join Successful!</h2>
             <form>
-                <h3>Select your Name</h3>
+                <h3>Enter your Name</h3>
                 <input type="text" id="clientNameInput" placeholder="Enter name">
-                <h3>Choose your Color</h3>
+                <h3>Select your Color</h3>
                 <label id="blueOption">
                     <input type="radio" name="clientColor" value="blue">
-                    <img id="blueImage" src="pictures/figureBlue.png" alt="Blue">
+                    <img id="blueImage" src="pictures/figureBlue.png" alt="Blue" checked>
                 </label>
                 <label id="greenOption">
                     <input type="radio" name="clientColor" value="green">
@@ -86,7 +86,7 @@
                     <img id="yellowImage" src="pictures/figureYellow.png" alt="Yellow">
                 </label>
             </form>
-            <h3>Choose your Die Skin</h3>
+            <h3>Select your Die Skin</h3>
             <form>
                 <label>
                     <input type="radio" name="dieOptionClient" value="dieBl">
@@ -117,6 +117,7 @@
                     <img src="./pictures/dieRed.png" alt="Red Die">
                 </label>
             </form>
+            <h3 id="joinGameErrorMessage" class="errorMessage"></h3>
             <div class="button-container">
                 <button id="startJoinedGameButton" class="server-communication-button popup-button">Stay Cool, Buddy!</button>
                 <button id="cancelButton" class="server-communication-button popup-button">Cancel</button>
@@ -131,9 +132,9 @@
         <div class="popup-content">
             <h2>Create a new game</h2>
             <form>
-                <h3>Select your Name</h3>
+                <h3>Enter your Name</h3>
                 <input type="text" id="adminNameInput" placeholder="Enter name">
-                <h3>Choose your Color</h3>
+                <h3>Select your Color</h3>
                 <label>
                     <input type="radio" name="playerColor" value="blue">
                     <img src="pictures/figureBlue.png" alt="Blue">
@@ -151,7 +152,7 @@
                     <img src="./pictures/figureYellow.png" alt="Yellow">
                 </label>
             </form>
-            <h3>Choose your Die Skin</h3>
+            <h3>Select your Die Skin</h3>
             <form>
                 <label>
                     <input type="radio" name="dieOptionServer" value="dieBl">
@@ -182,6 +183,7 @@
                     <img src="./pictures/dieRed.png" alt="Red Die">
                 </label>
             </form>
+            <h2 id="createGameErrorMessage" class="errorMessage"></h2>
             <div class="button-container">
                 <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
                 <button id="closeCreateGamePopupButton" class="server-communication-button popup-button">Back</button>
