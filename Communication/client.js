@@ -291,6 +291,8 @@ function setGameRunning() {
     const gameRunningElements = document.querySelectorAll('.game-running')
     lobbyElements.forEach((element) => element.style.display = 'none')
     gameRunningElements.forEach((element) => element.style.display = 'block')
+    // Don't show the game id when the game has already started
+    document.getElementById("gameId").innerHTML = ""
 }
 
 function endGame() {
