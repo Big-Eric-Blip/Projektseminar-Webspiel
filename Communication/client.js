@@ -408,9 +408,8 @@ function startJoinedGame() {
     const playerName = document.getElementById('clientNameInput').value
     dieColor = document.querySelector('input[name="dieOptionClient"]:checked').value;
     changeRollDiceImage("./pictures/"+dieColor+".png")
-    console.log(dieColor);
 
-    if (playerName!= '' && selectedColor!= ''){
+    if (playerName!= '' && selectedColor!= null){
         sendMessage({
             type: 'tryPickColor',
             gameId: currentGame.gameId,
@@ -418,10 +417,11 @@ function startJoinedGame() {
             playerName: playerName,
             playerId: currentGame.playerId
         });
-    }else{
-        document.getElementById('joinGameErrorMessage').textContent='Do not forget to Enter a Name and Pick a Color!'
+    }else if(playerName == '' && selectedColor == null){
+        document.getElementById('joinGameErrorMessage').textContent='Do not forget to Enter a Name and Pick an available Color!'
         makeTextBlink('joinGameErrorMessage')
-    }
+    }else{document.getElementById('joinGameErrorMessage').textContent='Do not forget to Enter a Name and Pick an available Color!'
+        makeTextBlink('joinGameErrorMessage')}
 }
 
 function handlePickedColor(response) {
