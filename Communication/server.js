@@ -2,14 +2,14 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
-const {v4: uuidv4} = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({server});
+const wss = new WebSocket.Server({ server });
 const clients = new Map();
 let games = [];
 let board = new Board(4, 4);
@@ -66,11 +66,18 @@ function checkClientMessage(message, playerId) {
                         numberOfPlayers: game.player.length + 1,
                         fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     });
+                    let takenColors = []
+                    for (const player of game.player) {
+                        if (player.color !== "") {
+                            takenColors.push(player.color)
+                        }
+                    }
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
                         playerId: playerId,
+                        takenColors: takenColors,
                         fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     };
                 }
@@ -80,6 +87,24 @@ function checkClientMessage(message, playerId) {
                 message: `There is no game with game id: ${(message.gameId === "" ? "empty game id" : message.gameId)}`,
 
             };
+
+        case 'pickColor':
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    for (const player of game.player) {
+                        if (player.playerId === message.playerId) {
+                            player.color = message.playerColor
+                            player.name = message.playerName
+                            addTokensOnPlayerJoin(message, playerId, game);
+                            return { type: 'pickedColor', message: `Successfully picked color!` }
+                        }
+                    }
+                    return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
+                }
+            }
+            return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
+
+
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
                 if (games[i].gameId === message.gameId) {
@@ -207,7 +232,7 @@ function leaveGameOnCloseWindow(playerId) {
     for (const game of games) {
         for (const player of game.player) {
             if (player.playerId === playerId) {
-                checkClientMessage({type: 'leaveGame', gameId: game.gameId}, playerId);
+                checkClientMessage({ type: 'leaveGame', gameId: game.gameId }, playerId);
                 return;
             }
         }
