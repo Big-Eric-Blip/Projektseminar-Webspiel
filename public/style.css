@@ -91,6 +91,10 @@ body {
     display: block;
 }
 
+.errorMessage{
+    text-align: center;
+}
+
 .panel-button {
     color: whitesmoke;
     background-color: crimson;

@@ -145,6 +145,7 @@ function openCreateGamePopup() {
 }
 
 function closeCreateGamePopup() {
+    document.getElementById('createGameErrorMessage').textContent='';
     document.getElementById('createGamePopup').style.display = 'none';
 }
 
@@ -175,6 +176,9 @@ function createGame() {
             playerName: playerName,
             playerColor: selectedColor
         });
+    }else{
+        document.getElementById('createGameErrorMessage').textContent='Do not forget to Enter a Name!'
+        makeTextBlink('createGameErrorMessage')
     }
 
     //the game state influences the CSS of the game
@@ -188,6 +192,25 @@ function changeRollDiceImage(newSrc) {
         rollDiceButtonImg.src = newSrc;
     }
 }
+
+function makeTextBlink(elementId) {
+    const element = document.getElementById(elementId);
+    let blinkCount = 0;
+
+    const blinkInterval = setInterval(() => {
+      if (blinkCount >= 5) {
+        clearInterval(blinkInterval);
+      } else {
+        if (element.style.color === 'black') {
+          element.style.color = 'red';
+        } else {
+          element.style.color = 'black';
+        }
+        blinkCount++;
+      }
+    }, 100);
+    blinkCount=0
+  }
 
 function returnToLandingPage() {
     setGameState('PRE_GAME')
@@ -369,6 +392,9 @@ function startJoinedGame() {
             playerName: playerName,
             playerId: currentGame.playerId
         });
+    }else{
+        document.getElementById('joinGameErrorMessage').textContent='Do not forget to Enter a Name and Pick a Color!'
+        makeTextBlink('joinGameErrorMessage')
     }
 }
 
