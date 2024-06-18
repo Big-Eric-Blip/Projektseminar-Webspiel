@@ -389,7 +389,7 @@ function handlePickedColor(response) {
 function rollDice() {
     //check if action allowed
     if(isPlayerEligibleForGameAction('ROLL_DIE')) {
-        sendMessage({ type: 'rollDice' });
+        sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
     } else {
         //send message to the sideboard
         document.getElementById("inGameMessage").innerHTML = "It's not your turn"
@@ -459,7 +459,7 @@ function validateMoveToken(tokenId) {
  */
 function chooseGameAction(gameAction, tokenId) {
     sendMessage({
-        type: 'action_' + gameAction, //for example: action_ROLL_DIE
+        type: 'action_' + gameAction, //for example: action_LEAVE_HOUSE
         tokenId: tokenId,
         playerId: currentGame.playerId
     })
@@ -470,6 +470,7 @@ function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
     dieAnimation(response.dieValue)
+    updateGameActions(JSON.parse(response.gameActions))
 }
 
 function dieAnimation(final) {
@@ -504,6 +505,7 @@ function moveToken(tokenId) {
     if(validation) {
         let gameAction = '' + validation
         chooseGameAction(gameAction,tokenId)
+        console.log("Execute game action " + validation)
     } else {
         document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
     }
@@ -522,6 +524,12 @@ function handleGameUpdate(message) {
     let tokens = JSON.parse(message.tokens)
     let gameId = message.gameId
     let gameActions = JSON.parse(message.gameActions)
+    updateGameActions(gameActions)
+
+    //TODO: update board with current token positions
+
+}
+function updateGameActions(gameActions) {
     //clear out previously available game actions
     availableGameActions = []
     //add gameActions from the message
@@ -532,8 +540,6 @@ function handleGameUpdate(message) {
     })
     //example for how to access values from the array
     console.log(availableGameActions[0].action)
-    //TODO: update board with current token positions
-
 }
 
 //TODO: evaluate the usage of this function and probably delete!
@@ -607,7 +613,7 @@ function onCanvasClick(event) {
             console.log(`Game piece clicked:`, token);
             currentGame.currentTokenId = token.tn
             moveToken(token.tn)
-
+            //renderer.moveToken(token)
         }
     }); }
 },{"../View/Renderer":2}],2:[function(require,module,exports){
@@ -619,25 +625,25 @@ class Renderer {
         this.scale = 1;
         this.tokens = [
             // blue token
-            { tn: 'bt1', x: 50, y: 50, color: "blue" },
-            { tn: 'bt2', x: 50, y: 150, color: "blue" },
-            { tn: 'bt3', x: 150, y: 50, color: "blue" },
-            { tn: 'bt4', x: 150, y: 150, color: "blue" },
+            { tn: 'blue1', x: 50, y: 50, color: "blue" },
+            { tn: 'blue2', x: 50, y: 150, color: "blue" },
+            { tn: 'blue3', x: 150, y: 50, color: "blue" },
+            { tn: 'blue4', x: 150, y: 150, color: "blue" },
             // green token
-            { tn: 'gt1', x: 950, y: 950, color: "green" },
-            { tn: 'gt2', x: 950, y: 1050, color: "green" },
-            { tn: 'gt3', x: 1050, y: 950, color: "green" },
-            { tn: 'gt4', x: 1050, y: 1050, color: "green" },
+            { tn: 'green1', x: 950, y: 950, color: "green" },
+            { tn: 'green2', x: 950, y: 1050, color: "green" },
+            { tn: 'green3', x: 1050, y: 950, color: "green" },
+            { tn: 'green4', x: 1050, y: 1050, color: "green" },
             // yellow token
-            { tn: 'yt1', x: 50, y: 950, color: "yellow" },
-            { tn: 'yt2', x: 50, y: 1050, color: "yellow" },
-            { tn: 'yt3', x: 150, y: 950, color: "yellow" },
-            { tn: 'yt4', x: 150, y: 1050, color: "yellow" },
+            { tn: 'yellow1', x: 50, y: 950, color: "yellow" },
+            { tn: 'yellow2', x: 50, y: 1050, color: "yellow" },
+            { tn: 'yellow3', x: 150, y: 950, color: "yellow" },
+            { tn: 'yellow4', x: 150, y: 1050, color: "yellow" },
             // red token
-            { tn: 'rt1', x: 950, y: 50, color: "red" },
-            { tn: 'rt2', x: 1050, y: 50, color: "red" },
-            { tn: 'rt3', x: 950, y: 150, color: "red" },
-            { tn: 'rt4', x: 1050, y: 150, color: "red" }
+            { tn: 'red1', x: 950, y: 50, color: "red" },
+            { tn: 'red2', x: 1050, y: 50, color: "red" },
+            { tn: 'red3', x: 950, y: 150, color: "red" },
+            { tn: 'red4', x: 1050, y: 150, color: "red" }
         ];
         this.fields = [];
         this.canvas = document.getElementById(canvasID);

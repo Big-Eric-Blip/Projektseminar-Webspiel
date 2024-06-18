@@ -25,8 +25,20 @@ class Game {
         this.player.push(newPlayer);
     }
 
+    /**
+     * Moves the attribute playersTurn = true to the next player in the array
+     * Exception: if there is only one player in the game, nothing happens
+     */
     updatePlayersTurn() {
-        //TODO implement this method
+        if(this.player.length !== 1) {
+           let currentIndex = this.getCurrentPlayerIndex()
+           this.player[currentIndex].setPlayersTurn(false)
+            if(this.player.length === currentIndex+1) {
+                this.player[0].setPlayersTurn(true)
+            } else {
+                this.player[currentIndex+1].setPlayersTurn(true)
+            }
+        }
     }
 
     /**
@@ -120,6 +132,13 @@ class Game {
         this.gameActions = []
         //calculate new values
         let currentPlayer = this.player[this.getCurrentPlayerIndex()]
+        //update playersTokens
+        this.playersTokens = []
+        for(let i=0; i<this.tokens.length; i++) {
+            if(this.tokens[i].playerId === currentPlayer.playerId) {
+                this.playersTokens.push(this.tokens[i])
+            }
+        }
         //die value available?
         if (this.currentDieValue === 0) {
             // it's the player's turn to roll the die
@@ -139,9 +158,9 @@ class Game {
                     if (board.getFieldType(this.playersTokens[i].fieldId) === 'HOME') {
                         //case starting field empty
                         if (fieldCheck === true) {
+                            console.log("Survived field check")
                             this.gameActions.push(new GameAction(currentPlayer.playerId,
-                                'LEAVE_HOUSE', this.playersTokens[i].tokenId, startingPosition,
-                                this.currentDieValue))
+                                'LEAVE_HOUSE', this.playersTokens[i].getTokenId(), startingPosition))
                             //case starting field populated by enemy token
                         } else if(fieldCheck.getTokensPlayerId() !== currentPlayer.getPlayerId()) {
                             this.gameActions.push(new GameAction(currentPlayer.playerId,
@@ -215,11 +234,22 @@ class Game {
                     }
                 }
             }
-            //if no actions are available, push "NONE" to signal this to the client
+            //if no actions are available, check if there is more than one player
             if(this.gameActions.length === 0) {
-                this.gameActions.push(new GameAction(currentPlayer.playerId, 'NONE'))
-            }
+                if(this.player.length ===1) {
+                    //if there is only one player, let them roll the dice again
+                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
+                } else {
+                    //if there is more than one player, update the players turn
+                    this.updatePlayersTurn()
+                    this.currentDieValue = 0
+                    this.calculateAvailableGameActions(board)
 
+                }
+
+            }
+            //if no actions are available, push "NONE" to signal this to the client
+            //this.gameActions.push(new GameAction(currentPlayer.playerId, 'NONE'))
         }
     }
 
