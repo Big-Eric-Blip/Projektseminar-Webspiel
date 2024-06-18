@@ -148,7 +148,7 @@ function openCreateGamePopup() {
 }
 
 function closeCreateGamePopup() {
-    document.getElementById('createGameErrorMessage').textContent='';
+    document.getElementById('createGameErrorMessage').textContent = '';
     document.getElementById('createGamePopup').style.display = 'none';
 }
 
@@ -166,7 +166,7 @@ function createGame() {
     const playerName = document.getElementById('adminNameInput').value;
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
     console.log(dieColor);
-    changeRollDiceImage("./pictures/"+dieColor+".png")
+    changeRollDiceImage("./pictures/" + dieColor + ".png")
 
     if (playerName != '') {
 
@@ -179,8 +179,8 @@ function createGame() {
             playerName: playerName,
             playerColor: selectedColor
         });
-    }else{
-        document.getElementById('createGameErrorMessage').textContent='Do not forget to Enter a Name!'
+    } else {
+        document.getElementById('createGameErrorMessage').textContent = 'Do not forget to Enter a Name!'
         makeTextBlink('createGameErrorMessage')
     }
 
@@ -201,19 +201,19 @@ function makeTextBlink(elementId) {
     let blinkCount = 0;
 
     const blinkInterval = setInterval(() => {
-      if (blinkCount >= 5) {
-        clearInterval(blinkInterval);
-      } else {
-        if (element.style.color === 'black') {
-          element.style.color = 'red';
+        if (blinkCount >= 5) {
+            clearInterval(blinkInterval);
         } else {
-          element.style.color = 'black';
+            if (element.style.color === 'black') {
+                element.style.color = 'red';
+            } else {
+                element.style.color = 'black';
+            }
+            blinkCount++;
         }
-        blinkCount++;
-      }
     }, 100);
-    blinkCount=0
-  }
+    blinkCount = 0
+}
 
 function returnToLandingPage() {
     setGameState('PRE_GAME')
@@ -326,12 +326,12 @@ function joinGame() {
 }
 
 function handleColorTaken(response) {
-     if (response.color=="blue") {
+    if (response.color == "blue") {
         document.getElementById('blueOption').querySelector('input').disabled = true
         document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
     }
 
-    if (response.color=="yellow") {
+    if (response.color == "yellow") {
         document.getElementById('yellowOption').querySelector('input').disabled = true
         document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
     }
@@ -341,13 +341,13 @@ function handleColorTaken(response) {
         document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
     }
 
-    if (response.color=="red") {
+    if (response.color == "red") {
         document.getElementById('redOption').querySelector('input').disabled = true
         document.getElementById('redImage').src = "pictures/figureRedCross.png"
 
     }
-    document.getElementById('joinGameErrorMessage').textContent='This color is already taken! Please choose another one.'
-    makeTextBlink('joinGameErrorMessage')  
+    document.getElementById('joinGameErrorMessage').textContent = 'This color is already taken! Please choose another one.'
+    makeTextBlink('joinGameErrorMessage')
 }
 
 function handleJoinGameResponse(response) {
@@ -393,8 +393,8 @@ function handleJoinGameResponse(response) {
 
         });
         renderer.fields = response.fields;
-            renderer.drawFields();
-            renderer.drawTokens();
+        renderer.drawFields();
+        renderer.drawTokens();
         console.log(renderer.fields)
 
     } else {
@@ -405,13 +405,17 @@ function handleJoinGameResponse(response) {
 }
 
 function startJoinedGame() {
-    const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
-    const playerName = document.getElementById('clientNameInput').value
-    dieColor = document.querySelector('input[name="dieOptionClient"]:checked').value;
-    changeRollDiceImage("./pictures/"+dieColor+".png")
-    console.log(dieColor);
+    const selectedColorElement = document.querySelector('input[name="clientColor"]:checked');
+    const selectedColor = selectedColorElement ? selectedColorElement.value : null;
+    const playerName = document.getElementById('clientNameInput').value;
+    const dieColorElement = document.querySelector('input[name="dieOptionClient"]:checked');
+    const dieColor = dieColorElement ? dieColorElement.value : null;
 
-    if (playerName!= '' && selectedColor!= ''){
+    if (dieColor) {
+        changeRollDiceImage("./pictures/" + dieColor + ".png");
+    }
+
+    if (playerName !== '' && selectedColor !== null) {
         sendMessage({
             type: 'tryPickColor',
             gameId: currentGame.gameId,
@@ -419,9 +423,19 @@ function startJoinedGame() {
             playerName: playerName,
             playerId: currentGame.playerId
         });
-    }else{
-        document.getElementById('joinGameErrorMessage').textContent='Do not forget to Enter a Name and Pick a Color!'
-        makeTextBlink('joinGameErrorMessage')
+    } else {
+        let errorMessage = 'Do not forget to ';
+        if (playerName === '') {
+            errorMessage += 'Enter a Name ';
+        }
+        if (selectedColor === null) {
+            if (playerName === '') {
+                errorMessage += 'and ';
+            }
+            errorMessage += 'Pick an available Color!';
+        }
+        document.getElementById('joinGameErrorMessage').textContent = errorMessage;
+        makeTextBlink('joinGameErrorMessage');
     }
 }
 
@@ -434,7 +448,7 @@ function handlePickedColor(response) {
 
 function rollDice() {
     //check if action allowed
-    if(isPlayerEligibleForGameAction('ROLL_DIE')) {
+    if (isPlayerEligibleForGameAction('ROLL_DIE')) {
         sendMessage({ type: 'rollDice' });
     } else {
         //send message to the sideboard
@@ -450,9 +464,9 @@ function rollDice() {
  * @return {boolean}
  */
 function isPlayerEligibleForGameAction(action) {
-    for(let i = 0; i < availableGameActions.length; i++) {
-        if(currentGame.playerId === availableGameActions[i].playerId) {
-            if(availableGameActions[i].action === action) {
+    for (let i = 0; i < availableGameActions.length; i++) {
+        if (currentGame.playerId === availableGameActions[i].playerId) {
+            if (availableGameActions[i].action === action) {
                 return true
             }
         }
@@ -465,9 +479,9 @@ function isPlayerEligibleForGameAction(action) {
  * @return {boolean}
  */
 function isPlayerEligible() {
-    for(let i = 0; i < availableGameActions.length; i++) {
-        if(currentGame.playerId === availableGameActions[i].playerId) {
-                return true
+    for (let i = 0; i < availableGameActions.length; i++) {
+        if (currentGame.playerId === availableGameActions[i].playerId) {
+            return true
 
         }
     }
@@ -481,9 +495,9 @@ function isPlayerEligible() {
  * @return {boolean} true if the token can be moved
  */
 function validateMoveToken(tokenId) {
-    if(isPlayerEligible()) {
-        for(let i = 0; i<availableGameActions.length;i++) {
-            if(availableGameActions[i].tokenId === tokenId) {
+    if (isPlayerEligible()) {
+        for (let i = 0; i < availableGameActions.length; i++) {
+            if (availableGameActions[i].tokenId === tokenId) {
                 return true
             }
         }
@@ -512,23 +526,23 @@ function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
     dieAnimation(response.dieValue)
-/*
-    const diceResultDiv = document.getElementById('resultDice');
-    if (diceResultDiv) {
-        diceResultDiv.textContent = `${response.dieValue}`;
-    } else {
-        console.error('Element with id "diceResult" not found.');
-    }*/
+    /*
+        const diceResultDiv = document.getElementById('resultDice');
+        if (diceResultDiv) {
+            diceResultDiv.textContent = `${response.dieValue}`;
+        } else {
+            console.error('Element with id "diceResult" not found.');
+        }*/
 }
 
 function dieAnimation(final) {
     const images = [
-        'pictures/'+dieColor+'1.png',
-        'pictures/'+dieColor+'2.png',
-        'pictures/'+dieColor+'3.png',
-        'pictures/'+dieColor+'4.png',
-        'pictures/'+dieColor+'5.png',
-        'pictures/'+dieColor+'6.png'
+        'pictures/' + dieColor + '1.png',
+        'pictures/' + dieColor + '2.png',
+        'pictures/' + dieColor + '3.png',
+        'pictures/' + dieColor + '4.png',
+        'pictures/' + dieColor + '5.png',
+        'pictures/' + dieColor + '6.png'
     ];
     let currentIndex = 0;
     const intervalTime = 100; // Time between image changes in milliseconds
@@ -541,7 +555,7 @@ function dieAnimation(final) {
 
     setTimeout(() => {
         clearInterval(intervalId);
-        changeRollDiceImage('pictures/'+dieColor+final+'.png');
+        changeRollDiceImage('pictures/' + dieColor + final + '.png');
     }, totalDuration);
 }
 
@@ -573,8 +587,10 @@ function handleGameUpdate(message) {
     availableGameActions = []
     //add gameActions from the message
     gameActions.forEach(gameAction => {
-        availableGameActions.push({playerId: gameAction.playerId, action: gameAction.action, tokenId:gameAction.tokenId,
-            amount: gameAction.amount, fieldId: gameAction.fieldId})
+        availableGameActions.push({
+            playerId: gameAction.playerId, action: gameAction.action, tokenId: gameAction.tokenId,
+            amount: gameAction.amount, fieldId: gameAction.fieldId
+        })
         console.log(gameAction)
     })
     //example for how to access values from the array
@@ -611,7 +627,7 @@ function handleLeftGame(message) {
 }
 
 function handleGameStarted(message) {
-//     todo show in response text or something like that
+    //     todo show in response text or something like that
     console.log(message)
     document.getElementById("inGameServerResponse").innerHTML = message.message;
     document.getElementById('rollDiceButton').style.display = 'block';
