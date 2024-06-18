@@ -296,11 +296,23 @@ function setGameRunning() {
 }
 
 function endGame() {
+    displayLeaveGameMessage()
     currentGame.gameState = "GAME_OVER"
     const gameRunningElements = document.querySelectorAll('.game-running')
     const gameOverElements = document.querySelectorAll('.game-over')
     gameRunningElements.forEach((element) => element.style.display = 'none')
     gameOverElements.forEach((element) => element.style.display = 'block')
+}
+
+function displayLeaveGameMessage(){
+    if (currentGame.gameState === "LOBBY") {
+        // Don't show the game id when the game has already started
+        document.getElementById("inGameMessage").innerHTML =
+            'You left the game.\n Game id: ' + currentGame.gameId
+    } else {
+        document.getElementById("inGameMessage").innerHTML =
+            'You left the game.'
+    }
 }
 
 function handleCreateGameResponse(response) {
@@ -588,7 +600,6 @@ function handleGameUpdate(message) {
     }
     //update available game actions
     let tokens = JSON.parse(message.tokens)
-    let gameId = message.gameId
     let gameActions = JSON.parse(message.gameActions)
     updateGameActions(gameActions)
     if (message.dieValue) {
@@ -669,7 +680,6 @@ function handleAPlayerLeftGame(message) {
 
 function handleLeftGame(message) {
     const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
-    document.getElementById("inGameMessage").innerHTML = serverResponseText;
     document.getElementById("gameId").innerHTML = "";
     console.log(serverResponseText);
 }
