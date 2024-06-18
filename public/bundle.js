@@ -237,7 +237,7 @@ function endGame() {
 }
 
 function handleCreateGameResponse(response) {
-    document.getElementById("inGameServerResponse").innerHTML = "Nice. You've created a game."
+    document.getElementById("inGameMessage").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
 
@@ -261,8 +261,7 @@ function joinGame() {
 function handleJoinGameResponse(response) {
     if (response.playerId) {
         currentGame.playerId = response.playerId;
-
-        let serverResponseText = document.getElementById("inGameServerResponse");
+        let serverResponseText = document.getElementById("inGameMessage");
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
         setGameState('LOBBY');
@@ -288,7 +287,7 @@ function initRenderer(response) {
     //});
 
     renderer.canvas.addEventListener('click', function (e) {
-        testOnCanvasClick(e)})
+        onCanvasClick(e)})
     renderer.fields = response.fields;
     renderer.drawFields();
     renderer.drawTokens();
@@ -303,7 +302,8 @@ function rollDice() {
         sendMessage({ type: 'rollDice' });
     } else {
         //send message to the sideboard
-        console.log("It's not your turn.")
+        document.getElementById("inGameMessage").innerHTML = "It's not your turn"
+        //console.log("It's not your turn.")
     }
 
 }
@@ -396,6 +396,8 @@ function moveToken(tokenId) {
     if(validation) {
         let gameAction = '' + validation
         chooseGameAction(gameAction,tokenId)
+    } else {
+        document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
     }
 }
 
@@ -434,7 +436,7 @@ function handleMoveTokenResponse(response) {
 }
 
 function handlePlayerJoinedResponse(message) {
-    document.getElementById("inGameServerResponse").innerHTML =
+    document.getElementById("inGameMessage").innerHTML =
         "A new player joined your game. There are now " + message.numberOfPlayers + " players in your game."
 }
 
@@ -442,14 +444,14 @@ function handleAPlayerLeftGame(message) {
     const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
         ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
         (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
-    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameMessage").innerHTML = serverResponseText;
     console.log(serverResponseText)
     console.log("There are now " + message.numberOfPlayers + " players in your game.")
 }
 
 function handleLeftGame(message) {
     const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
-    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameMessage").innerHTML = serverResponseText;
     document.getElementById("gameId").innerHTML = "";
     console.log(serverResponseText);
 }
@@ -457,20 +459,22 @@ function handleLeftGame(message) {
 function handleGameStarted(message) {
 //     todo show in response text or something like that
     console.log(message)
-    document.getElementById("inGameServerResponse").innerHTML = message.message;
-    document.getElementById('rollDiceButton').style.display = 'block';
+    document.getElementById("inGameMessage").innerHTML = message.message;
+    //document.getElementById('rollDiceButton').style.display = 'block';
     handleGameUpdate(message)
+    setGameState("GAME_RUNNING")
     console.log("The current state is: " + currentGame.gameState)
 }
 
 function handleServerMessage(response) {
     // TODO show message in game in grey block on the left or maybe implement chat and show it there
     const serverResponseText = response.message;
-    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameMessage").innerHTML = serverResponseText;
     console.log(serverResponseText);
 }
 
-function testOnCanvasClick(event) {
+//TODO: refactor + rename
+function onCanvasClick(event) {
 
 const rect = renderer.canvas.getBoundingClientRect();
 const scaleX = renderer.canvas.width / rect.width;
