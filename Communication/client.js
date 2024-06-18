@@ -160,6 +160,10 @@ function createGame() {
 
     const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
     const playerName = document.getElementById('adminNameInput').value;
+    dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
+    console.log(dieColor);
+    changeRollDiceImage("./pictures/"+dieColor+".png")
+
     if (playerName != '') {
 
         setGameState("LOBBY")
@@ -353,6 +357,10 @@ function handleJoinGameResponse(response) {
 function startJoinedGame() {
     const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
     const playerName = document.getElementById('clientNameInput').value
+    dieColor = document.querySelector('input[name="dieOptionClient"]:checked').value;
+    changeRollDiceImage("./pictures/"+dieColor+".png")
+    console.log(dieColor);
+
     if (playerName!= '' && selectedColor!= ''){
         sendMessage({
             type: 'pickColor',
