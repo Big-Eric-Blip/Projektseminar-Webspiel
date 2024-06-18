@@ -153,18 +153,26 @@ class Board {
      * @return {*|string|string} the fieldId of the field where the token is positioned next
      */
     getNextPosition(currentFieldId, dieValue, traversedDistance) {
+        let trueDieValue
+        if(dieValue instanceof Number){
+            trueDieValue = dieValue
+        } else {
+            trueDieValue = Number(dieValue)
+        }
         let currentIndex = this.gameArray.findIndex(field => field.fieldId === currentFieldId);
         let fieldId = "test"
-        let nextIndex = (currentIndex + dieValue)
-        if (traversedDistance + dieValue > 40) {
-            let goalArrayIndex = (traversedDistance + dieValue) - 40
+        let nextIndex = (currentIndex + trueDieValue)
+        console.log("Index: " + nextIndex)
+        if (traversedDistance + trueDieValue > 40) {
+            let goalArrayIndex = (traversedDistance + trueDieValue) - 40
             return "goalArray"
         } else {
-            if (currentIndex + dieValue > 39) {
-                nextIndex = (currentIndex + dieValue) - 40
+            if (currentIndex + trueDieValue > 39) {
+                nextIndex = (currentIndex + trueDieValue) - 40
+                console.log("Index: " + nextIndex)
             }
-            fieldId = this.gameArray[nextIndex].fieldId
-            console.log(fieldId)
+            let field = this.gameArray[nextIndex]
+            fieldId = field.fieldId
         }
         return fieldId
     }

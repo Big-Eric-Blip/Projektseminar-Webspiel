@@ -168,7 +168,7 @@ class Game {
                 //TODO: what if there are no tokens left in the house?
                 //leave home + maybe move from starting position
                 //check if field starting position is empty or contains other token
-
+                let startingPosition = board.getStartingPosition(currentPlayer.getColor())
                 let fieldCheck = this.isFieldEmpty(startingPosition)
                 //if own token on starting position: needs to move!
                 // except if beats own token

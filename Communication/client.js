@@ -593,7 +593,6 @@ function handleGameUpdate(message) {
     if (message.dieValue) {
         dieAnimation(message.dieValue)
     }
-    //TODO: update board with current token positions
     tokenToRenderer(tokens);
 
 }
@@ -605,9 +604,9 @@ function tokenToRenderer(tokens) {
         let xCoord = getTokenXCoord(token.fieldId);
         let yCoord = getTokenYCoord(token.fieldId);        
         renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
-        console.log(renderer.tokens)
+
     })
-    
+    console.log(renderer.tokens)
     renderer.drawFields();
     renderer.drawTokens();
 
@@ -675,7 +674,7 @@ function handleLeftGame(message) {
 
 function handleGameStarted(message) {
     //     todo show in response text or something like that
-    console.log(message)
+    console.log("Handle game started: ",message)
     document.getElementById("inGameMessage").innerHTML = message.message;
     //document.getElementById('rollDiceButton').style.display = 'block';
     handleGameUpdate(message)
