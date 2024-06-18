@@ -69,6 +69,8 @@ function fromServerMessage(event) {
             break;
         case 'pickedColor':
             handlePickedColor(message)
+        case 'colorTaken':
+            handleColorTaken(message)
         case 'message':
             handleServerMessage(message);
             break;
@@ -322,6 +324,30 @@ function joinGame() {
 
 }
 
+function handleColorTaken(response) {
+     if (response.color=="blue") {
+        document.getElementById('blueOption').querySelector('input').disabled = true
+        document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
+    }
+
+    if (response.color=="yellow") {
+        document.getElementById('yellowOption').querySelector('input').disabled = true
+        document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
+    }
+
+    if (response.color == "green") {
+        document.getElementById('greenOption').querySelector('input').disabled = true
+        document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
+    }
+
+    if (response.color=="red") {
+        document.getElementById('redOption').querySelector('input').disabled = true
+        document.getElementById('redImage').src = "pictures/figureRedCross.png"
+
+    }
+    document.getElementById('joinGameErrorMessage').textContent='This color is already taken! Please choose another one.'
+    makeTextBlink('joinGameErrorMessage')  
+}
 
 function handleJoinGameResponse(response) {
     if (response.playerId) {
@@ -386,7 +412,7 @@ function startJoinedGame() {
 
     if (playerName!= '' && selectedColor!= ''){
         sendMessage({
-            type: 'pickColor',
+            type: 'tryPickColor',
             gameId: currentGame.gameId,
             playerColor: selectedColor,
             playerName: playerName,

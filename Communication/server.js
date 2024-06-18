@@ -92,6 +92,11 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     for (const player of game.player) {
+                            if (player.color !== "") {
+                                takenColors.push(player.color)
+                            }}
+                        console.log(takenColors)
+                    for (const player of game.player) {
                         if (player.playerId === message.playerId) {
                             player.color = message.playerColor
                             player.name = message.playerName
@@ -103,6 +108,32 @@ function checkClientMessage(message, playerId) {
                 }
             }
             return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
+
+
+            case 'tryPickColor':
+                for (const game of games) {
+                    if (game.gameId === message.gameId) {
+                        let takenColors = []
+             
+                        for (const player of game.player) {
+                            if (player.color !== "") {
+                                takenColors.push(player.color)
+                            }}
+                        console.log(takenColors)
+                        for (const player of game.player){
+                            if (player.playerId === message.playerId&&!takenColors.includes(message.playerColor)) {
+                                player.color = message.playerColor
+                                player.name = message.playerName
+                                addTokensOnPlayerJoin(message, playerId, game);
+                                return { type: 'pickedColor', message: `Successfully picked color!` }
+                            }else if(takenColors.includes(message.playerColor)){
+                                return { type: 'colorTaken', message: `The color ${message.playerColor} is already taken.`,color:message.playerColor }
+                            }
+                        }
+                        return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
+                    }
+                }
+                return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
 
 
         case 'leaveGame':
