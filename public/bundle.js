@@ -229,6 +229,7 @@ function startGame() {
         type: 'startGame',
         gameId: currentGame.gameId
     });
+
 }
 
 function leaveGame() {
@@ -400,7 +401,8 @@ function initRenderer(response) {
     });
 
     renderer.canvas.addEventListener('click', function (e) {
-        onCanvasClick(e)})
+        onCanvasClick(e)
+    })
     renderer.fields = response.fields;
     renderer.drawFields();
     renderer.drawTokens();
@@ -451,7 +453,7 @@ function handlePickedColor(response) {
 
 function rollDice() {
     //check if action allowed
-    if(isPlayerEligibleForGameAction('ROLL_DIE')) {
+    if (isPlayerEligibleForGameAction('ROLL_DIE')) {
         sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
     } else {
         //send message to the sideboard
@@ -500,9 +502,9 @@ function isPlayerEligible() {
  * @return {boolean} true if the token can be moved
  */
 function validateMoveToken(tokenId) {
-    if(isPlayerEligible()) {
-        for(let i = 0; i<availableGameActions.length;i++) {
-            if(availableGameActions[i].tokenId === tokenId) {
+    if (isPlayerEligible()) {
+        for (let i = 0; i < availableGameActions.length; i++) {
+            if (availableGameActions[i].tokenId === tokenId) {
                 console.log("Validation tried and true")
                 return availableGameActions[i].action
             }
@@ -565,9 +567,9 @@ function moveToken(tokenId) {
     //Can this token be moved?
     let validation = validateMoveToken(tokenId)
     //if yes
-    if(validation) {
+    if (validation) {
         let gameAction = '' + validation
-        chooseGameAction(gameAction,tokenId)
+        chooseGameAction(gameAction, tokenId)
         console.log("Execute game action " + validation)
     } else {
         document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
@@ -588,12 +590,46 @@ function handleGameUpdate(message) {
     let gameId = message.gameId
     let gameActions = JSON.parse(message.gameActions)
     updateGameActions(gameActions)
-    if(message.dieValue) {
+    if (message.dieValue) {
         dieAnimation(message.dieValue)
     }
     //TODO: update board with current token positions
+    tokenToRenderer(tokens);
 
 }
+
+
+function tokenToRenderer(tokens) {
+    renderer.tokens = [];
+    tokens.forEach(token => {
+        let xCoord = getTokenXCoord(token.fieldId);
+        let yCoord = getTokenYCoord(token.fieldId);        
+        renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
+        console.log(renderer.tokens)
+    })
+    
+    renderer.drawFields();
+    renderer.drawTokens();
+
+}
+
+function getTokenXCoord(fieldId) {
+    for (let i = 0; i < renderer.fields.length; i++) {
+        if (renderer.fields[i].fieldId === fieldId) {
+            return renderer.fields[i].xCoord
+        }
+    }
+}
+
+function getTokenYCoord(fieldId) {
+    for (let i = 0; i < renderer.fields.length; i++) {
+        if (renderer.fields[i].fieldId === fieldId) {
+            return renderer.fields[i].yCoord
+        }
+    }
+}
+
+
 function updateGameActions(gameActions) {
     //clear out previously available game actions
     availableGameActions = []
@@ -644,7 +680,9 @@ function handleGameStarted(message) {
     //document.getElementById('rollDiceButton').style.display = 'block';
     handleGameUpdate(message)
     setGameState("GAME_RUNNING")
-    console.log("The current state is: " + currentGame.gameState)
+    console.log("The current state is: " + currentGame.gameState);
+
+
 }
 
 function handleServerMessage(response) {
@@ -682,35 +720,15 @@ function onCanvasClick(event) {
             moveToken(token.tn)
             //renderer.moveToken(token)
         }
-    }); }
+    });
+}
 },{"../View/Renderer":2}],2:[function(require,module,exports){
 
 class Renderer {
     constructor(canvasID) {
 
         this.scale = 1;
-        this.tokens = [
-            // blue token
-            { tn: 'blue1', x: 50, y: 50, color: "blue" },
-            { tn: 'blue2', x: 50, y: 150, color: "blue" },
-            { tn: 'blue3', x: 150, y: 50, color: "blue" },
-            { tn: 'blue4', x: 150, y: 150, color: "blue" },
-            // green token
-            { tn: 'green1', x: 950, y: 950, color: "green" },
-            { tn: 'green2', x: 950, y: 1050, color: "green" },
-            { tn: 'green3', x: 1050, y: 950, color: "green" },
-            { tn: 'green4', x: 1050, y: 1050, color: "green" },
-            // yellow token
-            { tn: 'yellow1', x: 50, y: 950, color: "yellow" },
-            { tn: 'yellow2', x: 50, y: 1050, color: "yellow" },
-            { tn: 'yellow3', x: 150, y: 950, color: "yellow" },
-            { tn: 'yellow4', x: 150, y: 1050, color: "yellow" },
-            // red token
-            { tn: 'red1', x: 950, y: 50, color: "red" },
-            { tn: 'red2', x: 1050, y: 50, color: "red" },
-            { tn: 'red3', x: 950, y: 150, color: "red" },
-            { tn: 'red4', x: 1050, y: 150, color: "red" }
-        ];
+        this.tokens = [];
         this.fields = [];
         this.canvas = document.getElementById(canvasID);
         this.ctx = this.canvas.getContext("2d");

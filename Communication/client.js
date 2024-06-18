@@ -228,6 +228,7 @@ function startGame() {
         type: 'startGame',
         gameId: currentGame.gameId
     });
+
 }
 
 function leaveGame() {
@@ -399,7 +400,8 @@ function initRenderer(response) {
     });
 
     renderer.canvas.addEventListener('click', function (e) {
-        onCanvasClick(e)})
+        onCanvasClick(e)
+    })
     renderer.fields = response.fields;
     renderer.drawFields();
     renderer.drawTokens();
@@ -450,7 +452,7 @@ function handlePickedColor(response) {
 
 function rollDice() {
     //check if action allowed
-    if(isPlayerEligibleForGameAction('ROLL_DIE')) {
+    if (isPlayerEligibleForGameAction('ROLL_DIE')) {
         sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
     } else {
         //send message to the sideboard
@@ -499,9 +501,9 @@ function isPlayerEligible() {
  * @return {boolean} true if the token can be moved
  */
 function validateMoveToken(tokenId) {
-    if(isPlayerEligible()) {
-        for(let i = 0; i<availableGameActions.length;i++) {
-            if(availableGameActions[i].tokenId === tokenId) {
+    if (isPlayerEligible()) {
+        for (let i = 0; i < availableGameActions.length; i++) {
+            if (availableGameActions[i].tokenId === tokenId) {
                 console.log("Validation tried and true")
                 return availableGameActions[i].action
             }
@@ -564,9 +566,9 @@ function moveToken(tokenId) {
     //Can this token be moved?
     let validation = validateMoveToken(tokenId)
     //if yes
-    if(validation) {
+    if (validation) {
         let gameAction = '' + validation
-        chooseGameAction(gameAction,tokenId)
+        chooseGameAction(gameAction, tokenId)
         console.log("Execute game action " + validation)
     } else {
         document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
@@ -587,12 +589,46 @@ function handleGameUpdate(message) {
     let gameId = message.gameId
     let gameActions = JSON.parse(message.gameActions)
     updateGameActions(gameActions)
-    if(message.dieValue) {
+    if (message.dieValue) {
         dieAnimation(message.dieValue)
     }
     //TODO: update board with current token positions
+    tokenToRenderer(tokens);
 
 }
+
+
+function tokenToRenderer(tokens) {
+    renderer.tokens = [];
+    tokens.forEach(token => {
+        let xCoord = getTokenXCoord(token.fieldId);
+        let yCoord = getTokenYCoord(token.fieldId);        
+        renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
+        console.log(renderer.tokens)
+    })
+    
+    renderer.drawFields();
+    renderer.drawTokens();
+
+}
+
+function getTokenXCoord(fieldId) {
+    for (let i = 0; i < renderer.fields.length; i++) {
+        if (renderer.fields[i].fieldId === fieldId) {
+            return renderer.fields[i].xCoord
+        }
+    }
+}
+
+function getTokenYCoord(fieldId) {
+    for (let i = 0; i < renderer.fields.length; i++) {
+        if (renderer.fields[i].fieldId === fieldId) {
+            return renderer.fields[i].yCoord
+        }
+    }
+}
+
+
 function updateGameActions(gameActions) {
     //clear out previously available game actions
     availableGameActions = []
@@ -643,7 +679,9 @@ function handleGameStarted(message) {
     //document.getElementById('rollDiceButton').style.display = 'block';
     handleGameUpdate(message)
     setGameState("GAME_RUNNING")
-    console.log("The current state is: " + currentGame.gameState)
+    console.log("The current state is: " + currentGame.gameState);
+
+
 }
 
 function handleServerMessage(response) {
@@ -681,4 +719,5 @@ function onCanvasClick(event) {
             moveToken(token.tn)
             //renderer.moveToken(token)
         }
-    }); }
+    });
+}
