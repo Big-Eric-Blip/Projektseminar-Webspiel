@@ -2,6 +2,8 @@
 let currentGame = {
     gameId: "",
     playerId: "",
+    playerColor: "",
+    playerName: "",
     gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
 let availableGameActions = new Set;
@@ -66,6 +68,8 @@ function fromServerMessage(event) {
         case 'gameStarted':
             handleGameStarted(message);
             break;
+        case 'pickedColor':
+            handlePickedColor(message)
         case 'message':
             handleServerMessage(message);
             break;
@@ -97,15 +101,21 @@ document.addEventListener('DOMContentLoaded', function () {
         //Create Game
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
-        joinGameButton: joinGame,
-        startGameButton: startGame,
-        leaveGameButton: leaveGame,
-        landingPageButton: returnToLandingPage,
         createGameButton: createGame,
 
         //Join Game
         joinGamePopupButton: openJoinGamePopup,
         closeJoinGamePopupButton: closeJoinGamePopup,
+        joinGameButton: joinGame,
+
+        //Succesfull Join
+        startJoinedGameButton: startJoinedGame,
+        cancelButton: cancel,
+
+        //Lobby
+        startGameButton: startGame,
+        leaveGameButton: leaveGame,
+        landingPageButton: returnToLandingPage,
 
         //Game Buttons
         rollDiceButton: rollDice,
@@ -139,7 +149,16 @@ function closeCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'none';
 }
 
+function cancel() {
+    //ToDo checken
+    leaveGame()
+    document.getElementById('succesfullJoinPopup').style.display = 'none';
+    setGameState("PRE_GAME")
+    document.getElementById('myCanvas').style.display = 'none';
+}
+
 function createGame() {
+<<<<<<< HEAD
     setGameState("LOBBY")
     const selectedColor = document.querySelector('input[name="playerColor"]:checked');
     dieColor = document.querySelector('input[name="dieOption"]:checked').value;
@@ -152,6 +171,24 @@ function createGame() {
         playerName: "Alice",
         playerColor: "red"
     });
+=======
+
+    const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
+    const playerName = document.getElementById('adminNameInput').value;
+    if (playerName != '') {
+
+        setGameState("LOBBY")
+        document.getElementById('createGamePopup').style.display = 'none';
+
+        sendMessage({
+            type: 'createGame',
+            boardType: "default",
+            playerName: playerName,
+            playerColor: selectedColor
+        });
+    }
+
+>>>>>>> origin/main
     //the game state influences the CSS of the game
 
 }
@@ -274,8 +311,36 @@ function joinGame() {
 
 }
 
+
 function handleJoinGameResponse(response) {
     if (response.playerId) {
+        document.getElementById('joinGamePopup').style.display = 'none'
+        document.getElementById('succesfullJoinPopup').style.display = 'block'
+
+
+        //Make taken colors unavailable
+        if (response.takenColors.includes("blue")) {
+            document.getElementById('blueOption').querySelector('input').disabled = true
+            document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
+        }
+
+        if (response.takenColors.includes("yellow")) {
+            document.getElementById('yellowOption').querySelector('input').disabled = true
+            document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
+        }
+
+        if (response.takenColors.includes("green")) {
+            document.getElementById('greenOption').querySelector('input').disabled = true
+            document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
+        }
+
+        if (response.takenColors.includes("red")) {
+            document.getElementById('redOption').querySelector('input').disabled = true
+            document.getElementById('redImage').src = "pictures/figureRedCross.png"
+
+        }
+
+
         currentGame.playerId = response.playerId;
 
         let serverResponseText = document.getElementById("inGameServerResponse");
@@ -300,6 +365,27 @@ function handleJoinGameResponse(response) {
         console.log(response.message);
     }
 }
+
+function startJoinedGame() {
+    const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
+    const playerName = document.getElementById('clientNameInput').value
+    if (playerName!= '' && selectedColor!= ''){
+        sendMessage({
+            type: 'pickColor',
+            gameId: currentGame.gameId,
+            playerColor: selectedColor,
+            playerName: playerName,
+            playerId: currentGame.playerId
+        });
+    }
+}
+
+function handlePickedColor(response) {
+    currentGame.playerName = response.playerName
+    currentGame.playerColor = response.playerColor
+    document.getElementById('succesfullJoinPopup').style.display = 'none'
+}
+
 
 function rollDice() {
     sendMessage({ type: 'rollDice' });
