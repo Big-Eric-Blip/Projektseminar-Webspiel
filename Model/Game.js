@@ -282,7 +282,7 @@ class Game {
     }
     getTokenById(tokenId) {
         for(let i= 0; i< this.tokens.length; i++) {
-            if(this.tokens[i].playerId === tokenId) {
+            if(this.tokens[i].tokenId === tokenId) {
                 return this.tokens[i]
             }
         }
@@ -297,7 +297,7 @@ class Game {
         let player = this.getPlayerById(playerId)
         token.fieldId = board.getStartingPosition(player.color)
         //update fieldId of token
-
+        console.log("Achieved the impossible")
     }
 
     moveToken(playerId, tokenId) {

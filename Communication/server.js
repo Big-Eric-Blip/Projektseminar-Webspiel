@@ -234,7 +234,8 @@ function checkClientMessage(message, playerId) {
                     game.leaveHouse(board,message.playerId, message.tokenId)
                     game.currentDieValue = 0
                     game.calculateAvailableGameActions(board)
-                    sendUpdateToAllPlayers(game);
+                        let message = "Player X moved out of the house"
+                    sendUpdateToAllPlayers(game, message);
                 }
             }
             return {
@@ -257,9 +258,10 @@ function sendMessageToAllPlayers(game, jsonMessage) {
     }
 }
 
-function sendUpdateToAllPlayers(game) {
+function sendUpdateToAllPlayers(game, message) {
     let jsonMessage = {
         type: "updateGame",
+        message: message,
         status: game.status,
         gameId: game.gameId,
         gameActions: JSON.stringify(game.gameActions),

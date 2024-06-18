@@ -594,6 +594,7 @@ function handleGameUpdate(message) {
     if (message.dieValue) {
         dieAnimation(message.dieValue)
     }
+    //document.getElementById("inGameMessage").innerHTML = message.message
     tokenToRenderer(tokens);
 
 }
