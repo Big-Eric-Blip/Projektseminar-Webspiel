@@ -469,13 +469,6 @@ function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
     dieAnimation(response.dieValue)
-/*
-    const diceResultDiv = document.getElementById('resultDice');
-    if (diceResultDiv) {
-        diceResultDiv.textContent = `${response.dieValue}`;
-    } else {
-        console.error('Element with id "diceResult" not found.');
-    }*/
 }
 
 function dieAnimation(final) {
@@ -525,7 +518,7 @@ function handleGameUpdate(message) {
         setGameState(message.status)
     }
     //update available game actions
-    let tokens = message.tokens
+    let tokens = JSON.parse(message.tokens)
     let gameId = message.gameId
     let gameActions = JSON.parse(message.gameActions)
     //clear out previously available game actions
@@ -587,35 +580,32 @@ function handleServerMessage(response) {
     console.log(serverResponseText);
 }
 
-//TODO: refactor + rename
 function onCanvasClick(event) {
 
-const rect = renderer.canvas.getBoundingClientRect();
-const scaleX = renderer.canvas.width / rect.width;
-const scaleY = renderer.canvas.height / rect.height;
-const clickX = (event.clientX - rect.left) * scaleX;
-const clickY = (event.clientY - rect.top) * scaleY;
+    const rect = renderer.canvas.getBoundingClientRect();
+    const scaleX = renderer.canvas.width / rect.width;
+    const scaleY = renderer.canvas.height / rect.height;
+    const clickX = (event.clientX - rect.left) * scaleX;
+    const clickY = (event.clientY - rect.top) * scaleY;
 
-const clickPoint = { x: clickX, y: clickY };
+    const clickPoint = { x: clickX, y: clickY };
 
-renderer.tokens.forEach(token => {
-    // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
-    const tokenSize = 35 * renderer.scale;
-    const tokenX = token.x;
-    const tokenY = token.y;
+    renderer.tokens.forEach(token => {
+        // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
+        const tokenSize = 35 * renderer.scale;
+        const tokenX = token.x;
+        const tokenY = token.y;
 
-    // Überprüfen, ob der Klick innerhalb des Bereichs des Tokens liegt
-    if (
-        clickPoint.x >= tokenX - tokenSize / 2 &&
-        clickPoint.x <= tokenX + tokenSize / 2 &&
-        clickPoint.y >= tokenY - tokenSize / 2 &&
-        clickPoint.y <= tokenY + tokenSize / 2
-    ) {
-        console.log(`Game piece clicked:`, token);
-        currentGame.currentTokenId = token.tn
-        moveToken(token.tn)
+        // Überprüfen, ob der Klick innerhalb des Bereichs des Tokens liegt
+        if (
+            clickPoint.x >= tokenX - tokenSize / 2 &&
+            clickPoint.x <= tokenX + tokenSize / 2 &&
+            clickPoint.y >= tokenY - tokenSize / 2 &&
+            clickPoint.y <= tokenY + tokenSize / 2
+        ) {
+            console.log(`Game piece clicked:`, token);
+            currentGame.currentTokenId = token.tn
+            moveToken(token.tn)
 
-    }
-});
-
-}
+        }
+    }); }
