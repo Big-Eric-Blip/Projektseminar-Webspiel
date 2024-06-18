@@ -602,10 +602,7 @@ function tokenToRenderer(tokens) {
     renderer.tokens = [];
     tokens.forEach(token => {
         let xCoord = getTokenXCoord(token.fieldId);
-       
-
-        let yCoord = getTokenYCoord(token.fieldId);
-        console.log(token)
+        let yCoord = getTokenYCoord(token.fieldId);        
         renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
         console.log(renderer.tokens)
     })
@@ -620,7 +617,6 @@ function getTokenXCoord(fieldId) {
         if (renderer.fields[i].fieldId === fieldId) {
             return renderer.fields[i].xCoord
         }
-
     }
 }
 
@@ -629,7 +625,6 @@ function getTokenYCoord(fieldId) {
         if (renderer.fields[i].fieldId === fieldId) {
             return renderer.fields[i].yCoord
         }
-
     }
 }
 
