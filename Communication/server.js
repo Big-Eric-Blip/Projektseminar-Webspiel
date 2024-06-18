@@ -26,10 +26,34 @@ app.use(express.json());
 function checkClientMessage(message, playerId) {
     switch (message.type) {
         case 'rollDice':
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    let dieValue = (Math.floor(Math.random() * 6) + 1).toString()
+                    //keep the following line for testing purposes
+                    //let dieValue = 6
+                    game.currentDieValue = dieValue
+                    game.calculateAvailableGameActions(board)
+                    sendMessageToAllPlayers(game, {
+                        type: 'updateGame',
+                        message: "Updated actions after rolling the dice",
+                        gameId: game.gameId,
+                        gameActions: JSON.stringify(game.gameActions),
+                        tokens: JSON.stringify(game.tokens),
+                        dieValue: dieValue
+                    })
+                    return {
+                        //type: 'rollDice',
+                        type: "updateGame",
+                        tokens: JSON.stringify(game.tokens),
+                        gameActions: JSON.stringify(game.gameActions),
+                        dieValue: dieValue
+                    };
+                }
+            }
             return {
-                type: 'rollDice',
-                dieValue: (Math.floor(Math.random() * 6) + 1).toString()
-            };
+                type: 'error',
+                message: "No game available with this id"
+            }
         case 'createGame':
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType, "LOBBY");
@@ -167,13 +191,16 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.status = "GAME_RUNNING";
-                    sendMessageToAllPlayers(game, {
-                        type: 'gameStarted',
-                        gameId: game.gameId,
-                        message: 'The game started!'
-                    });
                     game.initializePlayersTurn()
                     game.calculateAvailableGameActions(board)
+                    sendMessageToAllPlayers(game, {
+                        type: 'gameStarted',
+                        status: game.status,
+                        gameId: game.gameId,
+                        message: 'The game started!',
+                        gameActions: JSON.stringify(game.gameActions),
+                        tokens: JSON.stringify(game.tokens)
+                    });
                     return {
                         type: "updateGame",
                         message: "You´ve started the game.",
@@ -202,7 +229,11 @@ function checkClientMessage(message, playerId) {
             break;
         case "action_LEAVE_HOUSE":
             //TODO implement
-            break;
+            console.log("Arrived at the server side of action_LEAVE_HOUSE")
+            return{
+                type: 'message',
+                message: "Arrived at the server side of action_LEAVE_HOUSE"
+            }
 
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);

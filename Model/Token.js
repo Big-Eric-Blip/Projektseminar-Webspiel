@@ -24,6 +24,9 @@ class Token {
     getTokensPlayerId() {
         return this.playerId
     }
+    getTokenId(){
+        return this.tokenId
+    }
 }
 
 
