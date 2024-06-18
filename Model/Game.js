@@ -145,7 +145,7 @@ class Game {
             this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
         } else {
             //case by case
-            if (this.currentDieValue === 6) {
+            if (this.currentDieValue === 6||this.currentDieValue === '6') {
                 //TODO: what if there are no tokens left in the house?
                 //leave home + maybe move from starting position
                 //check if field starting position is empty or contains other token
