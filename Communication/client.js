@@ -166,7 +166,7 @@ function createGame() {
     const playerName = document.getElementById('adminNameInput').value;
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
     console.log(dieColor);
-    changeRollDiceImage("./pictures/"+dieColor+".png")
+    changeRollDiceImage("./pictures/" + dieColor + ".png")
 
     if (playerName != '') {
 
@@ -203,6 +203,7 @@ function startGame() {
         type: 'startGame',
         gameId: currentGame.gameId
     });
+
 }
 
 function leaveGame() {
@@ -349,7 +350,8 @@ function initRenderer(response) {
     });
 
     renderer.canvas.addEventListener('click', function (e) {
-        onCanvasClick(e)})
+        onCanvasClick(e)
+    })
     renderer.fields = response.fields;
     renderer.drawFields();
     renderer.drawTokens();
@@ -360,10 +362,10 @@ function startJoinedGame() {
     const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
     const playerName = document.getElementById('clientNameInput').value
     dieColor = document.querySelector('input[name="dieOptionClient"]:checked').value;
-    changeRollDiceImage("./pictures/"+dieColor+".png")
+    changeRollDiceImage("./pictures/" + dieColor + ".png")
     console.log(dieColor);
 
-    if (playerName!= '' && selectedColor!= ''){
+    if (playerName != '' && selectedColor != '') {
         sendMessage({
             type: 'pickColor',
             gameId: currentGame.gameId,
@@ -383,7 +385,7 @@ function handlePickedColor(response) {
 
 function rollDice() {
     //check if action allowed
-    if(isPlayerEligibleForGameAction('ROLL_DIE')) {
+    if (isPlayerEligibleForGameAction('ROLL_DIE')) {
         sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
     } else {
         //send message to the sideboard
@@ -400,9 +402,9 @@ function rollDice() {
  * @return {boolean}
  */
 function isPlayerEligibleForGameAction(action) {
-    for(let i = 0; i < availableGameActions.length; i++) {
-        if(currentGame.playerId === availableGameActions[i].playerId) {
-            if(availableGameActions[i].action === action) {
+    for (let i = 0; i < availableGameActions.length; i++) {
+        if (currentGame.playerId === availableGameActions[i].playerId) {
+            if (availableGameActions[i].action === action) {
                 return true
             }
         }
@@ -416,9 +418,9 @@ function isPlayerEligibleForGameAction(action) {
  * @return {boolean}
  */
 function isPlayerEligible() {
-    for(let i = 0; i < availableGameActions.length; i++) {
-        if(currentGame.playerId === availableGameActions[i].playerId) {
-                return true
+    for (let i = 0; i < availableGameActions.length; i++) {
+        if (currentGame.playerId === availableGameActions[i].playerId) {
+            return true
 
         }
     }
@@ -432,9 +434,9 @@ function isPlayerEligible() {
  * @return {boolean} true if the token can be moved
  */
 function validateMoveToken(tokenId) {
-    if(isPlayerEligible()) {
-        for(let i = 0; i<availableGameActions.length;i++) {
-            if(availableGameActions[i].tokenId === tokenId) {
+    if (isPlayerEligible()) {
+        for (let i = 0; i < availableGameActions.length; i++) {
+            if (availableGameActions[i].tokenId === tokenId) {
                 console.log("Validation tried and true")
                 return availableGameActions[i].action
             }
@@ -470,12 +472,12 @@ function handleRollDiceResponse(response) {
 
 function dieAnimation(final) {
     const images = [
-        'pictures/'+dieColor+'1.png',
-        'pictures/'+dieColor+'2.png',
-        'pictures/'+dieColor+'3.png',
-        'pictures/'+dieColor+'4.png',
-        'pictures/'+dieColor+'5.png',
-        'pictures/'+dieColor+'6.png'
+        'pictures/' + dieColor + '1.png',
+        'pictures/' + dieColor + '2.png',
+        'pictures/' + dieColor + '3.png',
+        'pictures/' + dieColor + '4.png',
+        'pictures/' + dieColor + '5.png',
+        'pictures/' + dieColor + '6.png'
     ];
     let currentIndex = 0;
     const intervalTime = 100; // Time between image changes in milliseconds
@@ -488,7 +490,7 @@ function dieAnimation(final) {
 
     setTimeout(() => {
         clearInterval(intervalId);
-        changeRollDiceImage('pictures/'+dieColor+final+'.png');
+        changeRollDiceImage('pictures/' + dieColor + final + '.png');
     }, totalDuration);
 }
 
@@ -497,9 +499,9 @@ function moveToken(tokenId) {
     //Can this token be moved?
     let validation = validateMoveToken(tokenId)
     //if yes
-    if(validation) {
+    if (validation) {
         let gameAction = '' + validation
-        chooseGameAction(gameAction,tokenId)
+        chooseGameAction(gameAction, tokenId)
         console.log("Execute game action " + validation)
     } else {
         document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
@@ -520,19 +522,60 @@ function handleGameUpdate(message) {
     let gameId = message.gameId
     let gameActions = JSON.parse(message.gameActions)
     updateGameActions(gameActions)
-    if(message.dieValue) {
+    if (message.dieValue) {
         dieAnimation(message.dieValue)
     }
     //TODO: update board with current token positions
+    tokenToRenderer(tokens);
 
 }
+
+
+function tokenToRenderer(tokens) {
+    renderer.tokens = [];
+    tokens.forEach(token => {
+        let xCoord = getTokenXCoord(token.fieldId);
+       
+
+        let yCoord = getTokenYCoord(token.fieldId);
+        console.log(token)
+        renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
+        console.log(renderer.tokens)
+    })
+    
+    renderer.drawFields();
+    renderer.drawTokens();
+
+}
+
+function getTokenXCoord(fieldId) {
+    for (let i = 0; i < renderer.fields.length; i++) {
+        if (renderer.fields[i].fieldId === fieldId) {
+            return renderer.fields[i].xCoord
+        }
+
+    }
+}
+
+function getTokenYCoord(fieldId) {
+    for (let i = 0; i < renderer.fields.length; i++) {
+        if (renderer.fields[i].fieldId === fieldId) {
+            return renderer.fields[i].yCoord
+        }
+
+    }
+}
+
+
 function updateGameActions(gameActions) {
     //clear out previously available game actions
     availableGameActions = []
     //add gameActions from the message
     gameActions.forEach(gameAction => {
-        availableGameActions.push({playerId: gameAction.playerId, action: gameAction.action, tokenId:gameAction.tokenId,
-            amount: gameAction.amount, fieldId: gameAction.fieldId})
+        availableGameActions.push({
+            playerId: gameAction.playerId, action: gameAction.action, tokenId: gameAction.tokenId,
+            amount: gameAction.amount, fieldId: gameAction.fieldId
+        })
         console.log(gameAction)
     })
     //example for how to access values from the array
@@ -568,13 +611,15 @@ function handleLeftGame(message) {
 }
 
 function handleGameStarted(message) {
-//     todo show in response text or something like that
+    //     todo show in response text or something like that
     console.log(message)
     document.getElementById("inGameMessage").innerHTML = message.message;
     //document.getElementById('rollDiceButton').style.display = 'block';
     handleGameUpdate(message)
     setGameState("GAME_RUNNING")
-    console.log("The current state is: " + currentGame.gameState)
+    console.log("The current state is: " + currentGame.gameState);
+
+
 }
 
 function handleServerMessage(response) {
@@ -612,4 +657,5 @@ function onCanvasClick(event) {
             moveToken(token.tn)
             //renderer.moveToken(token)
         }
-    }); }
+    });
+}
