@@ -28,14 +28,22 @@ function checkClientMessage(message, playerId) {
         case 'rollDice':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    let dieValue = (Math.floor(Math.random() * 6) + 1).toString()
+                    //let dieValue = (Math.floor(Math.random() * 6) + 1).toString()
                     //keep the following line for testing purposes
-                    //let dieValue = 6
+                    let dieValue = 6
                     game.currentDieValue = dieValue
                     game.calculateAvailableGameActions(board)
+                    sendMessageToAllPlayers(game, {
+                        type: 'updateGame',
+                        message: "Updated actions after rolling the dice",
+                        gameId: game.gameId,
+                        gameActions: JSON.stringify(game.gameActions),
+                        tokens: JSON.stringify(game.tokens),
+                        dieValue: dieValue
+                    })
                     return {
-                        type: 'rollDice',
-                        //type: "updateGame",
+                        //type: 'rollDice',
+                        type: "updateGame",
                         tokens: JSON.stringify(game.tokens),
                         gameActions: JSON.stringify(game.gameActions),
                         dieValue: dieValue
@@ -156,6 +164,7 @@ function checkClientMessage(message, playerId) {
                     game.calculateAvailableGameActions(board)
                     sendMessageToAllPlayers(game, {
                         type: 'gameStarted',
+                        status: game.status,
                         gameId: game.gameId,
                         message: 'The game started!',
                         gameActions: JSON.stringify(game.gameActions),
@@ -194,7 +203,6 @@ function checkClientMessage(message, playerId) {
                 type: 'message',
                 message: "Arrived at the server side of action_LEAVE_HOUSE"
             }
-            break;
 
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);

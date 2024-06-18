@@ -525,7 +525,9 @@ function handleGameUpdate(message) {
     let gameId = message.gameId
     let gameActions = JSON.parse(message.gameActions)
     updateGameActions(gameActions)
-
+    if(message.dieValue) {
+        dieAnimation(message.dieValue)
+    }
     //TODO: update board with current token positions
 
 }
