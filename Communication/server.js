@@ -197,9 +197,16 @@ function checkClientMessage(message, playerId) {
             // }
             break;
         case "action_LEAVE_HOUSE":
-            //TODO implement
-            console.log("Arrived at the server side of action_LEAVE_HOUSE")
-            return{
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    console.log("Arrived at the server side of action_LEAVE_HOUSE")
+                    game.leaveHouse(board,message.playerId, message.tokenId)
+                    game.currentDieValue = 0
+                    game.calculateAvailableGameActions(board)
+                    sendUpdateToAllPlayers(game);
+                }
+            }
+            return {
                 type: 'message',
                 message: "Arrived at the server side of action_LEAVE_HOUSE"
             }
@@ -211,6 +218,22 @@ function checkClientMessage(message, playerId) {
 }
 
 function sendMessageToAllPlayers(game, jsonMessage) {
+    for (const player of game.player) {
+        let client = clients.get(player.playerId)
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(jsonMessage));
+        }
+    }
+}
+
+function sendUpdateToAllPlayers(game) {
+    let jsonMessage = {
+        type: "updateGame",
+        status: game.status,
+        gameId: game.gameId,
+        gameActions: JSON.stringify(game.gameActions),
+        tokens: JSON.stringify(game.tokens)
+    }
     for (const player of game.player) {
         let client = clients.get(player.playerId)
         if (client.readyState === WebSocket.OPEN) {

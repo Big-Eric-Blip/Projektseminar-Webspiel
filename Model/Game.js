@@ -144,12 +144,31 @@ class Game {
             // it's the player's turn to roll the die
             this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
         } else {
+            //check if player is on own starting position
+            let startingPosition = board.getStartingPosition(currentPlayer.getColor())
+            let nextPosition =board.getNextPosition(startingPosition,this.currentDieValue,1)
+            for(let i = 0; i<this.playersTokens.length; i++) {
+                if(this.playersTokens[i].fieldId === startingPosition) {
+                    if(this.isFieldEmpty(nextPosition) === true) {
+                        this.gameActions.push(new GameAction(currentPlayer.playerId, 'MOVE',
+                            this.playersTokens[i].tokenId, nextPosition, this.currentDieValue))
+                        return
+                    } else if(this.isFieldEmpty(nextPosition).getPlayerId() !== currentPlayer.playerId()){
+                        // check that the next field is populated by an enemy token
+                            this.gameActions.push(new GameAction(currentPlayer.playerId, 'BEAT',
+                                this.playersTokens[i].tokenId, nextPosition, this.currentDieValue))
+                        return
+                        }
+                    }
+
+                }
+            }
             //case by case
             if (this.currentDieValue === 6||this.currentDieValue === '6') {
                 //TODO: what if there are no tokens left in the house?
                 //leave home + maybe move from starting position
                 //check if field starting position is empty or contains other token
-                let startingPosition = board.getStartingPosition(currentPlayer.getColor())
+
                 let fieldCheck = this.isFieldEmpty(startingPosition)
                 //if own token on starting position: needs to move!
                 // except if beats own token
@@ -183,6 +202,7 @@ class Game {
                                     fieldCheck.tokenId, nextFieldCheck, this.currentDieValue))
 
                             }
+                            //TODO implement own case
                         }
                     }
                 }
@@ -250,13 +270,34 @@ class Game {
             }
             //if no actions are available, push "NONE" to signal this to the client
             //this.gameActions.push(new GameAction(currentPlayer.playerId, 'NONE'))
+
+    }
+    getPlayerById(playerId) {
+        for(let i= 0; i< this.player.length; i++) {
+            if(this.player[i].playerId === playerId) {
+                return this.player[i]
+            }
         }
+        return false;
+    }
+    getTokenById(tokenId) {
+        for(let i= 0; i< this.tokens.length; i++) {
+            if(this.tokens[i].playerId === tokenId) {
+                return this.tokens[i]
+            }
+        }
+        return false;
     }
 
     //actually complete game actions
-    leaveHouse(playerId, tokenId) {
-        //DO NOT UPDATE PLAYERS TURN!
-        //TODO implement this function
+    leaveHouse(board, playerId, tokenId) {
+        //DO NOT UPDATE PLAYERS TURN! OR MAYBE DO?
+        //get token object,
+        let token = this.getTokenById(tokenId);
+        let player = this.getPlayerById(playerId)
+        token.fieldId = board.getStartingPosition(player.color)
+        //update fieldId of token
+
     }
 
     moveToken(playerId, tokenId) {

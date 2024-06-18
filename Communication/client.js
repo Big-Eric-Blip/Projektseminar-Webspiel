@@ -456,7 +456,8 @@ function chooseGameAction(gameAction, tokenId) {
     sendMessage({
         type: 'action_' + gameAction, //for example: action_LEAVE_HOUSE
         tokenId: tokenId,
-        playerId: currentGame.playerId
+        playerId: currentGame.playerId,
+        gameId: currentGame.gameId
     })
 }
 
