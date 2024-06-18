@@ -1,15 +1,22 @@
+//constant variables
+const url = "ws://127.0.0.1:3000";
+const Renderer = require('../View/Renderer');
+
+//dynamic variables
 let currentGame = {
     gameId: "",
     playerId: "",
-    gameState: "PRE_GAME" //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    gameState: "PRE_GAME", //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    currentTokenId: '',
+    playerColor: "",
+    playerName: "" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
-let availableGameActions = new Set;
+let availableGameActions = [];
 
+let dieColor;
 
 let socket = null;
 let isSocketOpen = false;
-const url = "ws://127.0.0.1:3000";
-const Renderer = require('../View/Renderer');
 
 function initWebSocketConnection() {
     socket = new WebSocket(url);
@@ -64,6 +71,8 @@ function fromServerMessage(event) {
         case 'gameStarted':
             handleGameStarted(message);
             break;
+        case 'pickedColor':
+            handlePickedColor(message)
         case 'message':
             handleServerMessage(message);
             break;
@@ -95,15 +104,21 @@ document.addEventListener('DOMContentLoaded', function () {
         //Create Game
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
-        joinGameButton: joinGame,
-        startGameButton: startGame,
-        leaveGameButton: leaveGame,
-        landingPageButton: returnToLandingPage,
         createGameButton: createGame,
 
         //Join Game
         joinGamePopupButton: openJoinGamePopup,
         closeJoinGamePopupButton: closeJoinGamePopup,
+        joinGameButton: joinGame,
+
+        //Succesfull Join
+        startJoinedGameButton: startJoinedGame,
+        cancelButton: cancel,
+
+        //Lobby
+        startGameButton: startGame,
+        leaveGameButton: leaveGame,
+        landingPageButton: returnToLandingPage,
 
         //Game Buttons
         rollDiceButton: rollDice,
@@ -137,18 +152,45 @@ function closeCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'none';
 }
 
+function cancel() {
+    //ToDo checken
+    leaveGame()
+    document.getElementById('succesfullJoinPopup').style.display = 'none';
+    setGameState("PRE_GAME")
+    document.getElementById('myCanvas').style.display = 'none';
+}
+
 function createGame() {
-    setGameState("LOBBY")
-    const selectedColor = document.querySelector('input[name="playerColor"]:checked');
-    // TODO set parameter to not static values
-    sendMessage({
-        type: 'createGame',
-        boardType: "default",
-        playerName: "Alice",
-        playerColor: "red"
-    });
+
+    const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
+    const playerName = document.getElementById('adminNameInput').value;
+    dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
+    console.log(dieColor);
+    changeRollDiceImage("./pictures/"+dieColor+".png")
+
+    if (playerName != '') {
+
+        setGameState("LOBBY")
+        document.getElementById('createGamePopup').style.display = 'none';
+
+        sendMessage({
+            type: 'createGame',
+            boardType: "default",
+            playerName: playerName,
+            playerColor: selectedColor
+        });
+    }
+
     //the game state influences the CSS of the game
 
+}
+
+// Function to change the roll dice button image
+function changeRollDiceImage(newSrc) {
+    const rollDiceButtonImg = document.querySelector('#rollDiceButton img');
+    if (rollDiceButtonImg) {
+        rollDiceButtonImg.src = newSrc;
+    }
 }
 
 function returnToLandingPage() {
@@ -234,21 +276,15 @@ function endGame() {
 }
 
 function handleCreateGameResponse(response) {
-    document.getElementById("inGameServerResponse").innerHTML = "Nice. You've created a game."
+    document.getElementById("inGameMessage").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
 
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
-    document.getElementById("createGameButton").style.display = 'none';
-    renderer.fields = response.fields;
-    document.addEventListener("DOMContentLoaded", function () {
-        const renderer = new Renderer("myCanvas");
-    });
-    renderer.drawFields();
-    renderer.drawTokens();
-    document.getElementById('leaveGameButton').style.display = 'block';
+    //document.getElementById("createGameButton").style.display = 'none';
+    initRenderer(response)
 }
 
 function joinGame() {
@@ -263,23 +299,42 @@ function joinGame() {
 
 function handleJoinGameResponse(response) {
     if (response.playerId) {
-        currentGame.playerId = response.playerId;
+        document.getElementById('joinGamePopup').style.display = 'none'
+        document.getElementById('succesfullJoinPopup').style.display = 'block'
 
-        let serverResponseText = document.getElementById("inGameServerResponse");
+
+        //Make taken colors unavailable
+        if (response.takenColors.includes("blue")) {
+            document.getElementById('blueOption').querySelector('input').disabled = true
+            document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
+        }
+
+        if (response.takenColors.includes("yellow")) {
+            document.getElementById('yellowOption').querySelector('input').disabled = true
+            document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
+        }
+
+        if (response.takenColors.includes("green")) {
+            document.getElementById('greenOption').querySelector('input').disabled = true
+            document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
+        }
+
+        if (response.takenColors.includes("red")) {
+            document.getElementById('redOption').querySelector('input').disabled = true
+            document.getElementById('redImage').src = "pictures/figureRedCross.png"
+
+        }
+
+
+        currentGame.playerId = response.playerId;
+        let serverResponseText = document.getElementById("inGameMessage");
         serverResponseText.innerHTML = "You've joined the game. " +
             "Please choose a name and a color";
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
+        initRenderer(response)
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const renderer = new Renderer("myCanvas");
-
-        });
-        renderer.fields = response.fields;
-            renderer.drawFields();
-            renderer.drawTokens();
-        console.log(renderer.fields)
 
     } else {
         let serverResponseText = document.getElementById("joinGamePopupServerResponse");
@@ -288,20 +343,120 @@ function handleJoinGameResponse(response) {
     }
 }
 
+function initRenderer(response) {
+    document.addEventListener("DOMContentLoaded", function () {
+        const renderer = new Renderer("myCanvas");
+    });
+
+    renderer.canvas.addEventListener('click', function (e) {
+        onCanvasClick(e)})
+    renderer.fields = response.fields;
+    renderer.drawFields();
+    renderer.drawTokens();
+    console.log(renderer.fields)
+}
+
+function startJoinedGame() {
+    const selectedColor = document.querySelector('input[name="clientColor"]:checked').value
+    const playerName = document.getElementById('clientNameInput').value
+    dieColor = document.querySelector('input[name="dieOptionClient"]:checked').value;
+    changeRollDiceImage("./pictures/"+dieColor+".png")
+    console.log(dieColor);
+
+    if (playerName!= '' && selectedColor!= ''){
+        sendMessage({
+            type: 'pickColor',
+            gameId: currentGame.gameId,
+            playerColor: selectedColor,
+            playerName: playerName,
+            playerId: currentGame.playerId
+        });
+    }
+}
+
+function handlePickedColor(response) {
+    currentGame.playerName = response.playerName
+    currentGame.playerColor = response.playerColor
+    document.getElementById('succesfullJoinPopup').style.display = 'none'
+}
+
+
 function rollDice() {
-    sendMessage({ type: 'rollDice' });
+    //check if action allowed
+    if(isPlayerEligibleForGameAction('ROLL_DIE')) {
+        sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
+    } else {
+        //send message to the sideboard
+        document.getElementById("inGameMessage").innerHTML = "It's not your turn"
+        //console.log("It's not your turn.")
+    }
+
 }
 
 /**
- * Sends a message to the server to initiate the execution of the chosen game action
- * @param gameAction
+ * Checks if the player of this session is eligible to complete
+ * a given action at this stage of the game
+ * @param {string} action the action the player wants to perform
+ * @return {boolean}
  */
-function chooseGameAction(gameAction) {
-    let action = 'text'
+function isPlayerEligibleForGameAction(action) {
+    for(let i = 0; i < availableGameActions.length; i++) {
+        if(currentGame.playerId === availableGameActions[i].playerId) {
+            if(availableGameActions[i].action === action) {
+                return true
+            }
+        }
+    }
+    console.log(currentGame.playerId + " is not eligible for game action " + action)
+    return false
+}
+
+/**
+ * Checks whether the player currently has any available game actions
+ * @return {boolean}
+ */
+function isPlayerEligible() {
+    for(let i = 0; i < availableGameActions.length; i++) {
+        if(currentGame.playerId === availableGameActions[i].playerId) {
+                return true
+
+        }
+    }
+    return false
+}
+
+/**
+ * Checks whether the current player can move a given token
+ * if the player is not eligible or the token can't be moved, this is logged to the console
+ * @param {string} tokenId the token to be moved
+ * @return {boolean} true if the token can be moved
+ */
+function validateMoveToken(tokenId) {
+    if(isPlayerEligible()) {
+        for(let i = 0; i<availableGameActions.length;i++) {
+            if(availableGameActions[i].tokenId === tokenId) {
+                console.log("Validation tried and true")
+                return availableGameActions[i].action
+            }
+        }
+        console.log("This move is not possible!")
+        return false
+    } else {
+        console.log("It's not your turn to play!")
+        return false
+    }
+}
+
+/**
+ * Sends a message to the server to initiate the execution of the chosen game action (all except ROLL_DIE)
+ * @param {string} gameAction
+ * @param {string} tokenId
+ */
+function chooseGameAction(gameAction, tokenId) {
     sendMessage({
-        type: 'action_' + action, //for example: action_ROLL_DIE
-
-
+        type: 'action_' + gameAction, //for example: action_LEAVE_HOUSE
+        tokenId: tokenId,
+        playerId: currentGame.playerId
     })
 }
 
@@ -309,24 +464,46 @@ function chooseGameAction(gameAction) {
 function handleRollDiceResponse(response) {
     console.log(response);
     console.log(response.dieValue);
+    dieAnimation(response.dieValue)
+    updateGameActions(JSON.parse(response.gameActions))
+}
 
-    const diceResultDiv = document.getElementById('resultDice');
-    if (diceResultDiv) {
-        diceResultDiv.textContent = `${response.dieValue}`;
-    } else {
-        console.error('Element with id "diceResult" not found.');
-    }
+function dieAnimation(final) {
+    const images = [
+        'pictures/'+dieColor+'1.png',
+        'pictures/'+dieColor+'2.png',
+        'pictures/'+dieColor+'3.png',
+        'pictures/'+dieColor+'4.png',
+        'pictures/'+dieColor+'5.png',
+        'pictures/'+dieColor+'6.png'
+    ];
+    let currentIndex = 0;
+    const intervalTime = 100; // Time between image changes in milliseconds
+    const totalDuration = 1000; // Total duration of the animation in milliseconds
+
+    const intervalId = setInterval(() => {
+        changeRollDiceImage(images[currentIndex]);
+        currentIndex = (currentIndex + 1) % images.length;
+    }, intervalTime);
+
+    setTimeout(() => {
+        clearInterval(intervalId);
+        changeRollDiceImage('pictures/'+dieColor+final+'.png');
+    }, totalDuration);
 }
 
 
-function moveToken(tokenId, dieValue) {
-
-    sendMessage({
-        type: "moveToken",
-        tokenId: tokenId,
-        dieValue: dieValue
-    })
-
+function moveToken(tokenId) {
+    //Can this token be moved?
+    let validation = validateMoveToken(tokenId)
+    //if yes
+    if(validation) {
+        let gameAction = '' + validation
+        chooseGameAction(gameAction,tokenId)
+        console.log("Execute game action " + validation)
+    } else {
+        document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
+    }
 }
 
 /**
@@ -339,17 +516,30 @@ function handleGameUpdate(message) {
         setGameState(message.status)
     }
     //update available game actions
-    let gameActions = message.gameActions
-    let tokens = message.tokens
+    let tokens = JSON.parse(message.tokens)
     let gameId = message.gameId
-    availableGameActions.add(gameActions)
-    //message: "You´ve started the game.",
+    let gameActions = JSON.parse(message.gameActions)
+    updateGameActions(gameActions)
+    if(message.dieValue) {
+        dieAnimation(message.dieValue)
+    }
     //TODO: update board with current token positions
 
-    //availableGameActions = message.
-
+}
+function updateGameActions(gameActions) {
+    //clear out previously available game actions
+    availableGameActions = []
+    //add gameActions from the message
+    gameActions.forEach(gameAction => {
+        availableGameActions.push({playerId: gameAction.playerId, action: gameAction.action, tokenId:gameAction.tokenId,
+            amount: gameAction.amount, fieldId: gameAction.fieldId})
+        console.log(gameAction)
+    })
+    //example for how to access values from the array
+    console.log(availableGameActions[0].action)
 }
 
+//TODO: evaluate the usage of this function and probably delete!
 function handleMoveTokenResponse(response) {
     console.log(response)
     console.log(response.dieValue)
@@ -357,7 +547,7 @@ function handleMoveTokenResponse(response) {
 }
 
 function handlePlayerJoinedResponse(message) {
-    document.getElementById("inGameServerResponse").innerHTML =
+    document.getElementById("inGameMessage").innerHTML =
         "A new player joined your game. There are now " + message.numberOfPlayers + " players in your game."
 }
 
@@ -365,14 +555,14 @@ function handleAPlayerLeftGame(message) {
     const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
         ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
         (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
-    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameMessage").innerHTML = serverResponseText;
     console.log(serverResponseText)
     console.log("There are now " + message.numberOfPlayers + " players in your game.")
 }
 
 function handleLeftGame(message) {
     const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
-    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameMessage").innerHTML = serverResponseText;
     document.getElementById("gameId").innerHTML = "";
     console.log(serverResponseText);
 }
@@ -380,14 +570,46 @@ function handleLeftGame(message) {
 function handleGameStarted(message) {
 //     todo show in response text or something like that
     console.log(message)
-    document.getElementById("inGameServerResponse").innerHTML = message.message;
-    document.getElementById('rollDiceButton').style.display = 'block';
-
+    document.getElementById("inGameMessage").innerHTML = message.message;
+    //document.getElementById('rollDiceButton').style.display = 'block';
+    handleGameUpdate(message)
+    setGameState("GAME_RUNNING")
+    console.log("The current state is: " + currentGame.gameState)
 }
 
 function handleServerMessage(response) {
     // TODO show message in game in grey block on the left or maybe implement chat and show it there
     const serverResponseText = response.message;
-    document.getElementById("inGameServerResponse").innerHTML = serverResponseText;
+    document.getElementById("inGameMessage").innerHTML = serverResponseText;
     console.log(serverResponseText);
 }
+
+function onCanvasClick(event) {
+
+    const rect = renderer.canvas.getBoundingClientRect();
+    const scaleX = renderer.canvas.width / rect.width;
+    const scaleY = renderer.canvas.height / rect.height;
+    const clickX = (event.clientX - rect.left) * scaleX;
+    const clickY = (event.clientY - rect.top) * scaleY;
+
+    const clickPoint = { x: clickX, y: clickY };
+
+    renderer.tokens.forEach(token => {
+        // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
+        const tokenSize = 35 * renderer.scale;
+        const tokenX = token.x;
+        const tokenY = token.y;
+
+        // Überprüfen, ob der Klick innerhalb des Bereichs des Tokens liegt
+        if (
+            clickPoint.x >= tokenX - tokenSize / 2 &&
+            clickPoint.x <= tokenX + tokenSize / 2 &&
+            clickPoint.y >= tokenY - tokenSize / 2 &&
+            clickPoint.y <= tokenY + tokenSize / 2
+        ) {
+            console.log(`Game piece clicked:`, token);
+            currentGame.currentTokenId = token.tn
+            moveToken(token.tn)
+            //renderer.moveToken(token)
+        }
+    }); }

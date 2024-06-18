@@ -2,14 +2,14 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
-const {v4: uuidv4} = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({server});
+const wss = new WebSocket.Server({ server });
 const clients = new Map();
 let games = [];
 let board = new Board(4, 4);
@@ -26,10 +26,34 @@ app.use(express.json());
 function checkClientMessage(message, playerId) {
     switch (message.type) {
         case 'rollDice':
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    let dieValue = (Math.floor(Math.random() * 6) + 1).toString()
+                    //keep the following line for testing purposes
+                    //let dieValue = 6
+                    game.currentDieValue = dieValue
+                    game.calculateAvailableGameActions(board)
+                    sendMessageToAllPlayers(game, {
+                        type: 'updateGame',
+                        message: "Updated actions after rolling the dice",
+                        gameId: game.gameId,
+                        gameActions: JSON.stringify(game.gameActions),
+                        tokens: JSON.stringify(game.tokens),
+                        dieValue: dieValue
+                    })
+                    return {
+                        //type: 'rollDice',
+                        type: "updateGame",
+                        tokens: JSON.stringify(game.tokens),
+                        gameActions: JSON.stringify(game.gameActions),
+                        dieValue: dieValue
+                    };
+                }
+            }
             return {
-                type: 'rollDice',
-                dieValue: (Math.floor(Math.random() * 6) + 1).toString()
-            };
+                type: 'error',
+                message: "No game available with this id"
+            }
         case 'createGame':
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType, "LOBBY");
@@ -66,11 +90,18 @@ function checkClientMessage(message, playerId) {
                         numberOfPlayers: game.player.length + 1,
                         fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     });
+                    let takenColors = []
+                    for (const player of game.player) {
+                        if (player.color !== "") {
+                            takenColors.push(player.color)
+                        }
+                    }
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
                         playerId: playerId,
+                        takenColors: takenColors,
                         fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     };
                 }
@@ -80,6 +111,24 @@ function checkClientMessage(message, playerId) {
                 message: `There is no game with game id: ${(message.gameId === "" ? "empty game id" : message.gameId)}`,
 
             };
+
+        case 'pickColor':
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    for (const player of game.player) {
+                        if (player.playerId === message.playerId) {
+                            player.color = message.playerColor
+                            player.name = message.playerName
+                            addTokensOnPlayerJoin(message, playerId, game);
+                            return { type: 'pickedColor', message: `Successfully picked color!` }
+                        }
+                    }
+                    return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
+                }
+            }
+            return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
+
+
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
                 if (games[i].gameId === message.gameId) {
@@ -111,13 +160,16 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.status = "GAME_RUNNING";
-                    sendMessageToAllPlayers(game, {
-                        type: 'gameStarted',
-                        gameId: game.gameId,
-                        message: 'The game started!'
-                    });
                     game.initializePlayersTurn()
                     game.calculateAvailableGameActions(board)
+                    sendMessageToAllPlayers(game, {
+                        type: 'gameStarted',
+                        status: game.status,
+                        gameId: game.gameId,
+                        message: 'The game started!',
+                        gameActions: JSON.stringify(game.gameActions),
+                        tokens: JSON.stringify(game.tokens)
+                    });
                     return {
                         type: "updateGame",
                         message: "You´ve started the game.",
@@ -146,7 +198,11 @@ function checkClientMessage(message, playerId) {
             break;
         case "action_LEAVE_HOUSE":
             //TODO implement
-            break;
+            console.log("Arrived at the server side of action_LEAVE_HOUSE")
+            return{
+                type: 'message',
+                message: "Arrived at the server side of action_LEAVE_HOUSE"
+            }
 
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
@@ -207,7 +263,7 @@ function leaveGameOnCloseWindow(playerId) {
     for (const game of games) {
         for (const player of game.player) {
             if (player.playerId === playerId) {
-                checkClientMessage({type: 'leaveGame', gameId: game.gameId}, playerId);
+                checkClientMessage({ type: 'leaveGame', gameId: game.gameId }, playerId);
                 return;
             }
         }
