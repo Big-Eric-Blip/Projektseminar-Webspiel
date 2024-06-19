@@ -450,13 +450,32 @@ function handlePickedColor(response) {
 function rollDice() {
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
-        sendMessage({type: 'rollDice', gameId: currentGame.gameId});
+        let actionTurnCounter = returnActionTurnCounter()
+        if(actionTurnCounter) {
+            sendMessage({type: 'rollDice', gameId: currentGame.gameId, turnCounter: actionTurnCounter});
+        } else {
+            sendMessage({type: 'rollDice', gameId: currentGame.gameId});
+        }
+
     } else {
         //send message to the sideboard
         document.getElementById("inGameMessage").innerHTML = "It's not your turn"
         //console.log("It's not your turn.")
     }
 
+}
+function returnActionTurnCounter() {
+    for (let i = 0; i < availableGameActions.length; i++) {
+        if (currentGame.playerId === availableGameActions[i].playerId) {
+            if (availableGameActions[i].action === 'ROLL_DIE') {
+                if (0 <availableGameActions[i].amount <4) {
+                    return availableGameActions[i].amount
+                } else {
+                    return false
+                }
+            }
+        }
+    }
 }
 
 /**

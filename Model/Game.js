@@ -18,6 +18,8 @@ class Game {
         this.gameActions = [];
         this.currentDieValue = 0
         this.playersTokens = []
+        this.allInHouse = false
+        this.allInHouseIterator = 0
     }
 
     //GETTERS, SETTERS and ADMIN functions
@@ -125,25 +127,42 @@ class Game {
      * It does NOT execute any actions by itself. The actions are then triggered
      * in the next step by the client
      * Available actions: LEAVE_HOUSE, ENTER_GOAL, BEAT, MOVE, MOVE_GOAL, ENTER_GOAL
-     * @param board on which the game actions are performed
+     * @param {Board} board on which the game actions are performed
+     * @param {Number} turnCounter optional parameter used for situations where
+     *                              multiple die rolls of the same person happen
      */
-    calculateAvailableGameActions(board) {
+    calculateAvailableGameActions(board, turnCounter) {
         //empty out all old values
         this.gameActions = []
         //calculate new values
         let currentPlayer = this.player[this.getCurrentPlayerIndex()]
         //update playersTokens
+        //fill the array with the current players tokens + count the number of tokens in the house
         this.playersTokens = []
+        let numberOfTokensInHouse = 0
         for(let i=0; i<this.tokens.length; i++) {
             if(this.tokens[i].playerId === currentPlayer.playerId) {
                 this.playersTokens.push(this.tokens[i])
+                if(this.tokens[i].inHouse === true) {
+                    numberOfTokensInHouse++
+                }
             }
         }
+        this.allInHouse = numberOfTokensInHouse === this.playersTokens.length;
         //die value available?
         if (this.currentDieValue === 0) {
             // it's the player's turn to roll the die
-            this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
+            if(this.allInHouse===true) {
+                if (turnCounter === -1 || !turnCounter) {
+                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE','','', 1))
+                } else if (turnCounter<3) {
+                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE','','',turnCounter++))
+                }
+            } else {
+                this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
+            }
         } else {
+
             //check if player is on own starting position
             let startingPosition = board.getStartingPosition(currentPlayer.getColor())
             let nextPosition =board.getNextPosition(startingPosition,this.currentDieValue,1)
@@ -207,6 +226,17 @@ class Game {
                     }
                 }
             } else if (this.currentDieValue < 6 && this.currentDieValue > 0) {
+                //if all tokens are on home fields
+                if(this.allInHouse===true) {
+                    if (turnCounter === -1 || !turnCounter) {
+                        this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE','','', 1))
+                    return
+                    } else if (turnCounter<3) {
+                        let count = turnCounter +1
+                        this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE','','',count))
+                    return
+                    }
+                }
                 //regular cases
                 //next position = string of the fieldId
                 for (let i = 0; i < this.playersTokens.length; i++) {
@@ -294,6 +324,8 @@ class Game {
         let token = this.getTokenById(tokenId);
         let player = this.getPlayerById(playerId)
         token.fieldId = board.getStartingPosition(player.color)
+        token.inHouse =false
+        token.inGame = true
         //update fieldId of token
         console.log("Achieved the impossible")
         this.currentDieValue = 0
@@ -304,12 +336,15 @@ class Game {
         let player = this.getPlayerById(playerId)
         token.fieldId = board.getNextPosition(token.fieldId, dieValue, token.traversedDistance)
         token.updateTraversedDistance(dieValue)
+        this.updatePlayersTurn()
         this.currentDieValue = 0
     }
 
     enterGoalArray(playerId, tokenId) {
+        let token = this.getTokenById(tokenId);
+        token.inGame = false
+        token.inGoal = true
         //TODO: implement this function
-
         return false;
     }
 

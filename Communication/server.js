@@ -28,11 +28,16 @@ function checkClientMessage(message, playerId) {
         case 'rollDice':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    // let dieValue = (Math.floor(Math.random() * 6) + 1)
+                    let dieValue = (Math.floor(Math.random() * 6) + 1)
                     //keep the following line for testing purposes
-                    let dieValue = 6
+                    //let dieValue = 6
                     game.currentDieValue = dieValue
-                    game.calculateAvailableGameActions(board)
+                    if (0<message.turnCounter <4) {
+                        game.calculateAvailableGameActions(board, message.turnCounter)
+                    } else {
+                        game.calculateAvailableGameActions(board, -1)
+                    }
+
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
                         message: "Updated actions after rolling the dice",
@@ -239,7 +244,7 @@ function checkClientMessage(message, playerId) {
         case "action_LEAVE_HOUSE":
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    console.log("Arrived at the server side of action_LEAVE_HOUSE")
+                    //console.log("Arrived at the server side of action_LEAVE_HOUSE")
                     game.leaveHouse(board, message.playerId, message.tokenId)
                     game.calculateAvailableGameActions(board)
                     let aPlayer = game.getPlayerById(message.playerId);
@@ -247,10 +252,11 @@ function checkClientMessage(message, playerId) {
                     sendUpdateToAllPlayers(game, info);
                 }
             }
-            return {
+            break
+            /*return {
                 type: 'message',
                 message: "Arrived at the server side of action_LEAVE_HOUSE"
-            }
+            }*/
 
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
