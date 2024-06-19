@@ -234,14 +234,15 @@ function checkClientMessage(message, playerId) {
                     game.leaveHouse(board,message.playerId, message.tokenId)
                     game.currentDieValue = 0
                     game.calculateAvailableGameActions(board)
-                        let message = "Player X moved out of the house"
-                    sendUpdateToAllPlayers(game, message);
+                        let info = "Player X moved out of the house"
+                    sendUpdateToAllPlayers(game, info);
                 }
             }
-            return {
+            /*return {
                 type: 'message',
                 message: "Arrived at the server side of action_LEAVE_HOUSE"
-            }
+            }*/
+            break
 
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
@@ -258,10 +259,10 @@ function sendMessageToAllPlayers(game, jsonMessage) {
     }
 }
 
-function sendUpdateToAllPlayers(game, message) {
+function sendUpdateToAllPlayers(game, info) {
     let jsonMessage = {
         type: "updateGame",
-        message: message,
+        message: info,
         status: game.status,
         gameId: game.gameId,
         gameActions: JSON.stringify(game.gameActions),

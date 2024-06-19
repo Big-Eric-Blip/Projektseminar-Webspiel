@@ -73,8 +73,10 @@ function fromServerMessage(event) {
             break;
         case 'pickedColor':
             handlePickedColor(message)
+            break;
         case 'colorTaken':
             handleColorTaken(message)
+            break;
         case 'message':
             handleServerMessage(message);
             break;
@@ -593,11 +595,10 @@ function handleGameUpdate(message) {
     if (message.dieValue) {
         dieAnimation(message.dieValue)
     }
-    //document.getElementById("inGameMessage").innerHTML = message.message
+    document.getElementById("inGameMessage").innerHTML = message.message
     tokenToRenderer(tokens);
 
 }
-
 
 function tokenToRenderer(tokens) {
     renderer.tokens = [];
