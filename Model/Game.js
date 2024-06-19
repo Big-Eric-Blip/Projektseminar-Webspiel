@@ -260,16 +260,14 @@ class Game {
                     //if there is only one player, let them roll the dice again
                     this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
                 } else {
+                    //if no actions are available, push "NONE" to signal this to the client
+                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'NONE'))
                     //if there is more than one player, update the players turn
                     this.updatePlayersTurn()
                     this.currentDieValue = 0
                     this.calculateAvailableGameActions(board)
-
                 }
-
             }
-            //if no actions are available, push "NONE" to signal this to the client
-            //this.gameActions.push(new GameAction(currentPlayer.playerId, 'NONE'))
 
     }
     getPlayerById(playerId) {

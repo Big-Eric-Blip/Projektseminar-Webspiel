@@ -91,7 +91,7 @@ function sendMessage(message) {
         // Wait for the socket to open before sending the message
         socket.addEventListener('open', function () {
             socket.send(JSON.stringify(message));
-        }, { once: true });
+        }, {once: true});
     } else {
         socket.send(JSON.stringify(message));
     }
@@ -450,7 +450,7 @@ function handlePickedColor(response) {
 function rollDice() {
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
-        sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
+        sendMessage({type: 'rollDice', gameId: currentGame.gameId});
     } else {
         //send message to the sideboard
         document.getElementById("inGameMessage").innerHTML = "It's not your turn"
@@ -486,6 +486,15 @@ function isPlayerEligible() {
         if (currentGame.playerId === availableGameActions[i].playerId) {
             return true
 
+        }
+    }
+    return false
+}
+
+function isGameActionNone() {
+    if (availableGameActions.length === 1) {
+        if (availableGameActions[0].action === 'NONE') {
+            return true
         }
     }
     return false
@@ -577,11 +586,22 @@ function handleGameUpdate(message) {
     let tokens = JSON.parse(message.tokens)
     let gameActions = JSON.parse(message.gameActions)
     updateGameActions(gameActions)
+    // if the server calculated that you have no gameActions
+    console.log("AvailableGameActions: ", availableGameActions)
     if (message.dieValue) {
         dieAnimation(message.dieValue)
     }
-    document.getElementById("inGameMessage").innerHTML = message.message
-    tokenToRenderer(tokens);
+    if (isGameActionNone()) {
+        console.log("You have no available game action. It's the next players Turn.")
+
+        // this will not be shown because it will be instantly overwritten because of the next players turn
+        // TODO if chat like function implemented add to chat otherwise delete these comments
+        // document.getElementById("inGameMessage").innerHTML =
+        //     "You have no available game action. It's the next players Turn."
+    } else {
+        document.getElementById("inGameMessage").innerHTML = message.message
+        tokenToRenderer(tokens);
+    }
 
 }
 
@@ -589,8 +609,8 @@ function tokenToRenderer(tokens) {
     renderer.tokens = [];
     tokens.forEach(token => {
         let xCoord = getTokenXCoord(token.fieldId);
-        let yCoord = getTokenYCoord(token.fieldId);        
-        renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
+        let yCoord = getTokenYCoord(token.fieldId);
+        renderer.tokens.push({tn: token.tokenId, x: xCoord, y: yCoord, color: token.color})
 
     })
     console.log(renderer.tokens)
@@ -654,7 +674,7 @@ function handleLeftGame(message) {
 
 function handleGameStarted(message) {
     //     todo show in response text or something like that
-    console.log("Handle game started: ",message)
+    console.log("Handle game started: ", message)
     document.getElementById("inGameMessage").innerHTML = message.message;
     //document.getElementById('rollDiceButton').style.display = 'block';
     handleGameUpdate(message)
@@ -679,7 +699,7 @@ function onCanvasClick(event) {
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
 
-    const clickPoint = { x: clickX, y: clickY };
+    const clickPoint = {x: clickX, y: clickY};
 
     renderer.tokens.forEach(token => {
         // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
