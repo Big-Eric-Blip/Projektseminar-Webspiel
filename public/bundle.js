@@ -49,9 +49,6 @@ function fromServerMessage(event) {
     const message = JSON.parse(event.data);
     console.log('Message from server:', message);
     switch (message.type) {
-        case 'rollDice':
-            handleRollDiceResponse(message);
-            break;
         case 'createGame':
             handleCreateGameResponse(message);
             break;
@@ -60,9 +57,6 @@ function fromServerMessage(event) {
             break;
         case 'playerJoined':
             handlePlayerJoinedResponse(message);
-            break;
-        case 'moveToken':
-            handleMoveTokenResponse(message);
             break;
         case 'aPlayerLeftGame':
             handleAPlayerLeftGame(message);
@@ -636,13 +630,6 @@ function updateGameActions(gameActions) {
     })
     //example for how to access values from the array
     // console.log(availableGameActions[0].action)
-}
-
-//TODO: evaluate the usage of this function and probably delete!
-function handleMoveTokenResponse(response) {
-    console.log(response)
-    console.log(response.dieValue)
-    console.log(response.tokenId)
 }
 
 function handlePlayerJoinedResponse(message) {

@@ -215,15 +215,21 @@ function checkClientMessage(message, playerId) {
             return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
         case "action_MOVE":
             console.log(message);
-            // TODO following code doesn't work. Has to be reworked.
-            // game.moveToken(message.tokenId,message.diceResult);
-            //
-            //
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    console.log("Arrived at the server side of action_MOVE")
+                    game.moveToken(board, message.playerId, message.tokenId, game.currentDieValue);
+                    game.calculateAvailableGameActions(board)
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) moved a game piece."
+                    sendUpdateToAllPlayers(game, info);
+                    break;
+                }
+            }
             // return {
             //     type: "moveToken",
             //     tokenId: tokenId,
             //     diceResult: diceResult
-            //
             // }
             return {
                 type: 'message',
@@ -234,9 +240,9 @@ function checkClientMessage(message, playerId) {
                 if (game.gameId === message.gameId) {
                     console.log("Arrived at the server side of action_LEAVE_HOUSE")
                     game.leaveHouse(board, message.playerId, message.tokenId)
-                    game.currentDieValue = 0
                     game.calculateAvailableGameActions(board)
-                    let info = "Player X moved out of the house"
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) moved out of the house"
                     sendUpdateToAllPlayers(game, info);
                 }
             }
@@ -297,7 +303,7 @@ wss.on('connection', function connection(ws) {
         console.log(`Current clients:`, [...clients.keys()]);
         console.log('Current games:', games)
         // Check if empty just in case there is no message to return
-        if (sendBackToClient){
+        if (sendBackToClient) {
             ws.send(JSON.stringify(sendBackToClient));
         }
     });

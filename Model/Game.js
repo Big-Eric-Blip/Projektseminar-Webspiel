@@ -153,7 +153,7 @@ class Game {
                         this.gameActions.push(new GameAction(currentPlayer.playerId, 'MOVE',
                             this.playersTokens[i].tokenId, nextPosition, this.currentDieValue))
                         return
-                    } else if(this.isFieldEmpty(nextPosition).getPlayerId() !== currentPlayer.playerId()){
+                    } else if(this.isFieldEmpty(nextPosition).getTokensPlayerId() !== currentPlayer.playerId){
                         // check that the next field is populated by an enemy token
                             this.gameActions.push(new GameAction(currentPlayer.playerId, 'BEAT',
                                 this.playersTokens[i].tokenId, nextPosition, this.currentDieValue))
@@ -298,11 +298,15 @@ class Game {
         token.fieldId = board.getStartingPosition(player.color)
         //update fieldId of token
         console.log("Achieved the impossible")
+        this.currentDieValue = 0
     }
 
-    moveToken(playerId, tokenId) {
-        //TODO implement this function
-        //set currentDieValue back to 0
+    moveToken(board, playerId, tokenId, dieValue) {
+        let token = this.getTokenById(tokenId);
+        let player = this.getPlayerById(playerId)
+        token.fieldId = board.getNextPosition(token.fieldId, dieValue, token.traversedDistance)
+        token.updateTraversedDistance(dieValue)
+        this.currentDieValue = 0
     }
 
     enterGoalArray(playerId, tokenId) {
