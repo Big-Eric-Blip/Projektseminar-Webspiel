@@ -36,6 +36,7 @@ function checkClientMessage(message, playerId) {
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
                         message: "Updated actions after rolling the dice",
+                        status: game.status,
                         gameId: game.gameId,
                         gameActions: JSON.stringify(game.gameActions),
                         tokens: JSON.stringify(game.tokens),
