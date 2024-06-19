@@ -577,7 +577,6 @@ function moveToken(tokenId) {
  * @param message
  */
 function handleGameUpdate(message) {
-    console.log(message)
     if (message.status !== currentGame.gameState) {
         setGameState(message.status)
     }

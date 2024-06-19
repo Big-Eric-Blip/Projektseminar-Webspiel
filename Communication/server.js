@@ -28,9 +28,9 @@ function checkClientMessage(message, playerId) {
         case 'rollDice':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    let dieValue = (Math.floor(Math.random() * 6) + 1)
+                    // let dieValue = (Math.floor(Math.random() * 6) + 1)
                     //keep the following line for testing purposes
-                    //let dieValue = 6
+                    let dieValue = 6
                     game.currentDieValue = dieValue
                     game.calculateAvailableGameActions(board)
                     sendMessageToAllPlayers(game, {
@@ -117,6 +117,7 @@ function checkClientMessage(message, playerId) {
                             takenColors.push(player.color)
                         }
                     }
+                    // TODO Clemens schau dir das nochmal an!!
                     console.log(takenColors)
                     for (const player of game.player) {
                         if (player.playerId === message.playerId) {
@@ -205,18 +206,13 @@ function checkClientMessage(message, playerId) {
                         tokens: JSON.stringify(game.tokens)
                     });
                     return {
-                        type: "updateGame",
-                        message: "You´ve started the game.",
-                        status: game.status,
-                        gameId: game.gameId,
-                        gameActions: JSON.stringify(game.gameActions),
-                        tokens: JSON.stringify(game.tokens)
+                        type: 'message',
+                        message: "You've started the game."
                     }
                     //     todo check in joinGame case if game is in status LOBBY
-
                 }
             }
-            break;
+            return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
         case "action_MOVE":
             console.log(message);
             // TODO following code doesn't work. Has to be reworked.
@@ -229,7 +225,10 @@ function checkClientMessage(message, playerId) {
             //     diceResult: diceResult
             //
             // }
-            break;
+            return {
+                type: 'message',
+                message: "Arrived at the server side of action_MOVE"
+            }
         case "action_LEAVE_HOUSE":
             for (const game of games) {
                 if (game.gameId === message.gameId) {
@@ -241,11 +240,10 @@ function checkClientMessage(message, playerId) {
                     sendUpdateToAllPlayers(game, info);
                 }
             }
-            /*return {
+            return {
                 type: 'message',
                 message: "Arrived at the server side of action_LEAVE_HOUSE"
-            }*/
-            break
+            }
 
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
@@ -298,7 +296,10 @@ wss.on('connection', function connection(ws) {
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
         console.log(`Current clients:`, [...clients.keys()]);
         console.log('Current games:', games)
-        ws.send(JSON.stringify(sendBackToClient));
+        // Check if empty just in case there is no message to return
+        if (sendBackToClient){
+            ws.send(JSON.stringify(sendBackToClient));
+        }
     });
 
     ws.on('close', () => {
