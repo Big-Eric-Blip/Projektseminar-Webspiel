@@ -44,6 +44,7 @@ function initWebSocketConnection() {
 }
 
 function fromServerMessage(event) {
+    console.log(event);
     const message = JSON.parse(event.data);
     console.log('Message from server:', message);
     switch (message.type) {
@@ -415,7 +416,7 @@ function startJoinedGame() {
     const selectedColor = selectedColorElement ? selectedColorElement.value : null;
     const playerName = document.getElementById('clientNameInput').value;
     const dieColorElement = document.querySelector('input[name="dieOptionClient"]:checked');
-    const dieColor = dieColorElement ? dieColorElement.value : null;
+    dieColor = dieColorElement ? dieColorElement.value : null;
 
     if (dieColor) {
         changeRollDiceImage("./pictures/" + dieColor + ".png");
@@ -532,14 +533,6 @@ function chooseGameAction(gameAction, tokenId) {
     })
 }
 
-
-function handleRollDiceResponse(response) {
-    console.log(response);
-    console.log(response.dieValue);
-    dieAnimation(response.dieValue)
-    updateGameActions(JSON.parse(response.gameActions))
-}
-
 function dieAnimation(final) {
     const images = [
         'pictures/' + dieColor + '1.png',
@@ -589,7 +582,6 @@ function handleGameUpdate(message) {
     }
     //update available game actions
     let tokens = JSON.parse(message.tokens)
-    let gameId = message.gameId
     let gameActions = JSON.parse(message.gameActions)
     updateGameActions(gameActions)
     if (message.dieValue) {
@@ -640,10 +632,10 @@ function updateGameActions(gameActions) {
             playerId: gameAction.playerId, action: gameAction.action, tokenId: gameAction.tokenId,
             amount: gameAction.amount, fieldId: gameAction.fieldId
         })
-        console.log(gameAction)
+        // console.log(gameAction)
     })
     //example for how to access values from the array
-    console.log(availableGameActions[0].action)
+    // console.log(availableGameActions[0].action)
 }
 
 //TODO: evaluate the usage of this function and probably delete!

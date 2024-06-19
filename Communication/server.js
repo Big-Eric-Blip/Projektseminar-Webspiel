@@ -2,14 +2,14 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({server});
 const clients = new Map();
 let games = [];
 let board = new Board(4, 4);
@@ -42,27 +42,24 @@ function checkClientMessage(message, playerId) {
                         dieValue: dieValue
                     })
                     return {
-                        //type: 'rollDice',
-                        type: "updateGame",
-                        tokens: JSON.stringify(game.tokens),
-                        gameActions: JSON.stringify(game.gameActions),
-                        dieValue: dieValue
+                        type: 'message',
+                        message: 'Rolled the die: ' + dieValue
                     };
                 }
             }
             return {
-                type: 'error',
+                type: 'message',
                 message: "No game available with this id"
             }
         case 'createGame':
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType, "LOBBY");
             let player = new Player(playerId, message.playerColor, message.playerName);
-            
+
             addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
             games.push(game);
-            
+
             return {
                 type: 'createGame',
                 gameId: gameId,
@@ -116,48 +113,54 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     for (const player of game.player) {
-                            if (player.color !== "") {
-                                takenColors.push(player.color)
-                            }}
-                        console.log(takenColors)
+                        if (player.color !== "") {
+                            takenColors.push(player.color)
+                        }
+                    }
+                    console.log(takenColors)
                     for (const player of game.player) {
                         if (player.playerId === message.playerId) {
                             player.color = message.playerColor
                             player.name = message.playerName
                             addTokensOnPlayerJoin(message, playerId, game);
-                            return { type: 'pickedColor', message: `Successfully picked color!` }
+                            return {type: 'pickedColor', message: `Successfully picked color!`}
                         }
                     }
-                    return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
+                    return {type: 'message', message: `There is no player with playerId: ${playerId} in this game.`}
                 }
             }
-            return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
+            return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
 
 
-            case 'tryPickColor':
-                for (const game of games) {
-                    if (game.gameId === message.gameId) {
-                        let takenColors = []
-             
-                        for (const player of game.player) {
-                            if (player.color !== "") {
-                                takenColors.push(player.color)
-                            }}
-                        console.log(takenColors)
-                        for (const player of game.player){
-                            if (player.playerId === message.playerId&&!takenColors.includes(message.playerColor)) {
-                                player.color = message.playerColor
-                                player.name = message.playerName
-                                addTokensOnPlayerJoin(message, playerId, game);
-                                return { type: 'pickedColor', message: `Successfully picked color!` }
-                            }else if(takenColors.includes(message.playerColor)){
-                                return { type: 'colorTaken', message: `The color ${message.playerColor} is already taken.`,color:message.playerColor }
+        case 'tryPickColor':
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    let takenColors = []
+
+                    for (const player of game.player) {
+                        if (player.color !== "") {
+                            takenColors.push(player.color)
+                        }
+                    }
+                    console.log(takenColors)
+                    for (const player of game.player) {
+                        if (player.playerId === message.playerId && !takenColors.includes(message.playerColor)) {
+                            player.color = message.playerColor
+                            player.name = message.playerName
+                            addTokensOnPlayerJoin(message, playerId, game);
+                            return {type: 'pickedColor', message: `Successfully picked color!`}
+                        } else if (takenColors.includes(message.playerColor)) {
+                            return {
+                                type: 'colorTaken',
+                                message: `The color ${message.playerColor} is already taken.`,
+                                color: message.playerColor
                             }
                         }
-                        return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
                     }
+                    return {type: 'message', message: `There is no player with playerId: ${playerId} in this game.`}
                 }
-                return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
+            }
+            return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
 
 
         case 'leaveGame':
@@ -231,10 +234,10 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     console.log("Arrived at the server side of action_LEAVE_HOUSE")
-                    game.leaveHouse(board,message.playerId, message.tokenId)
+                    game.leaveHouse(board, message.playerId, message.tokenId)
                     game.currentDieValue = 0
                     game.calculateAvailableGameActions(board)
-                        let info = "Player X moved out of the house"
+                    let info = "Player X moved out of the house"
                     sendUpdateToAllPlayers(game, info);
                 }
             }
@@ -268,14 +271,8 @@ function sendUpdateToAllPlayers(game, info) {
         gameActions: JSON.stringify(game.gameActions),
         tokens: JSON.stringify(game.tokens)
     }
-    for (const player of game.player) {
-        let client = clients.get(player.playerId)
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(jsonMessage));
-        }
-    }
+    sendMessageToAllPlayers(game, jsonMessage);
 }
-
 
 
 function addTokensOnPlayerJoin(message, playerId, game) {
@@ -320,7 +317,7 @@ function leaveGameOnCloseWindow(playerId) {
     for (const game of games) {
         for (const player of game.player) {
             if (player.playerId === playerId) {
-                checkClientMessage({ type: 'leaveGame', gameId: game.gameId }, playerId);
+                checkClientMessage({type: 'leaveGame', gameId: game.gameId}, playerId);
                 return;
             }
         }
