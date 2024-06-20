@@ -262,7 +262,7 @@ class Game {
                 if (turnCounter === -1 || !turnCounter) {
                     this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', 1))
                     return
-                } else if (0 < turnCounter < 3) {
+                } else if (0 < turnCounter && turnCounter< 3) {
                     let count = turnCounter + 1
                     this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', count))
                     return
@@ -411,12 +411,12 @@ class Game {
         }
     }
 
-    beatToken(board, tokenId, fieldId, dieValue) {
+    beatToken(board, tokenId, contestedField, dieValue) {
+        // get token that beats
         let token = this.getTokenById(tokenId);
-        let contestedField = fieldId
         token.fieldId = contestedField
         token.updateTraversedDistance(dieValue)
-        let enemyToken =this.getTokenByFieldId(contestedField)
+        let enemyToken = this.getTokenByFieldId(contestedField)
         enemyToken.traversedDistance = 0
         //send enemy token back to house
         this.sendTokenBackToHouse(enemyToken,board)

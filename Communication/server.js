@@ -32,12 +32,7 @@ function checkClientMessage(message, playerId) {
                     //keep the following line for testing purposes
                     //let dieValue = 6
                     game.currentDieValue = dieValue
-                    if (0<message.turnCounter <4 && message.turnCounter) {
-                        game.calculateAvailableGameActions(board, message.turnCounter)
-                    } else {
-                        game.calculateAvailableGameActions(board, -1)
-                        game.updatePlayersTurn()
-                    }
+                    game.calculateAvailableGameActions(board, message.turnCounter)
 
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
