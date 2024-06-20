@@ -367,7 +367,9 @@ class Game {
         let player = this.getPlayerById(playerId)
         token.fieldId = board.getNextPosition(token.fieldId, dieValue, token.traversedDistance)
         token.updateTraversedDistance(dieValue)
-        this.updatePlayersTurn()
+        if(dieValue < 6) {
+            this.updatePlayersTurn()
+        }
         this.currentDieValue = 0
     }
 
@@ -398,7 +400,9 @@ class Game {
         enemyToken.traversedDistance = 0
         //send enemy token back to house
         this.sendTokenBackToHouse(enemyToken,board)
-        this.updatePlayersTurn()
+        if(dieValue < 6) {
+            this.updatePlayersTurn()
+        }
         this.currentDieValue = 0
 
     }
