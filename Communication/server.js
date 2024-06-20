@@ -28,14 +28,15 @@ function checkClientMessage(message, playerId) {
         case 'rollDice':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    //let dieValue = (Math.floor(Math.random() * 6) + 1)
+                    let dieValue = (Math.floor(Math.random() * 6) + 1)
                     //keep the following line for testing purposes
-                    let dieValue = 6
+                    //let dieValue = 6
                     game.currentDieValue = dieValue
-                    if (0<message.turnCounter <4) {
+                    if (0<message.turnCounter <4 && message.turnCounter) {
                         game.calculateAvailableGameActions(board, message.turnCounter)
                     } else {
                         game.calculateAvailableGameActions(board, -1)
+                        game.updatePlayersTurn()
                     }
 
                     sendMessageToAllPlayers(game, {
@@ -226,24 +227,14 @@ function checkClientMessage(message, playerId) {
             console.log(message);
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    console.log("Arrived at the server side of action_MOVE")
                     game.moveToken(board, message.tokenId, message.fieldId, game.currentDieValue);
                     game.calculateAvailableGameActions(board)
                     let aPlayer = game.getPlayerById(message.playerId);
                     let info = aPlayer.name + " (" + aPlayer.color + " player) moved a game piece."
                     sendUpdateToAllPlayers(game, info);
-                    break;
                 }
             }
-            // return {
-            //     type: "moveToken",
-            //     tokenId: tokenId,
-            //     diceResult: diceResult
-            // }
-            return {
-                type: 'message',
-                message: "Arrived at the server side of action_MOVE"
-            }
+            break;
         case "action_LEAVE_HOUSE":
             for (const game of games) {
                 if (game.gameId === message.gameId) {
@@ -256,14 +247,10 @@ function checkClientMessage(message, playerId) {
                 }
             }
             break
-            /*return {
-                type: 'message',
-                message: "Arrived at the server side of action_LEAVE_HOUSE"
-            }*/
         case "action_BEAT":
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    game.beatToken(board,message.playerId,message.tokenId,game.currentDieValue)
+                    game.beatToken(board,message.tokenId,message.fieldId, game.currentDieValue)
                     game.calculateAvailableGameActions(board)
                     let aPlayer = game.getPlayerById(message.playerId);
                     let info = aPlayer.name + " (" + aPlayer.color + " player) beat another token!"
@@ -271,7 +258,6 @@ function checkClientMessage(message, playerId) {
                 }
             }
             break
-
         case "action_ENTER_GOAL":
             for (const game of games) {
                 if (game.gameId === message.gameId) {

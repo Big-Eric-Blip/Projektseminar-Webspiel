@@ -411,9 +411,9 @@ class Game {
         }
     }
 
-    beatToken(board,playerId, tokenId,dieValue) {
+    beatToken(board, tokenId, fieldId, dieValue) {
         let token = this.getTokenById(tokenId);
-        let contestedField =board.getNextPosition(token.fieldId, dieValue, token.traversedDistance)
+        let contestedField = fieldId
         token.fieldId = contestedField
         token.updateTraversedDistance(dieValue)
         let enemyToken =this.getTokenByFieldId(contestedField)
@@ -446,11 +446,10 @@ class Game {
         }
         for(let i = 0; i<this.tokens.length; i++) {
             //TODO: fix error with the findIndex function
-            fieldIndex = fieldIds.findIndex(this.tokens[i].fieldId)
+            fieldIndex = fieldIds.findIndex(fieldId => fieldId === this.tokens[i].fieldId)
             if(fieldIndex) {
                 fieldIds.splice(fieldIndex,1)
             }
-
         }
         //pick the first available home field id
         token.fieldId = fieldIds[0]

@@ -451,6 +451,7 @@ function rollDice() {
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
         let actionTurnCounter = returnActionTurnCounter()
+        console.log("current turn counter: "+ actionTurnCounter)
         if(actionTurnCounter) {
             sendMessage({type: 'rollDice', gameId: currentGame.gameId, turnCounter: actionTurnCounter});
         } else {
