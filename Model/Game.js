@@ -179,7 +179,7 @@ class Game {
             if (this.allInHouse === true) {
                 if (turnCounter === -1 || !turnCounter) {
                     this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', 1))
-                } else if (turnCounter < 3) {
+                } else if (0 < turnCounter < 3) {
                     this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', turnCounter++))
                 }
             } else {
@@ -250,7 +250,7 @@ class Game {
                     }
 
                 }
-            } if(this.anyoneAtHome>0) {
+            } if(this.anyoneAtHome>0 && !this.optionsExhausted) {
                 return
             }
         }
