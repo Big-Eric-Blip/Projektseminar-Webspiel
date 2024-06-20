@@ -227,7 +227,7 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     console.log("Arrived at the server side of action_MOVE")
-                    game.moveToken(board, message.playerId, message.tokenId, game.currentDieValue);
+                    game.moveToken(board, message.tokenId, message.fieldId, game.currentDieValue);
                     game.calculateAvailableGameActions(board)
                     let aPlayer = game.getPlayerById(message.playerId);
                     let info = aPlayer.name + " (" + aPlayer.color + " player) moved a game piece."
@@ -273,16 +273,28 @@ function checkClientMessage(message, playerId) {
             break
 
         case "action_ENTER_GOAL":
-            return {
-                type: 'message',
-                message: 'Triggered ENTER_GOAL functionality on the server side'
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.enterGoal(message.tokenId, message.fieldId)
+                }
+                game.calculateAvailableGameActions(board)
+                let aPlayer = game.getPlayerById(message.playerId);
+                let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
+                sendUpdateToAllPlayers(game, info);
             }
+            break
 
         case "action_MOVE_GOAL":
-            return {
-                type: 'message',
-                message: 'Triggered MOVE_GOAL functionality on the server side'
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.moveInGoal(message.tokenId, message.fieldId)
+                }
+                game.calculateAvailableGameActions(board)
+                let aPlayer = game.getPlayerById(message.playerId);
+                let info = aPlayer.name + " (" + aPlayer.color + " player) moved in the goal!"
+                sendUpdateToAllPlayers(game, info);
             }
+            break
 
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);

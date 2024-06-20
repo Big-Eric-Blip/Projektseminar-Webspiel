@@ -523,14 +523,14 @@ function isGameActionNone() {
  * Checks whether the current player can move a given token
  * if the player is not eligible or the token can't be moved, this is logged to the console
  * @param {string} tokenId the token to be moved
- * @return {string|boolean} the action of the token if it can be executed, false else
+ * @return {object|boolean} the game action if it can be executed, false else
  */
 function validateMoveToken(tokenId) {
     if (isPlayerEligible()) {
         for (let i = 0; i < availableGameActions.length; i++) {
             if (availableGameActions[i].tokenId === tokenId) {
-                console.log("Validation tried and true")
-                return availableGameActions[i].action
+                //return availableGameActions[i].action
+                return availableGameActions[i]
             }
         }
         console.log("This move is not possible!")
@@ -543,15 +543,16 @@ function validateMoveToken(tokenId) {
 
 /**
  * Sends a message to the server to initiate the execution of the chosen game action (all except ROLL_DIE)
- * @param {string} gameAction
+ * @param {object} gameAction
  * @param {string} tokenId
  */
 function chooseGameAction(gameAction, tokenId) {
     sendMessage({
-        type: 'action_' + gameAction, //for example: action_LEAVE_HOUSE
+        type: 'action_' + gameAction.action, //for example: action_LEAVE_HOUSE
         tokenId: tokenId,
         playerId: currentGame.playerId,
-        gameId: currentGame.gameId
+        gameId: currentGame.gameId,
+        fieldId: gameAction.fieldId
     })
 }
 
@@ -582,12 +583,12 @@ function dieAnimation(final) {
 
 function moveToken(tokenId) {
     //Can this token be moved?
-    let validation = validateMoveToken(tokenId)
+    let validatedAction = validateMoveToken(tokenId)
+    //validatedAction.action = undefined;
     //if yes
-    if (validation) {
-        let gameAction = '' + validation
-        chooseGameAction(gameAction, tokenId)
-        console.log("Execute game action " + validation)
+    if (validatedAction) {
+        chooseGameAction(validatedAction, tokenId)
+        console.log("Execute game action " + validatedAction.action)
     } else {
         document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
     }
