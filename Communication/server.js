@@ -28,9 +28,9 @@ function checkClientMessage(message, playerId) {
         case 'rollDice':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    let dieValue = (Math.floor(Math.random() * 6) + 1)
+                    //let dieValue = (Math.floor(Math.random() * 6) + 1)
                     //keep the following line for testing purposes
-                    //let dieValue = 6
+                    let dieValue = 6
                     game.currentDieValue = dieValue
                     if (0<message.turnCounter <4) {
                         game.calculateAvailableGameActions(board, message.turnCounter)

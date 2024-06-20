@@ -157,11 +157,13 @@ class Game {
         for (let i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i].playerId === currentPlayer.playerId) {
                 this.playersTokens.push(this.tokens[i])
-                if (this.tokens[i].inHouse === true) {
+                if (this.tokens[i].inHouse === true || this.tokens[i].inGoal === true) {
                     numberOfTokensInHouse++
                 }
             }
         }
+            //if all tokens are either in the home or the goal array,
+            // the player is allowed to roll the die three times
         this.allInHouse = numberOfTokensInHouse === this.playersTokens.length;
         //die value available?
         if (this.currentDieValue === 0) {
