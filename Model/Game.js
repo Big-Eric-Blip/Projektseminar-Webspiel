@@ -414,12 +414,12 @@ class Game {
     beatToken(board, tokenId, contestedField, dieValue) {
         // get token that beats
         let token = this.getTokenById(tokenId);
-        token.fieldId = contestedField
-        token.updateTraversedDistance(dieValue)
         let enemyToken = this.getTokenByFieldId(contestedField)
         enemyToken.traversedDistance = 0
         //send enemy token back to house
         this.sendTokenBackToHouse(enemyToken,board)
+        token.fieldId = contestedField
+        token.updateTraversedDistance(dieValue)
         if(dieValue < 6) {
             this.updatePlayersTurn()
         }
@@ -441,14 +441,14 @@ class Game {
         let fieldIds = []
         let fieldIndex
         //find empty home field
-        for(let i = 0; i<board.goalArray[index].length; i++) {
-            fieldIds.push(board.goalArray[index][i].fieldId)
+        for(let i = 0; i<board.homeArray[index].length; i++) {
+            fieldIds.push(board.homeArray[index][i].fieldId)
         }
         for(let i = 0; i<this.tokens.length; i++) {
-            //TODO: fix error with the findIndex function
-            fieldIndex = fieldIds.findIndex(fieldId => fieldId === this.tokens[i].fieldId)
-            if(fieldIndex) {
-                fieldIds.splice(fieldIndex,1)
+            for(let j = 0;j<fieldIds.length;j++) {
+                if(this.tokens[i].fieldId === fieldIds[j]) {
+                    fieldIds.splice(j,1)
+                }
             }
         }
         //pick the first available home field id
