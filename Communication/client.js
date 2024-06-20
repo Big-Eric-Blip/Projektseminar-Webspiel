@@ -124,6 +124,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //Game Buttons
         rollDiceButton: rollDice,
+
+         // Copy Game ID
+         copyGameIdButton: copyGameIdToClipboard,
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -162,6 +165,36 @@ function cancel() {
     setGameState("PRE_GAME")
     document.getElementById('myCanvas').style.display = 'none';
 }
+
+function copyGameIdToClipboard() {
+    const gameIdElement = document.getElementById('gameId');
+    const gameIdText = gameIdElement.textContent.split(": ")[1]; // Extrahiere die Game ID
+
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(gameIdText).then(() => {
+            console.log('Game ID wurde in die Zwischenablage kopiert.');
+        }).catch(err => {
+            console.error('Fehler beim Kopieren der Game ID: ', err);
+        });
+    } else {
+        // Fallback für ältere Browser
+        const textArea = document.createElement('textarea');
+        textArea.value = gameIdText;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            console.log('Game ID wurde in die Zwischenablage kopiert.');
+        } catch (err) {
+            console.error('Fehler beim Kopieren der Game ID: ', err);
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+
+
 
 function createGame() {
 
