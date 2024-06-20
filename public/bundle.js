@@ -414,6 +414,8 @@ function handleJoinGameResponse(response) {
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
+        const gameId = document.getElementById("gameId");
+        gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
         initRenderer(response)
 
 
