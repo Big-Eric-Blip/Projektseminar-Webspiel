@@ -523,7 +523,7 @@ function isGameActionNone() {
  * Checks whether the current player can move a given token
  * if the player is not eligible or the token can't be moved, this is logged to the console
  * @param {string} tokenId the token to be moved
- * @return {boolean} true if the token can be moved
+ * @return {string|boolean} the action of the token if it can be executed, false else
  */
 function validateMoveToken(tokenId) {
     if (isPlayerEligible()) {

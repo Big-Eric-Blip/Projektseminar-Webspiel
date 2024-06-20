@@ -101,6 +101,19 @@ class Game {
         }
         return -1;
     }
+    getHomeArrayIndex(tokenColor) {
+        switch (tokenColor.charAt(0)) {
+            case 'b':
+                return 0
+            case 'g':
+                return 1
+            case 'y':
+                return 2
+            case 'r':
+                return 3
+        }
+        return -1;
+    }
 
     /**
      *
@@ -247,10 +260,7 @@ class Game {
             for (let i = 0; i < this.playersTokens.length; i++) {
                 let tokenFieldId = this.playersTokens[i].fieldId
                 if (board.getFieldType(tokenFieldId) === 'REGULAR') {
-                    let nextPosition = board.getNextPosition(tokenFieldId,
-                        this.currentDieValue, this.playersTokens[i].traversedDistance)
-                    //move into goal array
-                    if (nextPosition === "goalArray") {
+                    if(this.playersTokens[i].traversedDistance + this.currentDieValue > 40) {
                         //calculate needed free steps
                         let neededFields = this.currentDieValue - (40 - tokenFieldId.traversedDistance)
                         //if the path is clear (enough goal fields are empty), add a game action
@@ -260,9 +270,18 @@ class Game {
                                 board.goalArray[this.getGoalArrayIndex(currentPlayer)][neededFields].fieldId,
                                 this.currentDieValue))
                         }
-                        //check if there is a token on the next field
-                    } else if (this.isFieldEmpty(board.getNextPosition(tokenFieldId, this.currentDieValue,
+                    } //calculate needed free steps
+                    let neededFields = this.currentDieValue - (40 - tokenFieldId.traversedDistance)
+                    //if the path is clear (enough goal fields are empty), add a game action
+                    if (this.isGoalPathClear(board, neededFields, 0)) {
+                        this.gameActions.push(new GameAction(currentPlayer.playerId, 'ENTER_GOAL',
+                            this.playersTokens[i].tokenId,
+                            board.goalArray[this.getGoalArrayIndex(currentPlayer)][neededFields].fieldId,
+                            this.currentDieValue))
+                    }else if (this.isFieldEmpty(board.getNextPosition(tokenFieldId, this.currentDieValue,
                         this.playersTokens[i].traversedDistance)) === true) {
+                        let nextPosition = board.getNextPosition(tokenFieldId,
+                            this.currentDieValue, this.playersTokens[i].traversedDistance)
                         this.gameActions.push(new GameAction(currentPlayer.playerId, 'MOVE',
                             this.playersTokens[i].tokenId, nextPosition, this.currentDieValue))
 
@@ -270,6 +289,8 @@ class Game {
                         // check that the next field is populated by an enemy token
                         if (this.isFieldEmpty(board.getNextPosition(tokenFieldId, this.currentDieValue,
                             this.playersTokens[i].traversedDistance)).playerId !== currentPlayer.playerId) {
+                            let nextPosition = board.getNextPosition(tokenFieldId,
+                                this.currentDieValue, this.playersTokens[i].traversedDistance)
                             this.gameActions.push(new GameAction(currentPlayer.playerId, 'BEAT',
                                 this.playersTokens[i].tokenId, nextPosition, this.currentDieValue))
                         }
@@ -366,8 +387,47 @@ class Game {
         }
     }
 
-    beatToken() {
+    beatToken(board,playerId, tokenId,dieValue) {
+        let token = this.getTokenById(tokenId);
+        let contestedField =board.getNextPosition(token.fieldId, dieValue, token.traversedDistance)
+        token.fieldId = contestedField
+        token.updateTraversedDistance(dieValue)
+        let enemyToken =this.getTokenByFieldId(contestedField)
+        enemyToken.traversedDistance = 0
+        //send enemy token back to house
+        this.sendTokenBackToHouse(enemyToken,board)
+        this.updatePlayersTurn()
+        this.currentDieValue = 0
 
+    }
+    getTokenByFieldId(fieldId) {
+        for(let i = 0; i<this.tokens.length;i++) {
+            if(this.tokens[i].fieldId === fieldId) {
+                return this.tokens[i]
+            }
+        }
+        return false
+    }
+    sendTokenBackToHouse(token,board) {
+        token.inGame = false
+        token.inHouse = true
+        let index = this.getHomeArrayIndex(token.color)
+        let fieldIds = []
+        let fieldIndex
+        //find empty home field
+        for(let i = 0; i<board.goalArray[index].length; i++) {
+            fieldIds.push(board.goalArray[index][i].fieldId)
+        }
+        for(let i = 0; i<this.tokens.length; i++) {
+            //TODO: fix error with the findIndex function
+            fieldIndex = fieldIds.findIndex(this.tokens[i].fieldId)
+            if(fieldIndex) {
+                fieldIds.splice(fieldIndex,1)
+            }
+
+        }
+        //pick the first available home field id
+        token.fieldId = fieldIds[0]
     }
 
 

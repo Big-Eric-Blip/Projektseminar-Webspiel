@@ -257,6 +257,29 @@ function checkClientMessage(message, playerId) {
                 type: 'message',
                 message: "Arrived at the server side of action_LEAVE_HOUSE"
             }*/
+        case "action_BEAT":
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.beatToken(board,message.playerId,message.tokenId,game.currentDieValue)
+                    game.calculateAvailableGameActions(board)
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) beat another token!"
+                    sendUpdateToAllPlayers(game, info);
+                }
+            }
+            break
+
+        case "action_ENTER_GOAL":
+            return {
+                type: 'message',
+                message: 'Triggered ENTER_GOAL functionality on the server side'
+            }
+
+        case "action_MOVE_GOAL":
+            return {
+                type: 'message',
+                message: 'Triggered MOVE_GOAL functionality on the server side'
+            }
 
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
