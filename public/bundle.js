@@ -169,31 +169,27 @@ function cancel() {
 
 function copyGameIdToClipboard() {
     const gameIdElement = document.getElementById('gameId');
-    const gameIdText = gameIdElement.textContent.split(": ")[1]; // Extrahiere die Game ID
+    const gameIdText = gameIdElement.textContent.split(": ")[1]; 
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(gameIdText).then(() => {
             console.log('Game ID wurde in die Zwischenablage kopiert.');
+            showCopyNotification();
         }).catch(err => {
             console.error('Fehler beim Kopieren der Game ID: ', err);
         });
     } else {
-        // Fallback für ältere Browser
-        const textArea = document.createElement('textarea');
-        textArea.value = gameIdText;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            console.log('Game ID wurde in die Zwischenablage kopiert.');
-        } catch (err) {
-            console.error('Fehler beim Kopieren der Game ID: ', err);
-        }
-        document.body.removeChild(textArea);
+        console.error('Clipboard API nicht verfügbar.');
     }
 }
 
+function showCopyNotification() {
+    const notificationElement = document.getElementById('copyNotification');
+    notificationElement.style.display = 'block';
+    setTimeout(() => {
+        notificationElement.style.display = 'none';
+    }, 2000);
+}
 
 
 
