@@ -131,7 +131,7 @@ class Game {
         let gLoop = index
         let gCount = 0
         while (gLoop < neededFields) {
-            if (this.isFieldEmpty(board.goalArray[this.getGoalArrayIndex(this.player[this.getCurrentPlayerIndex()])][gLoop]) === true) {
+            if (this.isFieldEmpty(board.goalArray[this.getGoalArrayIndex(this.player[this.getCurrentPlayerIndex()])][gLoop].fieldId) === true) {
                 gCount++
             } else {
                 break;
@@ -228,6 +228,7 @@ class Game {
             //if own token on starting position: needs to move!
             // except if beats own token
             this.anyoneAtHome = 0
+            this.optionsExhausted = false
             for (let i = 0; i < this.playersTokens.length; i++) {
                 //If there are tokens in the player's home
                 //TODO delete
@@ -305,11 +306,13 @@ class Game {
                     let goalArrayIndex = this.getGoalArrayIndex(currentPlayer)
                     let index =
                         board.goalArray[goalArrayIndex].findIndex(field => field.fieldId === tokenFieldId)
-                    if (this.isGoalPathClear(board, this.currentDieValue, index)) {
-                        let newFieldId = board.getNextGoalPosition(tokenFieldId.fieldId,
-                            this.currentDieValue, goalArrayIndex)
-                        this.gameActions.push(new GameAction(currentPlayer.playerId, 'MOVE_GOAL',
-                            this.playersTokens[i].tokenId, newFieldId, this.currentDieValue))
+                    if(index+this.currentDieValue < 4) {
+                        if (this.isGoalPathClear(board, this.currentDieValue, index)) {
+                            let newFieldId = board.getNextGoalPosition(tokenFieldId.fieldId,
+                                this.currentDieValue, goalArrayIndex)
+                            this.gameActions.push(new GameAction(currentPlayer.playerId, 'MOVE_GOAL',
+                                this.playersTokens[i].tokenId, newFieldId, this.currentDieValue))
+                        }
                     }
                 }
             }
