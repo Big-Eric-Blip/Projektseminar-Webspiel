@@ -179,12 +179,15 @@ function checkClientMessage(message, playerId) {
                         games.splice(i, 1);
                         // TODO else if (games[i].player.length === 1) trigger winning screen
                     } else {
+                        games[i].calculateAvailableGameActions(board)
                         sendMessageToAllPlayers(games[i], {
                             type: 'aPlayerLeftGame',
                             colorOfLeavingPlayer: leavingPlayer.color,
                             nameOfLeavingPlayer: leavingPlayer.name,
                             numberOfPlayers: games[i].player.length
                         });
+                        let info = leavingPlayer.name + " (" + leavingPlayer.color + " player) left the game."
+                        sendUpdateToAllPlayers(games[i], info)
                     }
                     return {
                         type: 'leftGame',

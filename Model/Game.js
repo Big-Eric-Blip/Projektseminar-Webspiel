@@ -385,6 +385,10 @@ class Game {
         for (let i = 0; i < this.player.length; i++) {
             if (this.player[i].playerId === playerId) {
                 let aPlayer = this.player[i];
+                //update playersTurn
+                if(aPlayer.playersTurn === true) {
+                    this.updatePlayersTurn()
+                }
                 this.player.splice(i, 1);
                 return aPlayer;
             }
