@@ -744,7 +744,6 @@ function onCanvasClick(event) {
     });
 }
 },{"../View/Renderer":2}],2:[function(require,module,exports){
-
 class Renderer {
     constructor(canvasID) {
         this.scale = 1;
@@ -786,28 +785,14 @@ class Renderer {
         let ctx = this.ctx;
         let size = 50 * this.scale;
         this.tokens.forEach((token) => {
-            let img = this.images[token.color];
-            if (img.complete) {
+            let img = this.images[token.color];          
                 ctx.drawImage(
                     img,
                     token.x * this.scale - size / 2,
                     token.y * this.scale - size / 2,
                     size,
-                    size
-                );
-            } else {
-                img.onload = () => {
-                    ctx.drawImage(
-                        img,
-                        token.x * this.scale - size / 2,
-                        token.y * this.scale - size / 2,
-                        size,
-                        size
-                    );
-                }
-            }
+                    size);
         });
-
     }
 }
 document.addEventListener("DOMContentLoaded", function () {
