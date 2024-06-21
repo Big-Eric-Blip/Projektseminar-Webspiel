@@ -7,13 +7,10 @@ class Renderer {
         this.fields = [];
         this.canvas = document.getElementById(canvasID);
         this.ctx = this.canvas.getContext("2d");
-
+        this.images = this.loadImages();
         this.drawFields();
         this.drawTokens();
-
     }
-
-
     drawFields() {
         // console.log(this.fields)
         let ctx = this.ctx;
@@ -27,23 +24,51 @@ class Renderer {
         });
     }
 
+    loadImages() {
+        let images = {};
+        images['red'] = new Image();
+        images['red'].src = 'pictures/figureRed.png';
+        images['blue'] = new Image();
+        images['blue'].src = 'pictures/figureBlue.png';
+        images['green'] = new Image();
+        images['green'].src = 'pictures/figureGreen.png';
+        images['yellow'] = new Image();
+        images['yellow'].src = 'pictures/figureYellow.png';
+        return images;        
+    }
+
 
     drawTokens() {
 
         let ctx = this.ctx;
 
 
-        let size = 35 * this.scale;
+        let size = 70 * this.scale;
 
         this.tokens.forEach((token) => {
-            ctx.beginPath();
-            ctx.scale(1, 1)
-            ctx.fillStyle = token.color;
-            ctx.fillRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
-            ctx.strokeStyle = "black";
-            ctx.strokeRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
-            ctx.stroke();
+            let img = this.images[token.color];
+
+            if (img.complete) {
+                ctx.drawImage(
+                    img,
+                    token.x * this.scale - size / 2,
+                    token.y * this.scale - size / 2,
+                    size,
+                    size
+                );
+            } else {
+                img.onload = () => {
+                    ctx.drawImage(
+                        img,
+                        token.x * this.scale - size / 2,
+                        token.y * this.scale - size / 2,
+                        size,
+                        size
+                    );
+                }
+            }
         });
+
     }
 }
 
