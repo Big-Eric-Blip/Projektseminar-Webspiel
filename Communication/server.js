@@ -145,9 +145,11 @@ function checkClientMessage(message, playerId) {
                 for (const game of games) {
                     if (game.gameId === message.gameId) {
                         let takenColors = []
+                        let takenNames = []
                         for (const player of game.player) {
                             if (player.color !== "") {
                                 takenColors.push(player.color)
+                                takenNames.push(player.name)   
                             }
                         console.log(takenColors)
                         for (const player of game.player){
@@ -163,6 +165,8 @@ function checkClientMessage(message, playerId) {
                                 return { type: 'pickedColor', message: `Successfully picked color!` }
                             }else if(takenColors.includes(message.playerColor)){
                                 return { type: 'colorTaken', message: `The color ${message.playerColor} is already taken.`,color:message.playerColor }
+                            }else if(takenNames.includes(message.playerName)){
+                                return { type: 'nameTaken', message: `The name ${message.playerName} is already taken.`,name:message.playerName } 
                             }
                         }
                         return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }

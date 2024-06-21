@@ -16,6 +16,7 @@ let availableGameActions = [];
 let players = [];
 
 let dieColor;
+let clientName;
 
 let socket = null;
 let isSocketOpen = false;
@@ -75,8 +76,13 @@ function fromServerMessage(event) {
             break;
         case 'pickedColor':
             handlePickedColor(message)
+            break
         case 'colorTaken':
             handleColorTaken(message)
+            break;
+        case 'nameTaken':
+            handleNameTaken(message)
+            break;
         case 'newPlayer':
             handleNewPlayer(message);
             break;
@@ -202,6 +208,7 @@ function createGame() {
     const playerName = document.getElementById('adminNameInput').value;
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
     changeRollDiceImage("./pictures/" + dieColor + ".png")
+    clientName = playerName;
     players.push({ name: playerName, color: selectedColor })
 
     if (playerName != '') {
@@ -382,6 +389,11 @@ function handleColorTaken(response) {
     makeTextBlink('joinGameErrorMessage')
 }
 
+function handleNameTaken(response) {
+    document.getElementById('joinGameErrorMessage').textContent = 'This name is already taken! Please choose another one.'
+    makeTextBlink('joinGameErrorMessage')
+}
+
 function handleJoinGameResponse(response) {
     if (response.playerId) {
         players.push(...response.players)
@@ -460,6 +472,7 @@ function startJoinedGame() {
     }
 
     if (playerName !== '' && selectedColor !== null) {
+        clientName = playerName;
         sendMessage({
             type: 'tryPickColor',
             gameId: currentGame.gameId,
@@ -584,8 +597,8 @@ function handleRollDiceResponse(response) {
 }
 
 function renderPlayerPanels() {
+    
     players = players.filter(player => player.name !== undefined);
-    console.log(players)
     for (let i = 0; i < players.length; i++) {
         const panel = document.getElementById(`player-panel${i + 1}`);
         const pictureDiv = panel.querySelector('.player-panel-picture');
@@ -597,7 +610,11 @@ function renderPlayerPanels() {
         img.alt = `Image ${i + 1}`;
         
         // Update text
-        nameDiv.textContent = players[i].name;
+        if (players[i].name === clientName) {
+        nameDiv.textContent = players[i].name+" - You";}
+        else{
+            nameDiv.textContent = players[i].name
+        }
 
         // Show the panel   
         panel.style.display = 'flex';
