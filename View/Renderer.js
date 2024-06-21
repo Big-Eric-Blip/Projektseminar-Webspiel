@@ -43,7 +43,7 @@ class Renderer {
         let ctx = this.ctx;
 
 
-        let size = 70 * this.scale;
+        let size = 50 * this.scale;
 
         this.tokens.forEach((token) => {
             let img = this.images[token.color];

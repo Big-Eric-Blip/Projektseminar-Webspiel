@@ -724,7 +724,7 @@ function onCanvasClick(event) {
 
     renderer.tokens.forEach(token => {
         // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
-        const tokenSize = 35 * renderer.scale;
+        const tokenSize = 50 * renderer.scale;
         const tokenX = token.x;
         const tokenY = token.y;
 
