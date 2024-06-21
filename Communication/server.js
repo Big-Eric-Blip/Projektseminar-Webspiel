@@ -32,7 +32,7 @@ function checkClientMessage(message, playerId) {
                     //keep the following line for testing purposes
                     //let dieValue = 6
                     game.currentDieValue = dieValue
-                    game.calculateAvailableGameActions(board, message.turnCounter)
+                    game.calculateAvailableGameActions(board)
 
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
@@ -233,7 +233,6 @@ function checkClientMessage(message, playerId) {
         case "action_LEAVE_HOUSE":
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    //console.log("Arrived at the server side of action_LEAVE_HOUSE")
                     game.leaveHouse(board, message.playerId, message.tokenId)
                     game.calculateAvailableGameActions(board)
                     let aPlayer = game.getPlayerById(message.playerId);
@@ -257,11 +256,11 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.enterGoal(message.tokenId, message.fieldId)
-                }
                 game.calculateAvailableGameActions(board)
                 let aPlayer = game.getPlayerById(message.playerId);
                 let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
                 sendUpdateToAllPlayers(game, info);
+                }
             }
             break
 
@@ -269,11 +268,11 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.moveInGoal(message.tokenId, message.fieldId)
-                }
                 game.calculateAvailableGameActions(board)
                 let aPlayer = game.getPlayerById(message.playerId);
                 let info = aPlayer.name + " (" + aPlayer.color + " player) moved in the goal!"
                 sendUpdateToAllPlayers(game, info);
+                }
             }
             break
 

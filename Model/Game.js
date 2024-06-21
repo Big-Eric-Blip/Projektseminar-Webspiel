@@ -36,6 +36,7 @@ class Game {
         if (this.player.length !== 1) {
             let currentIndex = this.getCurrentPlayerIndex()
             this.player[currentIndex].setPlayersTurn(false)
+            this.player[currentIndex].turnCounter = 0
             if (this.player.length === currentIndex + 1) {
                 this.player[0].setPlayersTurn(true)
             } else {
@@ -147,10 +148,9 @@ class Game {
      * in the next step by the client
      * Available actions: LEAVE_HOUSE, ENTER_GOAL, BEAT, MOVE, MOVE_GOAL, ENTER_GOAL
      * @param {Board} board on which the game actions are performed
-     * @param {Number} turnCounter optional parameter used for situations where
-     *                              multiple die rolls of the same person happen
+     *
      */
-    calculateAvailableGameActions(board, turnCounter) {
+    calculateAvailableGameActions(board) {
         //empty out all old values
         this.gameActions = []
         //calculate new values
@@ -177,10 +177,10 @@ class Game {
         if (this.currentDieValue === 0) {
             // it's the player's turn to roll the die
             if (this.allInHouse === true) {
-                if (turnCounter === -1 || !turnCounter) {
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', 1))
-                } else if (0 < turnCounter < 3) {
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', turnCounter++))
+                if (currentPlayer.turnCounter < currentPlayer.turnCounter< 3) {
+                    currentPlayer.turnCounter++
+                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
+                    return
                 }
             } else {
                 this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
@@ -259,12 +259,9 @@ class Game {
             ||(this.currentDieValue === 6 && this.anyoneAtHome === 0)) {
             //if all tokens are on home fields
             if (this.allInHouse === true) {
-                if (turnCounter === -1 || !turnCounter) {
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', 1))
-                    return
-                } else if (0 < turnCounter && turnCounter< 3) {
-                    let count = turnCounter + 1
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', count))
+                if (currentPlayer.turnCounter < currentPlayer.turnCounter< 3) {
+                    currentPlayer.turnCounter++
+                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
                     return
                 }
             }

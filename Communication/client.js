@@ -44,7 +44,6 @@ function initWebSocketConnection() {
 }
 
 function fromServerMessage(event) {
-    console.log(event);
     const message = JSON.parse(event.data);
     console.log('Message from server:', message);
     switch (message.type) {
@@ -446,37 +445,20 @@ function handlePickedColor(response) {
     document.getElementById('succesfullJoinPopup').style.display = 'none'
 }
 
-
+/**
+ * Checks the eligibility of the player clicking on the die symbol and if the player is eligible for the action
+ * ROLL_DIE, a message is sent to the server communicating the action. Otherwise, an error message is printed in
+ * the HTML element with id "inGameMessage"
+ */
 function rollDice() {
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
-        let actionTurnCounter = returnActionTurnCounter()
-        console.log("current turn counter: "+ actionTurnCounter)
-        if(0<actionTurnCounter<4) {
-            sendMessage({type: 'rollDice', gameId: currentGame.gameId, turnCounter: actionTurnCounter});
-        } else {
-            sendMessage({type: 'rollDice', gameId: currentGame.gameId});
-        }
-
+        sendMessage({type: 'rollDice', gameId: currentGame.gameId});
     } else {
         //send message to the sideboard
-        document.getElementById("inGameMessage").innerHTML = "It's not your turn"
-        //console.log("It's not your turn.")
+        document.getElementById("inGameMessage").innerHTML = "It's not your turn to roll the die"
     }
 
-}
-function returnActionTurnCounter() {
-    for (let i = 0; i < availableGameActions.length; i++) {
-        if (currentGame.playerId === availableGameActions[i].playerId) {
-            if (availableGameActions[i].action === 'ROLL_DIE') {
-                if (0 <availableGameActions[i].amount <4) {
-                    return availableGameActions[i].amount
-                } else {
-                    return false
-                }
-            }
-        }
-    }
 }
 
 /**
@@ -505,7 +487,6 @@ function isPlayerEligible() {
     for (let i = 0; i < availableGameActions.length; i++) {
         if (currentGame.playerId === availableGameActions[i].playerId) {
             return true
-
         }
     }
     return false
@@ -530,7 +511,6 @@ function validateMoveToken(tokenId) {
     if (isPlayerEligible()) {
         for (let i = 0; i < availableGameActions.length; i++) {
             if (availableGameActions[i].tokenId === tokenId) {
-                //return availableGameActions[i].action
                 return availableGameActions[i]
             }
         }
@@ -585,7 +565,6 @@ function dieAnimation(final) {
 function moveToken(tokenId) {
     //Can this token be moved?
     let validatedAction = validateMoveToken(tokenId)
-    //validatedAction.action = undefined;
     //if yes
     if (validatedAction) {
         chooseGameAction(validatedAction, tokenId)
@@ -634,7 +613,6 @@ function tokenToRenderer(tokens) {
         renderer.tokens.push({tn: token.tokenId, x: xCoord, y: yCoord, color: token.color})
 
     })
-    console.log(renderer.tokens)
     renderer.drawFields();
     renderer.drawTokens();
 
@@ -666,10 +644,7 @@ function updateGameActions(gameActions) {
             playerId: gameAction.playerId, action: gameAction.action, tokenId: gameAction.tokenId,
             amount: gameAction.amount, fieldId: gameAction.fieldId
         })
-        // console.log(gameAction)
     })
-    //example for how to access values from the array
-    // console.log(availableGameActions[0].action)
 }
 
 function handlePlayerJoinedResponse(message) {
@@ -697,7 +672,6 @@ function handleGameStarted(message) {
     //     todo show in response text or something like that
     console.log("Handle game started: ", message)
     document.getElementById("inGameMessage").innerHTML = message.message;
-    //document.getElementById('rollDiceButton').style.display = 'block';
     handleGameUpdate(message)
     setGameState("GAME_RUNNING")
     console.log("The current state is: " + currentGame.gameState);
