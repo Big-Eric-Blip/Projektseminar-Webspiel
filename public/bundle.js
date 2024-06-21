@@ -385,7 +385,7 @@ function handleColorTaken(response) {
 
 function handleJoinGameResponse(response) {
     if (response.playerId) {
-        players.push(response.players)
+        players.push(...response.players)
         console.log("hier")
         console.log(players)
         renderPlayerPanels();
@@ -461,7 +461,6 @@ function startJoinedGame() {
     }
 
     if (playerName !== '' && selectedColor !== null) {
-        players.push({ name: playerName, color: selectedColor })
         sendMessage({
             type: 'tryPickColor',
             gameId: currentGame.gameId,
@@ -486,7 +485,7 @@ function startJoinedGame() {
 }
 
 function handleNewPlayer(response) {
-    players.push({ name: response.playerName, color: response.playerColor })
+    players.push({ name: response.name, color: response.color })
     renderPlayerPanels();
 }
 
@@ -586,6 +585,8 @@ function handleRollDiceResponse(response) {
 }
 
 function renderPlayerPanels() {
+    players = players.filter(player => player.name !== undefined);
+    console.log(players)
     for (let i = 0; i < players.length; i++) {
         const panel = document.getElementById(`player-panel${i + 1}`);
         const pictureDiv = panel.querySelector('.player-panel-picture');
