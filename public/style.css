@@ -24,19 +24,23 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
 }
 
 .panel-left {
+    flex-direction: column;
+    justify-content: space-between;
     float: left;
-    width: 200px;
-    height: 100%;
+    width: 15vw;
+    min-width: 150px;
+    height: 85vh;
     padding: 15px;
+    margin-bottom: 60px;
     margin-right: 40px;
     border-right-style: inset;
     background-color: lightgray;
+    box-sizing: border-box;
 }
-
 
 
 #myCanvas {
@@ -45,7 +49,7 @@ body {
     background-color: #ffca1a;
     width: 70%;
     height: 70%;
-    
+
 }
 
 .pre-game {
@@ -82,7 +86,7 @@ body {
     background-color: crimson;
     border: none;
     float: right;
-    border-radius:10px;
+    border-radius: 10px;
     font-size: medium;
     width: auto;
     padding: 8px 20px;
@@ -91,7 +95,7 @@ body {
     display: block;
 }
 
-.errorMessage{
+.errorMessage {
     text-align: center;
 }
 
@@ -159,7 +163,7 @@ body {
 }
 
 .popup-content {
-    overflow-y:auto;
+    overflow-y: auto;
     background-color: rgba(217, 217, 217, 255);
     width: 50%;
     max-width: 800px;
@@ -192,6 +196,7 @@ body {
     border-radius: 10px;
     font-size: medium;
     width: 75%;
+    max-width: 200px;
     height: auto;
     padding: 8px 20px;
 }
@@ -253,4 +258,46 @@ input[type="radio"]:checked + img {
 .dropdown-button {
     padding: 10px 20px;
     font-size: 16px;
+}
+
+#chat-container {
+    resize: vertical;
+    overflow-y: auto;
+    height: 35%;
+    min-height: 10%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    padding: 10px;
+}
+
+.message {
+    background-color: #007bff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.message.incoming {
+    background-color: #28a745;
+    max-width: 80%;
+    color: white;
+}
+
+.message.outgoing {
+    background-color: #007bff;
+    align-self: flex-end;
+    max-width: 80%;
+    color: white;
+}
+
+.message.server {
+    background-color: #f7ca4d;
+    max-width: 100%;
+    color: black;
+}
+
+#messagesContainer {
+    display: flex;
+    flex-direction: column;
 }

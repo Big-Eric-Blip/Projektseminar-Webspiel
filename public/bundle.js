@@ -13,9 +13,8 @@ let currentGame = {
     playerName: "" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
 let availableGameActions = [];
-
+const messages = [];
 let dieColor;
-
 let socket = null;
 let isSocketOpen = false;
 
@@ -74,8 +73,10 @@ function fromServerMessage(event) {
             break;
         case 'pickedColor':
             handlePickedColor(message)
+            break;
         case 'colorTaken':
             handleColorTaken(message)
+            break;
         case 'message':
             handleServerMessage(message);
             break;
@@ -95,7 +96,7 @@ function sendMessage(message) {
         // Wait for the socket to open before sending the message
         socket.addEventListener('open', function () {
             socket.send(JSON.stringify(message));
-        }, { once: true });
+        }, {once: true});
     } else {
         socket.send(JSON.stringify(message));
     }
@@ -126,8 +127,8 @@ document.addEventListener('DOMContentLoaded', function () {
         //Game Buttons
         rollDiceButton: rollDice,
 
-         // Copy Game ID
-         copyGameIdButton: copyGameIdToClipboard,
+        // Copy Game ID
+        copyGameIdButton: copyGameIdToClipboard,
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -169,7 +170,7 @@ function cancel() {
 
 function copyGameIdToClipboard() {
     const gameIdElement = document.getElementById('gameId');
-    const gameIdText = gameIdElement.textContent.split(": ")[1]; 
+    const gameIdText = gameIdElement.textContent.split(": ")[1];
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(gameIdText).then(() => {
@@ -190,7 +191,6 @@ function showCopyNotification() {
         notificationElement.style.display = 'none';
     }, 2000);
 }
-
 
 
 function createGame() {
@@ -307,7 +307,7 @@ function setLobby() {
     const preGameElements = document.querySelectorAll('.pre-game')
     preGameElements.forEach((element) => element.style.display = 'none')
     const lobbyElements = document.querySelectorAll('.lobby')
-    lobbyElements.forEach((element) => element.style.display = 'block')
+    lobbyElements.forEach((element) => element.style.display = 'flex')
     document.getElementById('body').style.backgroundColor = 'azure'
     document.getElementById('body').style.marginTop = '60px'
     document.getElementById('main-area').style.marginLeft = '240px'
@@ -320,7 +320,7 @@ function setGameRunning() {
     const lobbyElements = document.querySelectorAll('.lobby')
     const gameRunningElements = document.querySelectorAll('.game-running')
     lobbyElements.forEach((element) => element.style.display = 'none')
-    gameRunningElements.forEach((element) => element.style.display = 'block')
+    gameRunningElements.forEach((element) => element.style.display = 'flex')
 }
 
 function endGame() {
@@ -328,11 +328,13 @@ function endGame() {
     const gameRunningElements = document.querySelectorAll('.game-running')
     const gameOverElements = document.querySelectorAll('.game-over')
     gameRunningElements.forEach((element) => element.style.display = 'none')
-    gameOverElements.forEach((element) => element.style.display = 'block')
+    gameOverElements.forEach((element) => element.style.display = 'flex')
 }
 
 function handleCreateGameResponse(response) {
-    document.getElementById("inGameMessage").innerHTML = "Nice. You've created a game."
+    const serverMessage = "Nice. You've created a game."
+    document.getElementById("inGameMessage").innerHTML = serverMessage
+    addMessageToChat(serverMessage)
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
 
@@ -408,9 +410,10 @@ function handleJoinGameResponse(response) {
 
 
         currentGame.playerId = response.playerId;
+        const serverMessage = "You've joined the game. " + "Please choose a name and a color"
         let serverResponseText = document.getElementById("inGameMessage");
-        serverResponseText.innerHTML = "You've joined the game. " +
-            "Please choose a name and a color";
+        serverResponseText.innerHTML = serverMessage;
+        addMessageToChat(serverMessage)
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
@@ -485,10 +488,12 @@ function handlePickedColor(response) {
 function rollDice() {
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
-        sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
+        sendMessage({type: 'rollDice', gameId: currentGame.gameId});
     } else {
         //send message to the sideboard
-        document.getElementById("inGameMessage").innerHTML = "It's not your turn"
+        const serverMessage = "It's not your turn"
+        document.getElementById("inGameMessage").innerHTML = serverMessage
+        addMessageToChat(serverMessage)
         //console.log("It's not your turn.")
     }
 
@@ -603,7 +608,9 @@ function moveToken(tokenId) {
         chooseGameAction(gameAction, tokenId)
         console.log("Execute game action " + validation)
     } else {
-        document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
+        const serverMessage = "It's not your turn to move."
+        document.getElementById("inGameMessage").innerHTML = serverMessage;
+        addMessageToChat(serverMessage)
     }
 }
 
@@ -634,11 +641,11 @@ function tokenToRenderer(tokens) {
     renderer.tokens = [];
     tokens.forEach(token => {
         let xCoord = getTokenXCoord(token.fieldId);
-        let yCoord = getTokenYCoord(token.fieldId);        
-        renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
+        let yCoord = getTokenYCoord(token.fieldId);
+        renderer.tokens.push({tn: token.tokenId, x: xCoord, y: yCoord, color: token.color})
         console.log(renderer.tokens)
     })
-    
+
     renderer.drawFields();
     renderer.drawTokens();
 
@@ -684,31 +691,35 @@ function handleMoveTokenResponse(response) {
 }
 
 function handlePlayerJoinedResponse(message) {
-    document.getElementById("inGameMessage").innerHTML =
-        "A new player joined your game. There are now " + message.numberOfPlayers + " players in your game."
+    const serverMessage = "A new player joined your game. There are now " + message.numberOfPlayers +
+        " players in your game."
+    document.getElementById("inGameMessage").innerHTML = serverMessage
+    addMessageToChat(serverMessage)
 }
 
 function handleAPlayerLeftGame(message) {
-    const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
+    const serverMessage = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
         ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
         (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
-    document.getElementById("inGameMessage").innerHTML = serverResponseText;
-    console.log(serverResponseText)
+    document.getElementById("inGameMessage").innerHTML = serverMessage;
+    addMessageToChat(serverMessage)
+    console.log(serverMessage)
     console.log("There are now " + message.numberOfPlayers + " players in your game.")
 }
 
 function handleLeftGame(message) {
-    const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
-    document.getElementById("inGameMessage").innerHTML = serverResponseText;
+    const serverMessage = 'You left the game.\n Game id: ' + message.gameId;
+    document.getElementById("inGameMessage").innerHTML = serverMessage;
     document.getElementById("gameId").innerHTML = "";
-    console.log(serverResponseText);
+    addMessageToChat(serverMessage)
+    console.log(serverMessage);
 }
 
 function handleGameStarted(message) {
     //     todo show in response text or something like that
     console.log(message)
     document.getElementById("inGameMessage").innerHTML = message.message;
-    //document.getElementById('rollDiceButton').style.display = 'block';
+    addMessageToChat(message.message)
     handleGameUpdate(message)
     setGameState("GAME_RUNNING")
     console.log("The current state is: " + currentGame.gameState);
@@ -718,9 +729,10 @@ function handleGameStarted(message) {
 
 function handleServerMessage(response) {
     // TODO show message in game in grey block on the left or maybe implement chat and show it there
-    const serverResponseText = response.message;
-    document.getElementById("inGameMessage").innerHTML = serverResponseText;
-    console.log(serverResponseText);
+    const serverMessage = response.message;
+    document.getElementById("inGameMessage").innerHTML = serverMessage;
+    addMessageToChat(serverMessage)
+    console.log(serverMessage);
 }
 
 function onCanvasClick(event) {
@@ -731,7 +743,7 @@ function onCanvasClick(event) {
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
 
-    const clickPoint = { x: clickX, y: clickY };
+    const clickPoint = {x: clickX, y: clickY};
 
     renderer.tokens.forEach(token => {
         // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
@@ -752,6 +764,37 @@ function onCanvasClick(event) {
             //renderer.moveToken(token)
         }
     });
+}
+
+/**
+ * Adds a message to the chat array
+ * @param {string} message to display in chat
+ * @param {string} type style of the message, possible are 'incoming', 'outgoing' and 'server'
+ * @return {void}
+ */
+function addMessageToChat(message, type = 'server') {
+    messages.push({text: message, type});
+    displayMessages();
+}
+
+/**
+ * applies the new message to the chat
+ */
+function displayMessages() {
+    const messagesContainer = document.getElementById('messagesContainer');
+    messagesContainer.innerHTML = ''; // Clear the container
+    const chatContainer = document.getElementById('chat-container');
+
+    messages.forEach(msg => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.classList.add(msg.type);
+        messageElement.textContent = msg.text;
+        messagesContainer.appendChild(messageElement);
+    });
+
+    // Scroll to the bottom of the chat
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 },{"../View/Renderer":2}],2:[function(require,module,exports){
 
