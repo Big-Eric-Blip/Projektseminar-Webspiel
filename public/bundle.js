@@ -130,6 +130,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //Game Buttons
         rollDiceButton: rollDice,
+
+         // Copy Game ID
+         copyGameIdButton: copyGameIdToClipboard,
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -168,6 +171,32 @@ function cancel() {
     setGameState("PRE_GAME")
     document.getElementById('myCanvas').style.display = 'none';
 }
+
+function copyGameIdToClipboard() {
+    const gameIdElement = document.getElementById('gameId');
+    const gameIdText = gameIdElement.textContent.split(": ")[1]; 
+
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(gameIdText).then(() => {
+            console.log('Game ID wurde in die Zwischenablage kopiert.');
+            showCopyNotification();
+        }).catch(err => {
+            console.error('Fehler beim Kopieren der Game ID: ', err);
+        });
+    } else {
+        console.error('Clipboard API nicht verfügbar.');
+    }
+}
+
+function showCopyNotification() {
+    const notificationElement = document.getElementById('copyNotification');
+    notificationElement.style.display = 'block';
+    setTimeout(() => {
+        notificationElement.style.display = 'none';
+    }, 2000);
+}
+
+
 
 function createGame() {
     const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
@@ -394,6 +423,8 @@ function handleJoinGameResponse(response) {
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
+        const gameId = document.getElementById("gameId");
+        gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
         initRenderer(response)
 
 
