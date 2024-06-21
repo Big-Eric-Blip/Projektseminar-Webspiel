@@ -1,7 +1,6 @@
 
 class Renderer {
     constructor(canvasID) {
-
         this.scale = 1;
         this.tokens = [];
         this.fields = [];
@@ -11,8 +10,8 @@ class Renderer {
         this.drawFields();
         this.drawTokens();
     }
-    drawFields() {
-        // console.log(this.fields)
+
+    drawFields() {        
         let ctx = this.ctx;
         let size = 45 * this.scale;
         this.fields.forEach((field) => {
@@ -37,17 +36,11 @@ class Renderer {
         return images;        
     }
 
-
     drawTokens() {
-
         let ctx = this.ctx;
-
-
         let size = 50 * this.scale;
-
         this.tokens.forEach((token) => {
             let img = this.images[token.color];
-
             if (img.complete) {
                 ctx.drawImage(
                     img,
@@ -71,7 +64,6 @@ class Renderer {
 
     }
 }
-
 document.addEventListener("DOMContentLoaded", function () {
     window.renderer = new Renderer("myCanvas");
 })
