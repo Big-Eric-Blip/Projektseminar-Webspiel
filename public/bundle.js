@@ -10,9 +10,11 @@ let currentGame = {
     gameState: "PRE_GAME", //also available: LOBBY, GAME_RUNNING, GAME_OVER
     currentTokenId: '',
     playerColor: "",
-    playerName: "" //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    playerName: "", //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
 let availableGameActions = [];
+
+let players = [];
 
 let dieColor;
 
@@ -76,6 +78,9 @@ function fromServerMessage(event) {
             handlePickedColor(message)
         case 'colorTaken':
             handleColorTaken(message)
+        case 'newPlayer':
+            handleNewPlayer(message);
+            break;
         case 'message':
             handleServerMessage(message);
             break;
@@ -165,12 +170,11 @@ function cancel() {
 }
 
 function createGame() {
-
     const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
     const playerName = document.getElementById('adminNameInput').value;
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
-    console.log(dieColor);
     changeRollDiceImage("./pictures/" + dieColor + ".png")
+    players.push({ name: playerName, color: selectedColor })
 
     if (playerName != '') {
 
@@ -309,6 +313,7 @@ function handleCreateGameResponse(response) {
 
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
+    renderPlayerPanels();
     console.log(currentGame);
     //document.getElementById("createGameButton").style.display = 'none';
     initRenderer(response)
@@ -351,27 +356,31 @@ function handleColorTaken(response) {
 
 function handleJoinGameResponse(response) {
     if (response.playerId) {
+        players.push(response.players)
+        console.log("hier")
+        console.log(players)
+        renderPlayerPanels();
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
 
 
         //Make taken colors unavailable
-        if (response.takenColors.includes("blue")) {
+        if (response.takenColors.includes("Blue")) {
             document.getElementById('blueOption').querySelector('input').disabled = true
             document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
         }
 
-        if (response.takenColors.includes("yellow")) {
+        if (response.takenColors.includes("Yellow")) {
             document.getElementById('yellowOption').querySelector('input').disabled = true
             document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
         }
 
-        if (response.takenColors.includes("green")) {
+        if (response.takenColors.includes("Green")) {
             document.getElementById('greenOption').querySelector('input').disabled = true
             document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
         }
 
-        if (response.takenColors.includes("red")) {
+        if (response.takenColors.includes("Red")) {
             document.getElementById('redOption').querySelector('input').disabled = true
             document.getElementById('redImage').src = "pictures/figureRedCross.png"
 
@@ -421,6 +430,7 @@ function startJoinedGame() {
     }
 
     if (playerName !== '' && selectedColor !== null) {
+        players.push({ name: playerName, color: selectedColor })
         sendMessage({
             type: 'tryPickColor',
             gameId: currentGame.gameId,
@@ -444,7 +454,13 @@ function startJoinedGame() {
     }
 }
 
+function handleNewPlayer(response) {
+    players.push({ name: response.playerName, color: response.playerColor })
+    renderPlayerPanels();
+}
+
 function handlePickedColor(response) {
+    renderPlayerPanels();
     currentGame.playerName = response.playerName
     currentGame.playerColor = response.playerColor
     document.getElementById('succesfullJoinPopup').style.display = 'none'
@@ -538,6 +554,25 @@ function handleRollDiceResponse(response) {
     updateGameActions(JSON.parse(response.gameActions))
 }
 
+function renderPlayerPanels() {
+    for (let i = 0; i < players.length; i++) {
+        const panel = document.getElementById(`player-panel${i + 1}`);
+        const pictureDiv = panel.querySelector('.player-panel-picture');
+        const nameDiv = panel.querySelector('.player-panel-name h2');
+        
+        // Update picture
+        const img = pictureDiv.querySelector('img');
+        img.src = "pictures/figure" + players[i].color + ".png";
+        img.alt = `Image ${i + 1}`;
+        
+        // Update text
+        nameDiv.textContent = players[i].name;
+
+        // Show the panel   
+        panel.style.display = 'flex';
+    }
+}
+
 function dieAnimation(final) {
     const images = [
         'pictures/' + dieColor + '1.png',
@@ -603,11 +638,11 @@ function tokenToRenderer(tokens) {
     renderer.tokens = [];
     tokens.forEach(token => {
         let xCoord = getTokenXCoord(token.fieldId);
-        let yCoord = getTokenYCoord(token.fieldId);        
+        let yCoord = getTokenYCoord(token.fieldId);
         renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
         console.log(renderer.tokens)
     })
-    
+
     renderer.drawFields();
     renderer.drawTokens();
 

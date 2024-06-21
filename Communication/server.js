@@ -91,17 +91,24 @@ function checkClientMessage(message, playerId) {
                         fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     });
                     let takenColors = []
+                    let players = []
                     for (const player of game.player) {
                         if (player.color !== "") {
                             takenColors.push(player.color)
+                        let playerHelp={
+                            name:player.name,
+                            color:player.color}
+                        players.push(playerHelp)
                         }
                     }
+
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
                         playerId: playerId,
                         takenColors: takenColors,
+                        players: players,
                         fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     };
                 }
@@ -138,17 +145,21 @@ function checkClientMessage(message, playerId) {
                 for (const game of games) {
                     if (game.gameId === message.gameId) {
                         let takenColors = []
-             
                         for (const player of game.player) {
                             if (player.color !== "") {
                                 takenColors.push(player.color)
-                            }}
+                            }
                         console.log(takenColors)
                         for (const player of game.player){
                             if (player.playerId === message.playerId&&!takenColors.includes(message.playerColor)) {
                                 player.color = message.playerColor
+                                takenColors.push(message.playerColor)
                                 player.name = message.playerName
                                 addTokensOnPlayerJoin(message, playerId, game);
+                                sendMessageToAllPlayers(game, {
+                                    type: "newPlayer",
+                                    name: message.playerName,
+                                    color: message.playerColor})
                                 return { type: 'pickedColor', message: `Successfully picked color!` }
                             }else if(takenColors.includes(message.playerColor)){
                                 return { type: 'colorTaken', message: `The color ${message.playerColor} is already taken.`,color:message.playerColor }
@@ -158,7 +169,7 @@ function checkClientMessage(message, playerId) {
                     }
                 }
                 return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
-
+            }
 
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
