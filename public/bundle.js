@@ -332,9 +332,7 @@ function endGame() {
 }
 
 function handleCreateGameResponse(response) {
-    const serverMessage = "Nice. You've created a game."
-    document.getElementById("inGameMessage").innerHTML = serverMessage
-    addMessageToChat(serverMessage)
+    addMessageToChat("Nice. You've created a game.")
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
 
@@ -410,10 +408,7 @@ function handleJoinGameResponse(response) {
 
 
         currentGame.playerId = response.playerId;
-        const serverMessage = "You've joined the game. " + "Please choose a name and a color"
-        let serverResponseText = document.getElementById("inGameMessage");
-        serverResponseText.innerHTML = serverMessage;
-        addMessageToChat(serverMessage)
+        addMessageToChat("You've joined the game. " + "Please choose a name and a color")
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
@@ -490,11 +485,8 @@ function rollDice() {
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
         sendMessage({type: 'rollDice', gameId: currentGame.gameId});
     } else {
-        //send message to the sideboard
-        const serverMessage = "It's not your turn"
-        document.getElementById("inGameMessage").innerHTML = serverMessage
-        addMessageToChat(serverMessage)
-        //console.log("It's not your turn.")
+        //send message to the chat
+        addMessageToChat("It's not your turn")
     }
 
 }
@@ -608,9 +600,7 @@ function moveToken(tokenId) {
         chooseGameAction(gameAction, tokenId)
         console.log("Execute game action " + validation)
     } else {
-        const serverMessage = "It's not your turn to move."
-        document.getElementById("inGameMessage").innerHTML = serverMessage;
-        addMessageToChat(serverMessage)
+        addMessageToChat("It's not your turn to move.")
     }
 }
 
@@ -691,34 +681,22 @@ function handleMoveTokenResponse(response) {
 }
 
 function handlePlayerJoinedResponse(message) {
-    const serverMessage = "A new player joined your game. There are now " + message.numberOfPlayers +
-        " players in your game."
-    document.getElementById("inGameMessage").innerHTML = serverMessage
-    addMessageToChat(serverMessage)
+    addMessageToChat("A new player joined your game. There are now " + message.numberOfPlayers +
+        " players in your game.")
 }
 
 function handleAPlayerLeftGame(message) {
-    const serverMessage = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
-        ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
-        (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
-    document.getElementById("inGameMessage").innerHTML = serverMessage;
-    addMessageToChat(serverMessage)
-    console.log(serverMessage)
-    console.log("There are now " + message.numberOfPlayers + " players in your game.")
+    addMessageToChat(message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
+        ' player) left the game.\n' + (message.numberOfPlayers === 1 ? "You are the only player in the game." :
+        ' There are now ' + message.numberOfPlayers + ' players in your game.'))
 }
 
 function handleLeftGame(message) {
-    const serverMessage = 'You left the game.\n Game id: ' + message.gameId;
-    document.getElementById("inGameMessage").innerHTML = serverMessage;
     document.getElementById("gameId").innerHTML = "";
-    addMessageToChat(serverMessage)
-    console.log(serverMessage);
+    addMessageToChat('You left the game.\n Game id: ' + message.gameId)
 }
 
 function handleGameStarted(message) {
-    //     todo show in response text or something like that
-    console.log(message)
-    document.getElementById("inGameMessage").innerHTML = message.message;
     addMessageToChat(message.message)
     handleGameUpdate(message)
     setGameState("GAME_RUNNING")
@@ -728,11 +706,7 @@ function handleGameStarted(message) {
 }
 
 function handleServerMessage(response) {
-    // TODO show message in game in grey block on the left or maybe implement chat and show it there
-    const serverMessage = response.message;
-    document.getElementById("inGameMessage").innerHTML = serverMessage;
-    addMessageToChat(serverMessage)
-    console.log(serverMessage);
+    addMessageToChat(response.message)
 }
 
 function onCanvasClick(event) {
