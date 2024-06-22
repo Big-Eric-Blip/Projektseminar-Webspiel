@@ -168,8 +168,7 @@ function cancel() {
 }
 
 function copyGameIdToClipboard() {
-    const gameIdElement = document.getElementById('gameId');
-    const gameIdText = gameIdElement.textContent.split(": ")[1];
+    const gameIdText = currentGame.gameId;
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(gameIdText).then(() => {
@@ -335,8 +334,7 @@ function handleCreateGameResponse(response) {
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
 
-    const gameId = document.getElementById("gameId");
-    gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
+    addMessageToChat("Send the game id to your friends to join your game: " + currentGame.gameId)
     console.log(currentGame);
     //document.getElementById("createGameButton").style.display = 'none';
     initRenderer(response)
@@ -411,8 +409,7 @@ function handleJoinGameResponse(response) {
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
-        const gameId = document.getElementById("gameId");
-        gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
+        addMessageToChat("Send the game id to your friends to join your game: " + currentGame.gameId)
         initRenderer(response)
 
 
@@ -691,7 +688,6 @@ function handleAPlayerLeftGame(message) {
 }
 
 function handleLeftGame(message) {
-    document.getElementById("gameId").innerHTML = "";
     addMessageToChat('You left the game.\n Game id: ' + message.gameId)
 }
 
