@@ -110,6 +110,11 @@ body {
     display: none;
     margin-bottom: 15px;
     margin-top: 15px;
+    cursor: pointer;
+}
+
+.panel-button:hover {
+    background-color: #9d0b28;
 }
 
 .test-button {
@@ -274,8 +279,9 @@ input[type="radio"]:checked + img {
 #chat-container {
     resize: vertical;
     overflow-y: auto;
-    height: 50%;
-    min-height: 10%;
+    height: 85%;
+    min-height: 20%;
+    max-height: 85%;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: white;
@@ -311,4 +317,31 @@ input[type="radio"]:checked + img {
 #messagesContainer {
     display: flex;
     flex-direction: column;
+    font: medium Arial;
+}
+
+#input-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    width: 100%;
+}
+
+#chatInput {
+    width: 100%;
+    font: medium Arial;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#sendButton {
+    margin-top: 0;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.chatAndInputContainer {
+    height: 50%;
+    max-height: 50%;
+    width: 100%;
 }

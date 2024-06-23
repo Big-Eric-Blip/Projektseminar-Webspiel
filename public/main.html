@@ -41,8 +41,15 @@
         <button id="copyGameIdButton" class="server-communication-button panel-button lobby">Copy Game ID</button>
         <p id="copyNotification" style="display:none;">Game ID copied to clipboard!</p>
     </div>
-    <div id="chat-container">
-        <div id="messagesContainer"></div>
+    <div class="chatAndInputContainer">
+        <div id="chat-container">
+            <div id="messagesContainer"></div>
+        </div>
+        <div id="input-container">
+            <input type="text" id="chatInput" class="lobby"
+                                                  placeholder="Type a message...">
+            <button class="server-communication-button panel-button lobby" id="sendButton">Send</button>
+        </div>
     </div>
 </aside>
 <div class="main-area" id="main-area">

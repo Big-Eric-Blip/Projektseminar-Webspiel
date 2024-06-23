@@ -128,6 +128,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Copy Game ID
         copyGameIdButton: copyGameIdToClipboard,
+
+        // Send a chat message
+        sendButton: sendChatMessage
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -310,6 +313,7 @@ function setLobby() {
     document.getElementById('body').style.marginTop = '60px'
     document.getElementById('main-area').style.marginLeft = '240px'
     //document.getElementById('body').style.width = '80%'
+    attachListenerToChatInput()
 
 }
 
@@ -684,7 +688,7 @@ function handlePlayerJoinedResponse(message) {
 function handleAPlayerLeftGame(message) {
     addMessageToChat(message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
         ' player) left the game.\n' + (message.numberOfPlayers === 1 ? "You are the only player in the game." :
-        ' There are now ' + message.numberOfPlayers + ' players in your game.'))
+            ' There are now ' + message.numberOfPlayers + ' players in your game.'))
 }
 
 function handleLeftGame(message) {
@@ -765,3 +769,30 @@ function displayMessages() {
     // Scroll to the bottom of the chat
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
+
+
+/**
+ * Adds the text in chat input field to the chat
+ * */
+function sendChatMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const message = chatInput.value.trim();
+    if (message) {
+        addMessageToChat(message, 'outgoing');
+        chatInput.value = '';
+    }
+}
+
+/**
+ * Inputs in the chat input field can be send with the enter button
+ * */
+function attachListenerToChatInput() {
+    const chatInput = document.getElementById('chatInput');
+    chatInput.addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            sendChatMessage();
+        }
+    });
+}
+
+
