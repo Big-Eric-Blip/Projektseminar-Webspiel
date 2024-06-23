@@ -456,7 +456,7 @@ function rollDice() {
         sendMessage({type: 'rollDice', gameId: currentGame.gameId});
     } else {
         //send message to the sideboard
-        document.getElementById("inGameMessage").innerHTML = "It's not your turn to roll the die"
+        document.getElementById("inGameMessage").innerHTML = "It's not your turn to roll the die."
     }
 
 }
