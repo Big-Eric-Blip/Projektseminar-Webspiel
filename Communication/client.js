@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         createGameButton: createGame,
-
+        openRulesPopupButton: openRulesPopup,
         //Join Game
         joinGamePopupButton: openJoinGamePopup,
         closeJoinGamePopupButton: closeJoinGamePopup,
@@ -156,6 +156,9 @@ function openCreateGamePopup() {
 function closeCreateGamePopup() {
     document.getElementById('createGameErrorMessage').textContent = '';
     document.getElementById('createGamePopup').style.display = 'none';
+}
+function openRulesPopup() {
+    document.getElementById('rulesPopup').style.display = 'block';
 }
 
 function cancel() {
