@@ -15,7 +15,6 @@ class Renderer {
 
 
     drawFields() {
-        console.log(this.fields)
         let ctx = this.ctx;
         let size = 45 * this.scale;
         this.fields.forEach((field) => {

@@ -11,6 +11,7 @@ class Player {
         this.playerId = playerId
         this.name = name
         this.playersTurn = false
+        this.turnCounter = 0
     }
 
     //TODO: implement getters and setters
