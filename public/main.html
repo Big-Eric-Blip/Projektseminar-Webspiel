@@ -21,9 +21,8 @@
         <nav class="nav">
             <button id="createGamePopupButton" class="server-communication-button red-button">Create game</button>
             <button id="joinGamePopupButton" class="server-communication-button red-button">Join game</button>
-            <button id="openRulesPopupButton" class="server-communication-button red-button">Red the rules!</button>
-
-            <button class="red-button">Settings</button>
+            <button id="openRulesPopupButton" class="server-communication-button red-button">Read the rules!</button>
+            
         </nav>
     </div>
 </header>
@@ -45,11 +44,8 @@
         <p id="copyNotification" style="display:none;">Game ID copied to clipboard!</p>
     </aside>
     <div class="main-area" id="main-area">
-        <!---->
-        <!--<div id="resultDice" display='none'>Hier wird dein Würfelergebnis angezeigt</div>-->
         <br>
         <br>
-
         <!-- Begin Join Game Popup-->
         <div class="popup" id="joinGamePopup">
             <div class="popup-content">
@@ -71,58 +67,54 @@
             <div class="popup-content">
                 <h1>Game Rules - Stay Cool Buddy!</h1>
                 <details>
-                    <summary>Ziel des Spiels</summary>
+                    <summary>Goal of the game</summary>
                     <ul>
-                        <li>Das Ziel des Spiels ist es, alle vier eigenen Spielfiguren als Erster vom Startfeld über das Spielfeld ins Ziel zu bringen.</li>
+                        <li>Ready, set, go! The aim of this thrilling game is to be the first to get all four of your pieces from the starting square to the finish line.</li>
                     </ul>
                 </details>
                 <details>
-                    <summary>Vorbereitung</summary>
+                    <summary>Setting up the fun</summary>
                     <ul>
-                        <li>Jeder Spieler wählt eine Farbe die Spielfiguren werden bei Spielstart platziert.</li>
-                        <li>Ein zufälliger Spieler beginnt, danach geht es mit dem nächsten Spieler weiter.</li>
+                        <li>Now for the fun part! Each player gets to choose a colour, and then the playing pieces are placed at the start of the game.</li>                        
+                        <li>Once all players are ready to go, it's time for the game creator to get the party started!</li>
+                        <li>A random player gets to start, and then the next player has to stay cool.</li>
                     </ul>
                 </details>
                 <details>
-                    <summary>Spielablauf</summary>
+                    <summary>Coming out of the house</summary>
                     <ul>
-                        <li>Jeder Spieler ist nacheinander an der Reihe und Würfelt</li>
+                        <li>When all the figures are at home, you can roll the dice three times!</li> 
+                        <li>A player must roll a 6 to move one of his figures from the starting square to the starting square in his colour (the first square of the circuit).</li>
+                        <li>If a 6 is rolled, a piece from home must be placed on the playing field.</li>
+                        <li>The starting field must be cleared immediately if possible.</li>
+                        <li>If a player no longer has any pieces in the starting square, he may also move on with the pieces on the playing field.</li>                     
                     </ul>
                 </details>
                 <details>
-                    <summary>Starten</summary>
+                    <summary>Moving the token</summary>
                     <ul>
-                        <li>Ein Spieler muss eine 6 würfeln, um eine seiner Figuren aus dem Startfeld auf das Startfeld in seiner Farbe (das erste Feld des Rundkurses) zu setzen.</li>
-                        <li>Wenn eine 6 gewürfelt wird, muss eine Figur aus dem Zuhause auf das Spielfeld gestellt werden.</li>
-                        <li>Wenn alle Figuren im Zuhause sind, darf 3 mal gewürfelt werden.</li>
-                        <li>Würfelt der Spieler eine 6, darf er nochmals würfeln.</li>
-                        <li>Hat ein Spieler keine Figuren mehr im Startfeld, darf er auch mit den Figuren auf dem Spielfeld weiterziehen.</li>
+                        <li>Once the game begins, the player gets to move their figure in a clockwise direction, with the number of dice rolled determining how far they go!</li>
+                        <li>If the player rolls a 6, he may roll the dice again.</li>
+                        <li>If a piece lands on a square occupied by an opponent's piece, the opponent's piece is returned to its home ("beat").</li>
+                        <li>You can't capture your own pieces, and you can't place them on squares with your own pieces.</li>
                     </ul>
                 </details>
                 <details>
-                    <summary>Ziehen</summary>
+                    <summary>Just pull to the finish and you'll be done!</summary>
                     <ul>
-                        <li>Nach dem Start zieht der Spieler seine Figur entsprechend der gewürfelten Augenzahl im Uhrzeigersinn vorwärts.</li>
-                        <li>Landet eine Figur auf einem Feld, das von einer gegnerischen Figur besetzt ist, wird die gegnerische Figur zurück in das Zuhause gestellt ("schlagen").</li>
-                        <li>Eigene Figuren können nicht geschlagen werden und dürfen auch nicht auf Felder mit eigenen Figuren gesetzt werden.</li>
+                        <li>Once a piece has made its way around the playing field, it reaches the finish line! This is where it's unbeatable!</li>
+                        <li>Let's say you've got a figure three spaces in front of the target area. If you roll a 4, that figure can move to the target and you've won!</li>
+                        <li>Once all the pawns are either at home or at the finish, it's time to roll the dice again!</li>
                     </ul>
                 </details>
                 <details>
-                    <summary>Ins Ziel ziehen</summary>
+                    <summary>The end is near</summary>
                     <ul>
-                        <li>Wenn eine Figur das Spielfeld umrundet hat, geht sie in das Ziel. Dort kann sie nicht mehr geschlagen werden.</li>
-                        <li>Beispiel: Steht eine Figur drei Felder vor dem Zielbereich und der Spieler würfelt eine 4, darf diese Figur ins Ziel ziehen.</li>
-                        <li>Wenn alle Spielfiguren entweder Zuhause oder im Ziel sind, darf wieder 3 mal gewürfelt werden.</li>
+                        <li>The game ends for each player when all four figures in their own colour have reached the finish area. Congratulations to the winner!</li>
+                        <li>The remaining players are all in it to win! Whoever is last on the field has lost, but the rest of the players are going all out to avoid that fate.</li>
                     </ul>
                 </details>
-                <details>
-                    <summary>Spielende</summary>
-                    <ul>
-                        <li>Das Spiel endet für jeden Spieler, wenn alle vier Figuren in eigener Farbe den Zielbereich gebracht wurden. Dieser Spieler ist der Gewinner.</li>
-                        <li>Die restlichen Spieler spielen darum, nicht letzer zu werden. Wer als letztes noch auf dem Feld steht, hat verloren</li>
-                    </ul>
-                </details>
-                <button id="cancelButton" class="server-communication-button popup-button">Cancel</button>
+                <button id="closeRulePopupButton" class="server-communication-button popup-button">Close</button>
             </div>
         </div>
 
@@ -258,12 +250,7 @@
             </div>
         </div>
         <!-- End Create Game Popup-->
-
-
-
-
-        <button class="pre-game test-button">test pre game visibility</button>
-
+        
 
         <div class="game-board lobby game-running" id="board">
             <canvas id="myCanvas" width="1100" height="1100"></canvas>
