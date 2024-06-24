@@ -12,6 +12,7 @@ class Game {
     constructor(gameId, player, boardType, status) {
         this.gameId = gameId;
         this.player = player;
+        this.winner = []
         this.boardType = boardType;
         this.tokens = [];
         this.status = status;
@@ -29,6 +30,18 @@ class Game {
     }
 
     /**
+     * Moves a player from the player array to the winner array of the game
+     * @param {Player} winningPlayer a player who just moved all tokens into the goal area
+     */
+    addWinningPlayer(winningPlayer) {
+        //remove player from player array
+        let playerIndex = this.player.findIndex(player => player.playerId === winningPlayer.playerId)
+        this.player.splice(playerIndex, 1)
+        //add player to winner array
+        this.winner.push(winningPlayer)
+    }
+
+    /**
      * Moves the attribute playersTurn = true to the next player in the array
      * Exception: if there is only one player in the game, nothing happens
      */
@@ -43,6 +56,17 @@ class Game {
                 this.player[currentIndex + 1].setPlayersTurn(true)
             }
         }
+    }
+    getWinners() {
+        let winners = []
+        for(let i = 0; i < this.winner.length; i++) {
+            winners.push(new Object({
+                playersName: this.winner[i].playersName,
+                moveCounter: this.winner[i].moveCounter
+            }));
+        }
+
+        return winners
     }
 
     /**
@@ -141,6 +165,39 @@ class Game {
             gLoop++
         }
         return neededFields === gCount;
+    }
+
+    /**
+     * Checks if all tokens of the current player are in the goal
+     * @return {boolean}
+     */
+    areAllTokensInGoal() {
+        let goalCount = 0
+        for(let i = 0; i < this.playersTokens.length; i++) {
+            if(this.playersTokens[i].inGoal === true) {
+                goalCount++
+            }
+        }
+        return goalCount === this.playersTokens.length;
+    }
+    isPlayerWinner(playerId) {
+        let player = this.getPlayerById(playerId)
+        let goalCount = 0
+        for(let i = 0; i < this.tokens.length; i++) {
+            if(this.tokens[i].inGoal === true && this.tokens[i].playerId === playerId) {
+                goalCount++
+            }
+        }
+        return goalCount === 4
+    }
+
+    areAllPlayersWinners() {
+        if(this.player.length === 0 && this.winner.length > 0) {
+            this.status = "GAME_OVER"
+            return true
+        } else {
+            return false
+        }
     }
 
     /**
@@ -355,6 +412,7 @@ class Game {
     leaveHouse(board, playerId, tokenId) {
         let token = this.getTokenById(tokenId);
         let player = this.getPlayerById(playerId)
+        player.incrementMoveCounter()
         token.fieldId = board.getStartingPosition(player.color)
         token.inHouse = false
         token.inGame = true
@@ -364,7 +422,8 @@ class Game {
 
     moveToken(board, tokenId, fieldId, dieValue) {
         let token = this.getTokenById(tokenId);
-        //let player = this.getPlayerById(playerId)
+        let currentPlayer = this.getPlayerById(token.playerId)
+        currentPlayer.incrementMoveCounter()
         token.fieldId = fieldId
         token.updateTraversedDistance(dieValue)
         if (dieValue < 6) {
@@ -375,6 +434,8 @@ class Game {
 
     enterGoal(tokenId, fieldId) {
         let token = this.getTokenById(tokenId);
+        let currentPlayer = this.getPlayerById(token.playerId)
+        currentPlayer.incrementMoveCounter()
         token.inGame = false
         token.inGoal = true
         token.fieldId = fieldId
@@ -382,15 +443,23 @@ class Game {
             this.updatePlayersTurn()
         }
         this.currentDieValue = 0
+        if(this.isPlayerWinner(currentPlayer)) {
+            this.addWinningPlayer(currentPlayer)
+        }
     }
 
     moveInGoal(tokenId, fieldId) {
         let token = this.getTokenById(tokenId);
+        let currentPlayer = this.getPlayerById(token.playerId)
+        currentPlayer.incrementMoveCounter()
         token.fieldId = fieldId
         if (this.currentDieValue < 6) {
             this.updatePlayersTurn()
         }
         this.currentDieValue = 0
+        if(this.isPlayerWinner(currentPlayer)) {
+            this.addWinningPlayer(currentPlayer)
+        }
     }
 
     removePlayer(playerId) {
@@ -412,6 +481,8 @@ class Game {
         // get token that beats
         let token = this.getTokenById(tokenId);
         let enemyToken = this.getTokenByFieldId(contestedField)
+        let currentPlayer = this.getPlayerById(token.playerId)
+        currentPlayer.incrementMoveCounter()
         enemyToken.traversedDistance = 0
         //send enemy token back to house
         this.sendTokenBackToHouse(enemyToken, board)

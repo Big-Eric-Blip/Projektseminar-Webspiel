@@ -256,9 +256,26 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.enterGoal(message.tokenId, message.fieldId)
-                game.calculateAvailableGameActions(board)
+
                 let aPlayer = game.getPlayerById(message.playerId);
                 let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
+                    // treat cases where a game is won partially or fully
+                    if(game.areAllPlayersWinners()) {
+                        info = aPlayer.name + " (" + aPlayer.color + " player) finished the game!"
+                        sendMessageToAllPlayers(game, {
+                            type: "gameOver",
+                            message: info,
+                            status: game.status,
+                            gameId: game.gameId,
+                            gameActions: JSON.stringify(game.gameActions),
+                            winners: JSON.stringify(game.getWinners())
+                        })
+                        break
+                    } else if (game.isPlayerWinner(message.playerId)) {
+                        //TODO send game update
+                        break
+                    }
+                game.calculateAvailableGameActions(board)
                 sendUpdateToAllPlayers(game, info);
                 }
             }

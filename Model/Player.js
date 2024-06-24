@@ -12,6 +12,7 @@ class Player {
         this.name = name
         this.playersTurn = false
         this.turnCounter = 0
+        this.moveCounter = 0
     }
 
     //TODO: implement getters and setters
@@ -29,6 +30,10 @@ class Player {
     }
     getPlayerId() {
         return this. playerId
+    }
+
+    incrementMoveCounter() {
+        this.moveCounter++
     }
 
 
