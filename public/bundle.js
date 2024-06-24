@@ -305,7 +305,7 @@ function setLobby() {
     const lobbyElements = document.querySelectorAll('.lobby')
     lobbyElements.forEach((element) => element.style.display = 'block')
     document.getElementById('body').style.backgroundColor = 'azure'
-    document.getElementById('body').style.marginTop = '60px'
+    document.getElementById('body').style.marginTop = '20px'
     document.getElementById('main-area').style.marginLeft = '240px'
     //document.getElementById('body').style.width = '80%'
 
