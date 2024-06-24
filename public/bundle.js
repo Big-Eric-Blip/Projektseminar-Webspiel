@@ -308,7 +308,7 @@ function setLobby() {
     const lobbyElements = document.querySelectorAll('.lobby')
     lobbyElements.forEach((element) => element.style.display = 'block')
     document.getElementById('body').style.backgroundColor = 'azure'
-    document.getElementById('body').style.marginTop = '60px'
+    document.getElementById('body').style.marginTop = '20px'
     document.getElementById('main-area').style.marginLeft = '240px'
     //document.getElementById('body').style.width = '80%'
 
@@ -733,7 +733,7 @@ function onCanvasClick(event) {
 
     renderer.tokens.forEach(token => {
         // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
-        const tokenSize = 35 * renderer.scale;
+        const tokenSize = 50 * renderer.scale;
         const tokenX = token.x;
         const tokenY = token.y;
 
@@ -752,19 +752,16 @@ function onCanvasClick(event) {
     });
 }
 },{"../View/Renderer":2}],2:[function(require,module,exports){
-
 class Renderer {
     constructor(canvasID) {
-
         this.scale = 1;
         this.tokens = [];
         this.fields = [];
         this.canvas = document.getElementById(canvasID);
         this.ctx = this.canvas.getContext("2d");
-
+        this.images = this.loadImages();
         this.drawFields();
         this.drawTokens();
-
     }
 
 
@@ -780,26 +777,33 @@ class Renderer {
         });
     }
 
+    loadImages() {
+        let images = {};
+        images['red'] = new Image();
+        images['red'].src = 'pictures/figureRed.png';
+        images['blue'] = new Image();
+        images['blue'].src = 'pictures/figureBlue.png';
+        images['green'] = new Image();
+        images['green'].src = 'pictures/figureGreen.png';
+        images['yellow'] = new Image();
+        images['yellow'].src = 'pictures/figureYellow.png';
+        return images;        
+    }
 
     drawTokens() {
-
         let ctx = this.ctx;
-
-
-        let size = 35 * this.scale;
-
+        let size = 50 * this.scale;
         this.tokens.forEach((token) => {
-            ctx.beginPath();
-            ctx.scale(1, 1)
-            ctx.fillStyle = token.color;
-            ctx.fillRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
-            ctx.strokeStyle = "black";
-            ctx.strokeRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
-            ctx.stroke();
+            let img = this.images[token.color];          
+                ctx.drawImage(
+                    img,
+                    token.x * this.scale - size / 2,
+                    token.y * this.scale - size / 2,
+                    size,
+                    size);
         });
     }
 }
-
 document.addEventListener("DOMContentLoaded", function () {
     window.renderer = new Renderer("myCanvas");
 })

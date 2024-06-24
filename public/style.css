@@ -44,10 +44,8 @@ body {
     border-style: solid;
     border-color: black;
     background-color: #ffca1a;
-    /*width: 70%;
-    height: 70%;*/
-    max-width: 80vh;
-    max-height: 80vh;
+    width: 90vh;
+    height: 90vh;
     
 }
 
