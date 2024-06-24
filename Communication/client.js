@@ -9,7 +9,8 @@ let currentGame = {
     gameState: "PRE_GAME", //also available: LOBBY, GAME_RUNNING, GAME_OVER
     currentTokenId: '',
     playerColor: "",
-    playerName: "" //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    playerName: "", //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    winners: []
 }
 let availableGameActions = [];
 
@@ -77,6 +78,8 @@ function fromServerMessage(event) {
         case 'updateGame':
             handleGameUpdate(message);
             break;
+        case 'gameOver':
+            handleGameOver(message);
         default:
             console.log(`Client: Sorry, we are out of ${message.type}.`);
     }
@@ -615,25 +618,32 @@ function handleGameUpdate(message) {
     }
     //update available game actions
     let tokens = JSON.parse(message.tokens)
-    let gameActions = JSON.parse(message.gameActions)
-    updateGameActions(gameActions)
-    // if the server calculated that you have no gameActions
-    console.log("AvailableGameActions: ", availableGameActions)
-    if (message.dieValue) {
-        dieAnimation(message.dieValue)
-    }
-    if (isGameActionNone()) {
-        console.log("You have no available game action. It's the next players Turn.")
-
-        // this will not be shown because it will be instantly overwritten because of the next players turn
-        // TODO if chat like function implemented add to chat otherwise delete these comments
-        // document.getElementById("inGameMessage").innerHTML =
-        //     "You have no available game action. It's the next players Turn."
-    } else {
+    if(currentGame.gameState === "GAME_OVER") {
+        tokenToRenderer(tokens);
+        let winners = JSON.parse(message.winners)
+        winners.forEach(winner => {
+            currentGame.winners.push({
+                playerName: winner.playerName, moveCounter: winner.moveCounter
+            })
+        })
+        //TODO include popup with game over screen
+        //TODO remove the following two lines, they are only for testing
         document.getElementById("inGameMessage").innerHTML = message.message
         tokenToRenderer(tokens);
+    } else {
+        let gameActions = JSON.parse(message.gameActions)
+        updateGameActions(gameActions)
+        // if the server calculated that you have no gameActions
+        if (message.dieValue) {
+            dieAnimation(message.dieValue)
+        }
+        if (isGameActionNone()) {
+            console.log("You have no available game action. It's the next players turn.")
+        } else {
+            document.getElementById("inGameMessage").innerHTML = message.message
+            tokenToRenderer(tokens);
+        }
     }
-
 }
 
 function tokenToRenderer(tokens) {

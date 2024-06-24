@@ -31,12 +31,13 @@ function checkClientMessage(message, playerId) {
                     let dieValue = (Math.floor(Math.random() * 6) + 1)
                     //keep the following line for testing purposes
                     //let dieValue = 6
+                    let aPlayer = game.player[game.getCurrentPlayerIndex()];
                     game.currentDieValue = dieValue
                     game.calculateAvailableGameActions(board)
-
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) rolled a " + game.currentDieValue
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
-                        message: "Updated actions after rolling the dice",
+                        message: info,
                         status: game.status,
                         gameId: game.gameId,
                         gameActions: JSON.stringify(game.gameActions),
@@ -214,7 +215,6 @@ function checkClientMessage(message, playerId) {
                         type: 'message',
                         message: "You've started the game."
                     }
-                    //     todo check in joinGame case if game is in status LOBBY
                 }
             }
             return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
@@ -261,19 +261,26 @@ function checkClientMessage(message, playerId) {
                 let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
                     // treat cases where a game is won partially or fully
                     if(game.areAllPlayersWinners()) {
-                        info = aPlayer.name + " (" + aPlayer.color + " player) finished the game!"
+                        info = aPlayer.name + " (" + aPlayer.color + " player) finished the game! The game is now over"
                         sendMessageToAllPlayers(game, {
-                            type: "gameOver",
+                            type: "updateGame",
                             message: info,
                             status: game.status,
                             gameId: game.gameId,
                             gameActions: JSON.stringify(game.gameActions),
+                            tokens: JSON.stringify(game.tokens),
                             winners: JSON.stringify(game.getWinners())
                         })
                         break
                     } else if (game.isPlayerWinner(message.playerId)) {
-                        //TODO send game update
-                        break
+                        info = aPlayer.name + " (" + aPlayer.color + " player) finished the game!"
+                        sendMessageToAllPlayers(game, {
+                            type: "updateGame",
+                            message: info,
+                            status: game.status,
+                            gameId: game.gameId,
+                            gameActions: JSON.stringify(game.gameActions)
+                        })
                     }
                 game.calculateAvailableGameActions(board)
                 sendUpdateToAllPlayers(game, info);

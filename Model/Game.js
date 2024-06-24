@@ -65,7 +65,6 @@ class Game {
                 moveCounter: this.winner[i].moveCounter
             }));
         }
-
         return winners
     }
 
@@ -156,7 +155,7 @@ class Game {
     isGoalPathClear(board, neededFields, index) {
         let gLoop = index
         let gCount = 0
-        while (gLoop < neededFields) {
+        while (gLoop < (neededFields + index)) {
             if (this.isFieldEmpty(board.goalArray[this.getGoalArrayIndex(this.player[this.getCurrentPlayerIndex()])][gLoop].fieldId) === true) {
                 gCount++
             } else {
@@ -180,8 +179,9 @@ class Game {
         }
         return goalCount === this.playersTokens.length;
     }
+
     isPlayerWinner(playerId) {
-        let player = this.getPlayerById(playerId)
+        //let player = this.getPlayerById(playerId)
         let goalCount = 0
         for(let i = 0; i < this.tokens.length; i++) {
             if(this.tokens[i].inGoal === true && this.tokens[i].playerId === playerId) {
@@ -330,7 +330,12 @@ class Game {
                     if (this.playersTokens[i].traversedDistance + this.currentDieValue > 40) {
                         //calculate needed free steps
                         let neededFields = this.currentDieValue - (40 - this.playersTokens[i].traversedDistance)
-                        let nextFieldId = board.goalArray[this.getGoalArrayIndex(currentPlayer)][neededFields - 1].fieldId
+                        if(4<neededFields && neededFields <1) {
+                            console.log("Something is wrong with the needed fields ("+ neededFields+")")
+                        }
+                        let nextFieldId = board.goalArray[this.getGoalArrayIndex(currentPlayer)][neededFields-1].fieldId
+
+
                         //if the path is clear (enough goal fields are empty), add a game action
                         if (this.isGoalPathClear(board, neededFields, 0)) {
                             this.gameActions.push(new GameAction(currentPlayer.playerId, 'ENTER_GOAL',
@@ -357,13 +362,13 @@ class Game {
 
                 } else if (this.playersTokens[i].inGoal === true) {
                     //check needed path
-                    let goalArrayIndex = this.getGoalArrayIndex(currentPlayer)
-                    let index =
-                        board.goalArray[goalArrayIndex].findIndex(field => field.fieldId === tokenFieldId)
-                    if (index + this.currentDieValue < 4) {
-                        if (this.isGoalPathClear(board, this.currentDieValue, index)) {
-                            let newFieldId = board.getNextGoalPosition(tokenFieldId.fieldId,
-                                this.currentDieValue, goalArrayIndex)
+                    let playersGoalArrayIndex = this.getGoalArrayIndex(currentPlayer)
+                    let currentIndex =
+                        board.goalArray[playersGoalArrayIndex].findIndex(field => field.fieldId === tokenFieldId)
+                    if (currentIndex + this.currentDieValue < 4) {
+                        if (this.isGoalPathClear(board, this.currentDieValue, currentIndex+1)) {
+                            let newFieldId = board.getNextGoalPosition(tokenFieldId,
+                                this.currentDieValue, playersGoalArrayIndex)
                             this.gameActions.push(new GameAction(currentPlayer.playerId, 'MOVE_GOAL',
                                 this.playersTokens[i].tokenId, newFieldId, this.currentDieValue))
                         }
