@@ -10,7 +10,8 @@ class Renderer {
         this.drawTokens();
     }
 
-    drawFields() {        
+
+    drawFields() {
         let ctx = this.ctx;
         let size = 45 * this.scale;
         this.fields.forEach((field) => {

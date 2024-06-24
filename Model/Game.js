@@ -19,7 +19,7 @@ class Game {
         this.currentDieValue = 0
         this.playersTokens = []
         this.allInHouse = false
-        this.anyoneAtHome = 0
+        this.numOfTokensAtHome = 0
         this.optionsExhausted = false
     }
 
@@ -36,6 +36,7 @@ class Game {
         if (this.player.length !== 1) {
             let currentIndex = this.getCurrentPlayerIndex()
             this.player[currentIndex].setPlayersTurn(false)
+            this.player[currentIndex].turnCounter = 0
             if (this.player.length === currentIndex + 1) {
                 this.player[0].setPlayersTurn(true)
             } else {
@@ -76,7 +77,7 @@ class Game {
 
     /**
      * function to determine if a field is empty
-     * @param  {Field} fieldId
+     * @param  {String} fieldId
      * @return {*|boolean} true if field is empty, else the token object that currently occupies it
      */
     isFieldEmpty(fieldId) {
@@ -106,6 +107,7 @@ class Game {
         }
         return -1;
     }
+
     getHomeArrayIndex(tokenColor) {
         switch (tokenColor.charAt(0)) {
             case 'b':
@@ -147,10 +149,9 @@ class Game {
      * in the next step by the client
      * Available actions: LEAVE_HOUSE, ENTER_GOAL, BEAT, MOVE, MOVE_GOAL, ENTER_GOAL
      * @param {Board} board on which the game actions are performed
-     * @param {Number} turnCounter optional parameter used for situations where
-     *                              multiple die rolls of the same person happen
+     *
      */
-    calculateAvailableGameActions(board, turnCounter) {
+    calculateAvailableGameActions(board) {
         //empty out all old values
         this.gameActions = []
         //calculate new values
@@ -165,22 +166,22 @@ class Game {
                 this.playersTokens.push(this.tokens[i])
                 if (this.tokens[i].inHouse === true) {
                     numberOfTokensInHouse++
-                } else if( this.tokens[i].inGoal === true) {
+                } else if (this.tokens[i].inGoal === true) {
                     numberOfTokensInGoal++
                 }
             }
         }
-            //if all tokens are either in the home or the goal array,
-            // the player is allowed to roll the die three times
-        this.allInHouse = numberOfTokensInHouse+numberOfTokensInGoal === this.playersTokens.length;
+        //if all tokens are either in the home or the goal array,
+        // the player is allowed to roll the die three times
+        this.allInHouse = numberOfTokensInHouse + numberOfTokensInGoal === this.playersTokens.length;
         //die value available?
         if (this.currentDieValue === 0) {
             // it's the player's turn to roll the die
             if (this.allInHouse === true) {
-                if (turnCounter === -1 || !turnCounter) {
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', 1))
-                } else if (0 < turnCounter < 3) {
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', turnCounter++))
+                if (currentPlayer.turnCounter < 3) {
+                    currentPlayer.turnCounter++
+                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
+                    return
                 }
             } else {
                 this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
@@ -227,14 +228,12 @@ class Game {
             let fieldCheck = this.isFieldEmpty(startingPosition)
             //if own token on starting position: needs to move!
             // except if beats own token
-            this.anyoneAtHome = 0
+            this.numOfTokensAtHome = 0
             this.optionsExhausted = false
             for (let i = 0; i < this.playersTokens.length; i++) {
                 //If there are tokens in the player's home
-                //TODO delete
-                //if (board.getFieldType(this.playersTokens[i].fieldId) === 'HOME') {
-                if(this.playersTokens[i].inHouse === true) {
-                    this.anyoneAtHome++
+                if (this.playersTokens[i].inHouse === true) {
+                    this.numOfTokensAtHome++
                     //case starting field empty
                     if (fieldCheck === true) {
                         this.gameActions.push(new GameAction(currentPlayer.playerId,
@@ -251,20 +250,18 @@ class Game {
                     }
 
                 }
-            } if(this.anyoneAtHome>0 && !this.optionsExhausted) {
+            }
+            if (this.numOfTokensAtHome > 0 && !this.optionsExhausted) {
                 return
             }
         }
-        if((this.currentDieValue < 6 && this.currentDieValue > 0 )||(this.optionsExhausted)
-            ||(this.currentDieValue === 6 && this.anyoneAtHome === 0)) {
+        if ((this.currentDieValue < 6 && this.currentDieValue > 0) || (this.optionsExhausted)
+            || (this.currentDieValue === 6 && this.numOfTokensAtHome === 0)) {
             //if all tokens are on home fields
             if (this.allInHouse === true) {
-                if (turnCounter === -1 || !turnCounter) {
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', 1))
-                    return
-                } else if (0 < turnCounter && turnCounter< 3) {
-                    let count = turnCounter + 1
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE', '', '', count))
+                if (currentPlayer.turnCounter < 3) {
+                    currentPlayer.turnCounter++
+                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
                     return
                 }
             }
@@ -273,10 +270,10 @@ class Game {
             for (let i = 0; i < this.playersTokens.length; i++) {
                 let tokenFieldId = this.playersTokens[i].fieldId
                 if (this.playersTokens[i].inGame === true) {
-                    if(this.playersTokens[i].traversedDistance + this.currentDieValue > 40) {
+                    if (this.playersTokens[i].traversedDistance + this.currentDieValue > 40) {
                         //calculate needed free steps
                         let neededFields = this.currentDieValue - (40 - this.playersTokens[i].traversedDistance)
-                        let nextFieldId = board.goalArray[this.getGoalArrayIndex(currentPlayer)][neededFields-1].fieldId
+                        let nextFieldId = board.goalArray[this.getGoalArrayIndex(currentPlayer)][neededFields - 1].fieldId
                         //if the path is clear (enough goal fields are empty), add a game action
                         if (this.isGoalPathClear(board, neededFields, 0)) {
                             this.gameActions.push(new GameAction(currentPlayer.playerId, 'ENTER_GOAL',
@@ -285,7 +282,7 @@ class Game {
                                 this.currentDieValue))
                         }
 
-                    }else if (this.isFieldEmpty(board.getNextPosition(tokenFieldId, this.currentDieValue,
+                    } else if (this.isFieldEmpty(board.getNextPosition(tokenFieldId, this.currentDieValue,
                         this.playersTokens[i].traversedDistance)) === true) {
                         let nextPosition = board.getNextPosition(tokenFieldId,
                             this.currentDieValue, this.playersTokens[i].traversedDistance)
@@ -293,11 +290,11 @@ class Game {
                             this.playersTokens[i].tokenId, nextPosition, this.currentDieValue))
 
                     } else if (this.isFieldEmpty(board.getNextPosition(tokenFieldId, this.currentDieValue,
-                            this.playersTokens[i].traversedDistance)).playerId !== currentPlayer.playerId) {
-                            let nextPosition = board.getNextPosition(tokenFieldId,
-                                this.currentDieValue, this.playersTokens[i].traversedDistance)
-                            this.gameActions.push(new GameAction(currentPlayer.playerId, 'BEAT',
-                                this.playersTokens[i].tokenId, nextPosition, this.currentDieValue))
+                        this.playersTokens[i].traversedDistance)).playerId !== currentPlayer.playerId) {
+                        let nextPosition = board.getNextPosition(tokenFieldId,
+                            this.currentDieValue, this.playersTokens[i].traversedDistance)
+                        this.gameActions.push(new GameAction(currentPlayer.playerId, 'BEAT',
+                            this.playersTokens[i].tokenId, nextPosition, this.currentDieValue))
 
                     }
 
@@ -306,7 +303,7 @@ class Game {
                     let goalArrayIndex = this.getGoalArrayIndex(currentPlayer)
                     let index =
                         board.goalArray[goalArrayIndex].findIndex(field => field.fieldId === tokenFieldId)
-                    if(index+this.currentDieValue < 4) {
+                    if (index + this.currentDieValue < 4) {
                         if (this.isGoalPathClear(board, this.currentDieValue, index)) {
                             let newFieldId = board.getNextGoalPosition(tokenFieldId.fieldId,
                                 this.currentDieValue, goalArrayIndex)
@@ -353,17 +350,15 @@ class Game {
     }
 
 
-    //actually complete game actions
+    //The following functions actually complete game actions.
+
     leaveHouse(board, playerId, tokenId) {
-        //DO NOT UPDATE PLAYERS TURN! OR MAYBE DO?
-        //get token object,
         let token = this.getTokenById(tokenId);
         let player = this.getPlayerById(playerId)
         token.fieldId = board.getStartingPosition(player.color)
         token.inHouse = false
         token.inGame = true
         token.traversedDistance = 1
-        //update fieldId of token
         this.currentDieValue = 0
     }
 
@@ -372,7 +367,7 @@ class Game {
         //let player = this.getPlayerById(playerId)
         token.fieldId = fieldId
         token.updateTraversedDistance(dieValue)
-        if(dieValue < 6) {
+        if (dieValue < 6) {
             this.updatePlayersTurn()
         }
         this.currentDieValue = 0
@@ -383,15 +378,16 @@ class Game {
         token.inGame = false
         token.inGoal = true
         token.fieldId = fieldId
-        if(this.currentDieValue < 6) {
+        if (this.currentDieValue < 6) {
             this.updatePlayersTurn()
         }
         this.currentDieValue = 0
     }
+
     moveInGoal(tokenId, fieldId) {
         let token = this.getTokenById(tokenId);
         token.fieldId = fieldId
-        if(this.currentDieValue < 6) {
+        if (this.currentDieValue < 6) {
             this.updatePlayersTurn()
         }
         this.currentDieValue = 0
@@ -402,7 +398,7 @@ class Game {
             if (this.player[i].playerId === playerId) {
                 let aPlayer = this.player[i];
                 //update playersTurn
-                if(aPlayer.playersTurn === true) {
+                if (aPlayer.playersTurn === true) {
                     this.updatePlayersTurn()
                 }
                 this.player.splice(i, 1);
@@ -412,42 +408,45 @@ class Game {
     }
 
     beatToken(board, tokenId, contestedField, dieValue) {
+        //Do not switch the order of the following assignment, otherwise the wrong token may land on the contested field
         // get token that beats
         let token = this.getTokenById(tokenId);
         let enemyToken = this.getTokenByFieldId(contestedField)
         enemyToken.traversedDistance = 0
         //send enemy token back to house
-        this.sendTokenBackToHouse(enemyToken,board)
+        this.sendTokenBackToHouse(enemyToken, board)
         token.fieldId = contestedField
         token.updateTraversedDistance(dieValue)
-        if(dieValue < 6) {
+        if (dieValue < 6) {
             this.updatePlayersTurn()
         }
         this.currentDieValue = 0
 
     }
+
     getTokenByFieldId(fieldId) {
-        for(let i = 0; i<this.tokens.length;i++) {
-            if(this.tokens[i].fieldId === fieldId) {
+        for (let i = 0; i < this.tokens.length; i++) {
+            if (this.tokens[i].fieldId === fieldId) {
                 return this.tokens[i]
             }
         }
         return false
     }
-    sendTokenBackToHouse(token,board) {
+
+    sendTokenBackToHouse(token, board) {
         token.inGame = false
         token.inHouse = true
         let index = this.getHomeArrayIndex(token.color)
         let fieldIds = []
         let fieldIndex
         //find empty home field
-        for(let i = 0; i<board.homeArray[index].length; i++) {
+        for (let i = 0; i < board.homeArray[index].length; i++) {
             fieldIds.push(board.homeArray[index][i].fieldId)
         }
-        for(let i = 0; i<this.tokens.length; i++) {
-            for(let j = 0;j<fieldIds.length;j++) {
-                if(this.tokens[i].fieldId === fieldIds[j]) {
-                    fieldIds.splice(j,1)
+        for (let i = 0; i < this.tokens.length; i++) {
+            for (let j = 0; j < fieldIds.length; j++) {
+                if (this.tokens[i].fieldId === fieldIds[j]) {
+                    fieldIds.splice(j, 1)
                 }
             }
         }
