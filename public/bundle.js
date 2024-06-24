@@ -104,7 +104,8 @@ document.addEventListener('DOMContentLoaded', function () {
         createGamePopupButton: openCreateGamePopup,
         closeCreateGamePopupButton: closeCreateGamePopup,
         createGameButton: createGame,
-
+        openRulesPopupButton: openRulesPopup,
+        closeRulePopupButton: closeRulePopup,
         //Join Game
         joinGamePopupButton: openJoinGamePopup,
         closeJoinGamePopupButton: closeJoinGamePopup,
@@ -149,10 +150,16 @@ function closeJoinGamePopup() {
 function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
 }
+function closeRulePopup() {
 
+    document.getElementById('rulesPopup').style.display = 'none';
+}
 function closeCreateGamePopup() {
     document.getElementById('createGameErrorMessage').textContent = '';
     document.getElementById('createGamePopup').style.display = 'none';
+}
+function openRulesPopup() {
+    document.getElementById('rulesPopup').style.display = 'block';
 }
 
 function cancel() {
@@ -299,15 +306,13 @@ function setPreGame() {
 
 function setLobby() {
     currentGame.gameState = "LOBBY"
-    //TODO list all html objects visible in the lobby state
     const preGameElements = document.querySelectorAll('.pre-game')
     preGameElements.forEach((element) => element.style.display = 'none')
     const lobbyElements = document.querySelectorAll('.lobby')
     lobbyElements.forEach((element) => element.style.display = 'block')
     document.getElementById('body').style.backgroundColor = 'azure'
     document.getElementById('body').style.marginTop = '20px'
-    document.getElementById('main-area').style.marginLeft = '240px'
-    //document.getElementById('body').style.width = '80%'
+    document.getElementById('main-area').style.marginLeft = '40px'
 
 }
 
@@ -335,7 +340,6 @@ function handleCreateGameResponse(response) {
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
     console.log(currentGame);
-    //document.getElementById("createGameButton").style.display = 'none';
     initRenderer(response)
 }
 
@@ -743,8 +747,7 @@ function onCanvasClick(event) {
         ) {
             console.log(`Game piece clicked:`, token);
             currentGame.currentTokenId = token.tn
-            moveToken(token.tn)
-            //renderer.moveToken(token)
+            moveToken(token.tn)           
         }
     });
 }
