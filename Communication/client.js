@@ -614,7 +614,15 @@ function renderPlayersTurn() {
 
     for (let i = 0; i < players.length; i++) {
         if (players[i].playerId === availableGameActions[0].playerId) {
+            if(players[i].color === "green") {
             document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgreen";
+        }else if(players[i].color === "red") {
+            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightcoral";
+        }else if(players[i].color === "blue") {
+            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightblue";
+        }else if(players[i].color === "yellow") {
+            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgoldenrodyellow";
+        }
             if (players[i].name === currentGame.playerName) {
                 startBlinking()
             }
