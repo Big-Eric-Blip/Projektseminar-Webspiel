@@ -195,6 +195,16 @@ summary {
     display: none;
 }
 
+@keyframes blink {
+    0% { border-color: transparent; }
+    50% { border-color: red; }
+    100% { border-color: transparent; }
+}
+
+.blinking-border {
+    animation: blink 1s infinite;
+}
+
 #rollDiceButton img {
     color: whitesmoke;
     background-color: whitesmoke;
@@ -204,6 +214,10 @@ summary {
     width: 75%;
     height: auto;
     padding: 8px 20px;
+}
+
+#rollDiceButton {
+    border: 2px solid transparent;
 }
 
 #joinGameInputId {
@@ -277,6 +291,7 @@ input[type="radio"]:checked + img {
 
     border :1px solid black;
     align-items: stretch;
+    background-color: white;
 }
 
 .player-panel-picture {

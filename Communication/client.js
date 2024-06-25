@@ -106,7 +106,7 @@ function sendMessage(message) {
         // Wait for the socket to open before sending the message
         socket.addEventListener('open', function () {
             socket.send(JSON.stringify(message));
-        }, {once: true});
+        }, { once: true });
     } else {
         socket.send(JSON.stringify(message));
     }
@@ -138,8 +138,8 @@ document.addEventListener('DOMContentLoaded', function () {
         //Game Buttons
         rollDiceButton: rollDice,
 
-         // Copy Game ID
-         copyGameIdButton: copyGameIdToClipboard,
+        // Copy Game ID
+        copyGameIdButton: copyGameIdToClipboard,
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -187,7 +187,7 @@ function cancel() {
 
 function copyGameIdToClipboard() {
     const gameIdElement = document.getElementById('gameId');
-    const gameIdText = gameIdElement.textContent.split(": ")[1]; 
+    const gameIdText = gameIdElement.textContent.split(": ")[1];
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(gameIdText).then(() => {
@@ -217,7 +217,7 @@ function createGame() {
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
     changeRollDiceImage("./pictures/" + dieColor + ".png")
 
-   
+
 
     if (playerName != '') {
 
@@ -352,8 +352,8 @@ function handleCreateGameResponse(response) {
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
     currentGame.playerColor = response.playerColor;
-    currentGame.playerName = response.playerName; 
-    players.push({ name: response.playerName, color: response.playerColor, id: response.playerId})
+    currentGame.playerName = response.playerName;
+    players.push({ name: response.playerName, color: response.playerColor, id: response.playerId })
 
 
     const gameId = document.getElementById("gameId");
@@ -505,7 +505,7 @@ function startJoinedGame() {
 }
 
 function handleNewPlayer(response) {
-    players.push({ name: response.name, color: response.color, playerId: response.playerId})
+    players.push({ name: response.name, color: response.color, playerId: response.playerId })
     renderPlayerPanels();
 }
 
@@ -524,9 +524,10 @@ function handlePickedColor(response) {
  * the HTML element with id "inGameMessage"
  */
 function rollDice() {
+    renderPlayersTurn()
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
-        sendMessage({type: 'rollDice', gameId: currentGame.gameId});
+        sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
     } else {
         //send message to the sideboard
         document.getElementById("inGameMessage").innerHTML = "It's not your turn to roll the die."
@@ -579,7 +580,7 @@ function isGameActionNone() {
  * @return {string} the playerId of the player whose turn it is
  */
 function whoseTurnIsIt() {
-    return availableGameActions[0].playerId
+    //return availableGameActions[0].playerId
 }
 
 /**
@@ -626,23 +627,52 @@ function handleRollDiceResponse(response) {
     updateGameActions(JSON.parse(response.gameActions))
 }
 
+function renderPlayersTurn() {
+    stopBlinking()
+    for (let i = 0; i < players.length; i++) {
+        document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "white";
+    }
+
+
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].playerId === whoseTurnIsIt()) {
+            console.log(whoseTurnIsIt())
+            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgreen";
+            if (players[i].name === currentGame.playerName) {
+                startBlinking()
+            }
+        }
+    }
+}
+
+function startBlinking() {
+    const button = document.getElementById('rollDiceButton');
+    button.classList.add('blinking-border');
+}
+
+function stopBlinking() {
+    const button = document.getElementById('rollDiceButton');
+    button.classList.remove('blinking-border');
+}
+
 function renderPlayerPanels() {
-    
+
     players = players.filter(player => player.name !== undefined);
     for (let i = 0; i < players.length; i++) {
         const panel = document.getElementById(`player-panel${i + 1}`);
         const pictureDiv = panel.querySelector('.player-panel-picture');
         const nameDiv = panel.querySelector('.player-panel-name h2');
-        
+
         // Update picture
         const img = pictureDiv.querySelector('img');
         img.src = "pictures/figure" + players[i].color + ".png";
         img.alt = `Image ${i + 1}`;
-        
+
         // Update text
         if (players[i].name === currentGame.playerName) {
-        nameDiv.textContent = players[i].name+" - You";}
-        else{
+            nameDiv.textContent = players[i].name + " - You";
+        }
+        else {
             nameDiv.textContent = players[i].name
         }
 
@@ -651,9 +681,6 @@ function renderPlayerPanels() {
     }
 }
 
-function renderPlayersTurn(){
-    
-}
 
 
 function dieAnimation(final) {
@@ -698,6 +725,7 @@ function moveToken(tokenId) {
  * @param message
  */
 function handleGameUpdate(message) {
+    renderPlayersTurn()
     if (message.status !== currentGame.gameState) {
         setGameState(message.status)
     }
@@ -729,7 +757,7 @@ function tokenToRenderer(tokens) {
     tokens.forEach(token => {
         let xCoord = getTokenXCoord(token.fieldId);
         let yCoord = getTokenYCoord(token.fieldId);
-        renderer.tokens.push({tn: token.tokenId, x: xCoord, y: yCoord, color: token.color})
+        renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
 
     })
 
@@ -795,7 +823,8 @@ function handleGameStarted(message) {
     handleGameUpdate(message)
     setGameState("GAME_RUNNING")
     console.log("The current state is: " + currentGame.gameState);
-
+    console.log(availableGameActions)
+    //renderPlayersTurn()
 
 }
 
@@ -814,7 +843,7 @@ function onCanvasClick(event) {
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
 
-    const clickPoint = {x: clickX, y: clickY};
+    const clickPoint = { x: clickX, y: clickY };
 
     renderer.tokens.forEach(token => {
         // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
@@ -831,7 +860,7 @@ function onCanvasClick(event) {
         ) {
             console.log(`Game piece clicked:`, token);
             currentGame.currentTokenId = token.tn
-            moveToken(token.tn)           
+            moveToken(token.tn)
         }
     });
 }
