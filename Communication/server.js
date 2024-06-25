@@ -59,7 +59,8 @@ function checkClientMessage(message, playerId) {
             let game = new Game(gameId, [], message.boardType, "LOBBY");
             let player = new Player(playerId, message.playerColor, message.playerName);
 
-            addTokensOnPlayerJoin(message, playerId, game);
+            //addTokensOnPlayerJoin(message, playerId, game);
+            addTestTokensOnPlayerJoin(message, playerId, game)
             game.addPlayer(player);
             games.push(game);
 
@@ -126,7 +127,9 @@ function checkClientMessage(message, playerId) {
                         if (player.playerId === message.playerId) {
                             player.color = message.playerColor
                             player.name = message.playerName
-                            addTokensOnPlayerJoin(message, playerId, game);
+                            //TODO revert to original state after testing
+                            //addTokensOnPlayerJoin(message, playerId, game);
+                            addTestTokensOnPlayerJoin(message, playerId, game)
                             return {type: 'pickedColor', message: `Successfully picked color!`}
                         }
                     }
@@ -151,7 +154,9 @@ function checkClientMessage(message, playerId) {
                         if (player.playerId === message.playerId && !takenColors.includes(message.playerColor)) {
                             player.color = message.playerColor
                             player.name = message.playerName
-                            addTokensOnPlayerJoin(message, playerId, game);
+                            //TODO revert after testing
+                            addTestTokensOnPlayerJoin(message, playerId, game)
+                            //addTokensOnPlayerJoin(message, playerId, game);
                             return {type: 'pickedColor', message: `Successfully picked color!`}
                         } else if (takenColors.includes(message.playerColor)) {
                             return {
@@ -267,20 +272,19 @@ function checkClientMessage(message, playerId) {
                             message: info,
                             status: game.status,
                             gameId: game.gameId,
-                            gameActions: JSON.stringify(game.gameActions),
                             tokens: JSON.stringify(game.tokens),
                             winners: JSON.stringify(game.getWinners())
                         })
                         break
                     } else if (game.isPlayerWinner(message.playerId)) {
                         info = aPlayer.name + " (" + aPlayer.color + " player) finished the game!"
-                        sendMessageToAllPlayers(game, {
+                        /*sendMessageToAllPlayers(game, {
                             type: "updateGame",
                             message: info,
                             status: game.status,
                             gameId: game.gameId,
                             gameActions: JSON.stringify(game.gameActions)
-                        })
+                        })*/
                     }
                 game.calculateAvailableGameActions(board)
                 sendUpdateToAllPlayers(game, info);
@@ -337,6 +341,20 @@ function addTokensOnPlayerJoin(message, playerId, game) {
             }
             break;
         }
+    }
+}
+
+function addTestTokensOnPlayerJoin(message, playerId, game) {
+    for(let i = 0; i< 4;i++) {
+        let tokenId = message.playerColor+ (i+1)
+        let start
+        switch (message.playerColor) {
+            case "blue": start = 30; break
+            case "red": start = 0; break
+            case "green": start = 10; break
+            case "yellow": start = 20; break
+        }
+        game.addToken(tokenId, playerId, board.gameArray[start+i].fieldId, message.playerColor,31+i)
     }
 }
 

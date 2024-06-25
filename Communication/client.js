@@ -625,6 +625,7 @@ function handleGameUpdate(message) {
             currentGame.winners.push({
                 playerName: winner.playerName, moveCounter: winner.moveCounter
             })
+            console.log(winner + " is a winner")
         })
         //TODO include popup with game over screen
         //TODO remove the following two lines, they are only for testing

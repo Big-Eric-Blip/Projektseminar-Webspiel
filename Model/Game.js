@@ -20,6 +20,7 @@ class Game {
         this.currentDieValue = 0
         this.playersTokens = []
         this.allInHouse = false
+        this.threeInGoal = false
         this.numOfTokensAtHome = 0
         this.optionsExhausted = false
     }
@@ -61,7 +62,7 @@ class Game {
         let winners = []
         for(let i = 0; i < this.winner.length; i++) {
             winners.push(new Object({
-                playersName: this.winner[i].playersName,
+                playersName: this.winner[i].name,
                 moveCounter: this.winner[i].moveCounter
             }));
         }
@@ -94,8 +95,9 @@ class Game {
      * @param fieldId the fieldId the token is currently placed on
      * @param color the color of the token
      */
-    addToken(tokenId, playerId, fieldId, color) {
-        this.tokens.push(new Token(tokenId, playerId, fieldId, color));
+    addToken(tokenId, playerId, fieldId, color,td) {
+        //TODO remove parameter TD after testing is finished
+        this.tokens.push(new Token(tokenId, playerId, fieldId, color,td));
     }
 
     /**
@@ -180,11 +182,15 @@ class Game {
         return goalCount === this.playersTokens.length;
     }
 
-    isPlayerWinner(playerId) {
-        //let player = this.getPlayerById(playerId)
+    /**
+     * Checks whether the player has all tokens in the goal, thereby partially winning the game
+     * @param {Player} player
+     * @return {boolean} true if the player has all tokens in the goal
+     */
+    isPlayerWinner(player) {
         let goalCount = 0
         for(let i = 0; i < this.tokens.length; i++) {
-            if(this.tokens[i].inGoal === true && this.tokens[i].playerId === playerId) {
+            if(this.tokens[i].inGoal === true && this.tokens[i].playerId === player.playerId) {
                 goalCount++
             }
         }
@@ -230,7 +236,8 @@ class Game {
         }
         //if all tokens are either in the home or the goal array,
         // the player is allowed to roll the die three times
-        this.allInHouse = numberOfTokensInHouse + numberOfTokensInGoal === this.playersTokens.length;
+        this.allInHouse = numberOfTokensInHouse === this.playersTokens.length
+        this.threeInGoal = numberOfTokensInGoal === this.playersTokens.length -1;
         //die value available?
         if (this.currentDieValue === 0) {
             // it's the player's turn to roll the die
@@ -330,19 +337,20 @@ class Game {
                     if (this.playersTokens[i].traversedDistance + this.currentDieValue > 40) {
                         //calculate needed free steps
                         let neededFields = this.currentDieValue - (40 - this.playersTokens[i].traversedDistance)
-                        if(4<neededFields && neededFields <1) {
-                            console.log("Something is wrong with the needed fields ("+ neededFields+")")
-                        }
-                        let nextFieldId = board.goalArray[this.getGoalArrayIndex(currentPlayer)][neededFields-1].fieldId
 
 
-                        //if the path is clear (enough goal fields are empty), add a game action
-                        if (this.isGoalPathClear(board, neededFields, 0)) {
-                            this.gameActions.push(new GameAction(currentPlayer.playerId, 'ENTER_GOAL',
-                                this.playersTokens[i].tokenId,
-                                nextFieldId,
-                                this.currentDieValue))
+                        let nextField = board.goalArray[this.getGoalArrayIndex(currentPlayer)][neededFields-1]
+                        if(nextField) {
+                            let nextFieldId = nextField.fieldId
+                            //if the path is clear (enough goal fields are empty), add a game action
+                            if (this.isGoalPathClear(board, neededFields, 0)) {
+                                this.gameActions.push(new GameAction(currentPlayer.playerId, 'ENTER_GOAL',
+                                    this.playersTokens[i].tokenId,
+                                    nextFieldId,
+                                    this.currentDieValue))
+                            }
                         }
+
 
                     } else if (this.isFieldEmpty(board.getNextPosition(tokenFieldId, this.currentDieValue,
                         this.playersTokens[i].traversedDistance)) === true) {
@@ -379,24 +387,39 @@ class Game {
         }
         //if no actions are available, check if there is more than one player
         if (this.gameActions.length === 0) {
-            if (this.player.length === 1) {
+            if (this.player.length === 1 ) {
                 //if there is only one player, let them roll the dice again
                 this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
             } else {
-                //if no actions are available, push "NONE" to signal this to the client
-                this.gameActions.push(new GameAction(currentPlayer.playerId, 'NONE'))
-                //if there is more than one player, update the players turn
-                this.updatePlayersTurn()
-                this.currentDieValue = 0
-                this.calculateAvailableGameActions(board)
+                if(this.threeInGoal === true) {
+                    if(currentPlayer.turnCounter < 2) {
+                        currentPlayer.turnCounter++
+                        this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
+                        return
+                    }
+                }
+                    currentPlayer.turnCounter = 0
+                    //if no actions are available, push "NONE" to signal this to the client
+                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'NONE'))
+                    //if there is more than one player, update the players turn
+                    this.updatePlayersTurn()
+                    this.currentDieValue = 0
+                    this.calculateAvailableGameActions(board)
+
             }
         }
     }
+
 
     getPlayerById(playerId) {
         for (let i = 0; i < this.player.length; i++) {
             if (this.player[i].playerId === playerId) {
                 return this.player[i]
+            }
+        }
+            for (let j = 0; j <this.winner.length; j++) {
+            if (this.winner[j].playerId === playerId) {
+                return this.winner[j]
             }
         }
         return false;
