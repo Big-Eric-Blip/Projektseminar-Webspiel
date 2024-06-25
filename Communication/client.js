@@ -214,7 +214,7 @@ function createGame() {
     const playerName = document.getElementById('adminNameInput').value;
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
     changeRollDiceImage("./pictures/" + dieColor + ".png")
-    clientName = playerName;
+
    
 
     if (playerName != '') {
@@ -482,7 +482,6 @@ function startJoinedGame() {
     }
 
     if (playerName !== '' && selectedColor !== null) {
-        clientName = playerName;
         sendMessage({
             type: 'tryPickColor',
             gameId: currentGame.gameId,
@@ -563,6 +562,14 @@ function isPlayerEligible() {
         }
     }
     return false
+}
+
+/**
+ * Checks whose turn it is and returns the playerId
+ * @return {string} the playerId of the player whose turn it is
+ */
+function whoseTurnIsIt() {
+    return availableGameActions[0].playerId
 }
 
 /**
