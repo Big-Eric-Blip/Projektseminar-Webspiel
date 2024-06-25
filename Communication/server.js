@@ -28,30 +28,29 @@ function checkClientMessage(message, playerId) {
         case 'rollDice':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    let dieValue = (Math.floor(Math.random() * 6) + 1).toString()
+                    let dieValue = (Math.floor(Math.random() * 6) + 1)
                     //keep the following line for testing purposes
                     //let dieValue = 6
                     game.currentDieValue = dieValue
                     game.calculateAvailableGameActions(board)
+
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
                         message: "Updated actions after rolling the dice",
+                        status: game.status,
                         gameId: game.gameId,
                         gameActions: JSON.stringify(game.gameActions),
                         tokens: JSON.stringify(game.tokens),
                         dieValue: dieValue
                     })
                     return {
-                        //type: 'rollDice',
-                        type: "updateGame",
-                        tokens: JSON.stringify(game.tokens),
-                        gameActions: JSON.stringify(game.gameActions),
-                        dieValue: dieValue
+                        type: 'message',
+                        message: 'Rolled the die: ' + dieValue
                     };
                 }
             }
             return {
-                type: 'error',
+                type: 'message',
                 message: "No game available with this id"
             }
         case 'createGame':
@@ -120,6 +119,7 @@ function checkClientMessage(message, playerId) {
                             takenColors.push(player.color)
                         }
                     }
+                    // TODO Clemens schau dir das nochmal an!!
                     console.log(takenColors)
                     for (const player of game.player) {
                         if (player.playerId === message.playerId) {
@@ -175,12 +175,15 @@ function checkClientMessage(message, playerId) {
                         games.splice(i, 1);
                         // TODO else if (games[i].player.length === 1) trigger winning screen
                     } else {
+                        games[i].calculateAvailableGameActions(board)
                         sendMessageToAllPlayers(games[i], {
                             type: 'aPlayerLeftGame',
                             colorOfLeavingPlayer: leavingPlayer.color,
                             nameOfLeavingPlayer: leavingPlayer.name,
                             numberOfPlayers: games[i].player.length
                         });
+                        let info = leavingPlayer.name + " (" + leavingPlayer.color + " player) left the game."
+                        sendUpdateToAllPlayers(games[i], info)
                     }
                     return {
                         type: 'leftGame',
@@ -208,38 +211,58 @@ function checkClientMessage(message, playerId) {
                         tokens: JSON.stringify(game.tokens)
                     });
                     return {
-                        type: "updateGame",
-                        message: "You´ve started the game.",
-                        status: game.status,
-                        gameId: game.gameId,
-                        gameActions: JSON.stringify(game.gameActions),
-                        tokens: JSON.stringify(game.tokens)
+                        type: 'message',
+                        message: "You've started the game."
                     }
                     //     todo check in joinGame case if game is in status LOBBY
-
+                }
+            }
+            return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
+        case "action_MOVE":
+            console.log(message);
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.moveToken(board, message.tokenId, message.fieldId, game.currentDieValue);
+                    game.calculateAvailableGameActions(board)
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) moved a game piece."
+                    sendUpdateToAllPlayers(game, info);
                 }
             }
             break;
-        case "action_MOVE":
-            console.log(message);
-            // TODO following code doesn't work. Has to be reworked.
-            // game.moveToken(message.tokenId,message.diceResult);
-            //
-            //
-            // return {
-            //     type: "moveToken",
-            //     tokenId: tokenId,
-            //     diceResult: diceResult
-            //
-            // }
-            break;
         case "action_LEAVE_HOUSE":
-            //TODO implement
-            console.log("Arrived at the server side of action_LEAVE_HOUSE")
-            return {
-                type: 'message',
-                message: "Arrived at the server side of action_LEAVE_HOUSE"
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.leaveHouse(board, message.playerId, message.tokenId)
+                    game.calculateAvailableGameActions(board)
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) moved out of the house"
+                    sendUpdateToAllPlayers(game, info);
+                }
             }
+            break
+        case "action_BEAT":
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.beatToken(board,message.tokenId,message.fieldId, game.currentDieValue)
+                    game.calculateAvailableGameActions(board)
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) beat another token!"
+                    sendUpdateToAllPlayers(game, info);
+                }
+            }
+            break
+        case "action_ENTER_GOAL":
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.enterGoal(message.tokenId, message.fieldId)
+                game.calculateAvailableGameActions(board)
+                let aPlayer = game.getPlayerById(message.playerId);
+                let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
+                sendUpdateToAllPlayers(game, info);
+                }
+            }
+            break
         case "chatMessage":
             for (const game of games) {
                 if (game.gameId === message.gameId) {
@@ -260,6 +283,18 @@ function checkClientMessage(message, playerId) {
             }
             return {type: 'message', message: `Chat message send.`};
 
+        case "action_MOVE_GOAL":
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.moveInGoal(message.tokenId, message.fieldId)
+                game.calculateAvailableGameActions(board)
+                let aPlayer = game.getPlayerById(message.playerId);
+                let info = aPlayer.name + " (" + aPlayer.color + " player) moved in the goal!"
+                sendUpdateToAllPlayers(game, info);
+                }
+            }
+            break
+
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
             return {type: 'message', message: `Server: Sorry, we are out of ${message.type}.`};
@@ -275,6 +310,17 @@ function sendMessageToAllPlayers(game, jsonMessage) {
     }
 }
 
+function sendUpdateToAllPlayers(game, info) {
+    let jsonMessage = {
+        type: "updateGame",
+        message: info,
+        status: game.status,
+        gameId: game.gameId,
+        gameActions: JSON.stringify(game.gameActions),
+        tokens: JSON.stringify(game.tokens)
+    }
+    sendMessageToAllPlayers(game, jsonMessage);
+}
 
 function addTokensOnPlayerJoin(message, playerId, game) {
     for (const fields of board.homeArray) {
@@ -299,7 +345,10 @@ wss.on('connection', function connection(ws) {
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
         console.log(`Current clients:`, [...clients.keys()]);
         console.log('Current games:', games)
-        ws.send(JSON.stringify(sendBackToClient));
+        // Check if empty just in case there is no message to return
+        if (sendBackToClient) {
+            ws.send(JSON.stringify(sendBackToClient));
+        }
     });
 
     ws.on('close', () => {
