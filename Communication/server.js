@@ -58,9 +58,8 @@ function checkClientMessage(message, playerId) {
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType, "LOBBY");
             let player = new Player(playerId, message.playerColor, message.playerName);
-
-            //addTokensOnPlayerJoin(message, playerId, game);
-            addTestTokensOnPlayerJoin(message, playerId, game)
+            //TODO clean up after testing
+            addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
             games.push(game);
 
@@ -127,9 +126,7 @@ function checkClientMessage(message, playerId) {
                         if (player.playerId === message.playerId) {
                             player.color = message.playerColor
                             player.name = message.playerName
-                            //TODO revert to original state after testing
-                            //addTokensOnPlayerJoin(message, playerId, game);
-                            addTestTokensOnPlayerJoin(message, playerId, game)
+                            addTokensOnPlayerJoin(message, playerId, game);
                             return {type: 'pickedColor', message: `Successfully picked color!`}
                         }
                     }
@@ -154,9 +151,7 @@ function checkClientMessage(message, playerId) {
                         if (player.playerId === message.playerId && !takenColors.includes(message.playerColor)) {
                             player.color = message.playerColor
                             player.name = message.playerName
-                            //TODO revert after testing
-                            addTestTokensOnPlayerJoin(message, playerId, game)
-                            //addTokensOnPlayerJoin(message, playerId, game);
+                            addTokensOnPlayerJoin(message, playerId, game);
                             return {type: 'pickedColor', message: `Successfully picked color!`}
                         } else if (takenColors.includes(message.playerColor)) {
                             return {
@@ -177,7 +172,7 @@ function checkClientMessage(message, playerId) {
                 if (games[i].gameId === message.gameId) {
                     const leavingPlayer = games[i].removePlayer(playerId);
                     // if the game is empty delete the game
-                    if (games[i].player.length === 0) {
+                    if (games[i].player.length === 0 && games[i].winner.length ===0) {
                         games.splice(i, 1);
                         // TODO else if (games[i].player.length === 1) trigger winning screen
                     } else {
@@ -275,7 +270,6 @@ function checkClientMessage(message, playerId) {
                             tokens: JSON.stringify(game.tokens),
                             winners: winners
                         })
-                        //TODO: close game on server side?
                         return
                     // If game is won partially
                     } else if (game.isPlayerWinner(game.getPlayerById(message.playerId))) {
@@ -344,7 +338,7 @@ function addTokensOnPlayerJoin(message, playerId, game) {
         }
     }
 }
-
+/*
 function addTestTokensOnPlayerJoin(message, playerId, game) {
     for(let i = 0; i< 4;i++) {
         let tokenId = message.playerColor+ (i+1)
@@ -357,7 +351,7 @@ function addTestTokensOnPlayerJoin(message, playerId, game) {
         }
         game.addToken(tokenId, playerId, board.gameArray[start+i].fieldId, message.playerColor,31+i)
     }
-}
+}*/
 
 wss.on('connection', function connection(ws) {
     const playerId = uuidv4();

@@ -20,7 +20,6 @@ class Game {
         this.currentDieValue = 0
         this.playersTokens = []
         this.allInHouse = false
-        this.threeInGoal = false
         this.numOfTokensAtHome = 0
         this.optionsExhausted = false
     }
@@ -95,9 +94,8 @@ class Game {
      * @param fieldId the fieldId the token is currently placed on
      * @param color the color of the token
      */
-    addToken(tokenId, playerId, fieldId, color,td) {
-        //TODO remove parameter TD after testing is finished
-        this.tokens.push(new Token(tokenId, playerId, fieldId, color,td));
+    addToken(tokenId, playerId, fieldId, color) {
+        this.tokens.push(new Token(tokenId, playerId, fieldId, color));
     }
 
     /**
@@ -169,17 +167,18 @@ class Game {
     }
 
     /**
-     * Checks if all tokens of the current player are in the goal
+     * returns whether a token can move further in the goal zone
+     * @param {Token} token
+     * @param {Board} board
      * @return {boolean}
      */
-    areAllTokensInGoal() {
-        let goalCount = 0
-        for(let i = 0; i < this.playersTokens.length; i++) {
-            if(this.playersTokens[i].inGoal === true) {
-                goalCount++
-            }
+    isFurtherMovingImpossible(token, board){
+        let currentFieldIndex = Number.parseInt(token.fieldId.substring(2)) -1
+        if (currentFieldIndex === 3) {
+            return true
+        } else {
+            return !this.isGoalPathClear(board,1,currentFieldIndex)
         }
-        return goalCount === this.playersTokens.length;
     }
 
     /**
@@ -199,7 +198,8 @@ class Game {
 
     areAllPlayersWinners() {
         if(this.player.length === 0 && this.winner.length > 0) {
-            this.status = "GAME_OVER"
+            //TODO reevaluate if necessary
+            //this.status = "GAME_OVER"
             return true
         } else {
             return false
@@ -229,15 +229,14 @@ class Game {
                 this.playersTokens.push(this.tokens[i])
                 if (this.tokens[i].inHouse === true) {
                     numberOfTokensInHouse++
-                } else if (this.tokens[i].inGoal === true) {
+                } else if (this.tokens[i].inGoal === true && this.isFurtherMovingImpossible(this.tokens[i],board)) {
                     numberOfTokensInGoal++
                 }
             }
         }
         //if all tokens are either in the home or the goal array,
         // the player is allowed to roll the die three times
-        this.allInHouse = numberOfTokensInHouse === this.playersTokens.length
-        this.threeInGoal = numberOfTokensInGoal === this.playersTokens.length -1;
+        this.allInHouse = numberOfTokensInHouse + numberOfTokensInGoal === this.playersTokens.length
         //die value available?
         if (this.currentDieValue === 0) {
             // it's the player's turn to roll the die
@@ -391,28 +390,15 @@ class Game {
                 //if there is only one player, let them roll the dice again
                 this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
             } else {
-                if(this.areAllPlayersWinners()) {
-                    console.log("ALL PLAYERS HAVE WON")
-                    return
-                }
-
-                if(this.threeInGoal === true) {
-                    if(currentPlayer.turnCounter < 2) {
-                        currentPlayer.turnCounter++
-                        this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
-                        return
-                    }
-                }
-                    currentPlayer.turnCounter = 0
-                    //if no actions are available, push "NONE" to signal this to the client
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'NONE'))
-                    //if there is more than one player, update the players turn
-                    this.updatePlayersTurn()
-                    this.currentDieValue = 0
-                    this.calculateAvailableGameActions(board)
-
+                currentPlayer.turnCounter = 0
+                //if no actions are available, push "NONE" to signal this to the client
+                this.gameActions.push(new GameAction(currentPlayer.playerId, 'NONE'))
+                //if there is more than one player, update the players turn
+                this.updatePlayersTurn()
+                this.currentDieValue = 0
+                this.calculateAvailableGameActions(board)
             }
-        }
+            }
     }
 
 
@@ -505,6 +491,12 @@ class Game {
                 }
                 this.player.splice(i, 1);
                 return aPlayer;
+            }
+        }
+        for (let i = 0; i < this.winner.length; i++) {
+            if(this.winner[i].playerId ===playerId) {
+                //no deletion in order to keep the ranking accurate
+                return this.winner[i]
             }
         }
     }

@@ -1,5 +1,5 @@
 class Token {
-/*
+
     constructor(tokenId, playerId, fieldId, color) {
         this.tokenId = tokenId
         this.playerId = playerId;
@@ -10,19 +10,6 @@ class Token {
         this.inGame = false;
         this.inGoal = false;
     }
-
- */
-    constructor(tokenId, playerId, fieldId, color,traversedDistance) {
-        this.tokenId = tokenId
-        this.playerId = playerId;
-        this.fieldId = fieldId;
-        this.color = color;
-        this.traversedDistance = traversedDistance;
-        this.inHouse = false;
-        this.inGame = true;
-        this.inGoal = false;
-    }
-
     getCurrentFieldId() {
         return this.fieldId
     }

@@ -618,7 +618,7 @@ function handleGameUpdate(message) {
     }
     //update available game actions
     let tokens = JSON.parse(message.tokens)
-    if(currentGame.gameState === "GAME_OVER") {
+    if(message.winners) {
         tokenToRenderer(tokens);
         let winners = JSON.parse(message.winners)
         winners.forEach(winner => {
