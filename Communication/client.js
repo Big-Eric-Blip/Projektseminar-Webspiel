@@ -339,6 +339,8 @@ function handleCreateGameResponse(response) {
     addMessageToChat("Nice. You've created a game.")
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
+    currentGame.playerColor = response.playerColor;
+    currentGame.playerName = response.playerName;
 
     addMessageToChat("Send the game id to your friends to join your game: " + currentGame.gameId)
     console.log(currentGame);
@@ -482,8 +484,8 @@ function handlePickedColor(response) {
 
 /**
  * Checks the eligibility of the player clicking on the die symbol and if the player is eligible for the action
- * ROLL_DIE, a message is sent to the server communicating the action. Otherwise, an error message is printed in
- * the HTML element with id "inGameMessage"
+ * ROLL_DIE, a message is sent to the server communicating the action. Otherwise, an error message is printed
+ * to the chat.
  */
 function rollDice() {
     //check if action allowed
@@ -627,14 +629,9 @@ function handleGameUpdate(message) {
         dieAnimation(message.dieValue)
     }
     if (isGameActionNone()) {
-        console.log("You have no available game action. It's the next players Turn.")
-
-        // this will not be shown because it will be instantly overwritten because of the next players turn
-        // TODO if chat like function implemented add to chat otherwise delete these comments
-        // document.getElementById("inGameMessage").innerHTML =
-        //     "You have no available game action. It's the next players Turn."
+        addMessageToChat("You have no available game action. It's the next players Turn.")
     } else {
-        document.getElementById("inGameMessage").innerHTML = message.message
+        addMessageToChat(message.message)
         tokenToRenderer(tokens);
     }
 

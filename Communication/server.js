@@ -66,6 +66,8 @@ function checkClientMessage(message, playerId) {
                 type: 'createGame',
                 gameId: gameId,
                 playerId: playerId,
+                playerColor: message.playerColor,
+                playerName: message.playerName,
                 fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
             };
 
@@ -111,30 +113,6 @@ function checkClientMessage(message, playerId) {
 
             };
 
-        case 'pickColor':
-            for (const game of games) {
-                if (game.gameId === message.gameId) {
-                    for (const player of game.player) {
-                        if (player.color !== "") {
-                            takenColors.push(player.color)
-                        }
-                    }
-                    // TODO Clemens schau dir das nochmal an!!
-                    console.log(takenColors)
-                    for (const player of game.player) {
-                        if (player.playerId === message.playerId) {
-                            player.color = message.playerColor
-                            player.name = message.playerName
-                            addTokensOnPlayerJoin(message, playerId, game);
-                            return {type: 'pickedColor', message: `Successfully picked color!`}
-                        }
-                    }
-                    return {type: 'message', message: `There is no player with playerId: ${playerId} in this game.`}
-                }
-            }
-            return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
-
-
         case 'tryPickColor':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
@@ -151,7 +129,12 @@ function checkClientMessage(message, playerId) {
                             player.color = message.playerColor
                             player.name = message.playerName
                             addTokensOnPlayerJoin(message, playerId, game);
-                            return {type: 'pickedColor', message: `Successfully picked color!`}
+                            return {
+                                type: 'pickedColor',
+                                playerName: player.name,
+                                playerColor: player.color,
+                                message: `Successfully picked color!`
+                            }
                         } else if (takenColors.includes(message.playerColor)) {
                             return {
                                 type: 'colorTaken',
@@ -244,7 +227,7 @@ function checkClientMessage(message, playerId) {
         case "action_BEAT":
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    game.beatToken(board,message.tokenId,message.fieldId, game.currentDieValue)
+                    game.beatToken(board, message.tokenId, message.fieldId, game.currentDieValue)
                     game.calculateAvailableGameActions(board)
                     let aPlayer = game.getPlayerById(message.playerId);
                     let info = aPlayer.name + " (" + aPlayer.color + " player) beat another token!"
@@ -256,13 +239,26 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.enterGoal(message.tokenId, message.fieldId)
-                game.calculateAvailableGameActions(board)
-                let aPlayer = game.getPlayerById(message.playerId);
-                let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
-                sendUpdateToAllPlayers(game, info);
+                    game.calculateAvailableGameActions(board)
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
+                    sendUpdateToAllPlayers(game, info);
                 }
             }
             break
+
+        case "action_MOVE_GOAL":
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    game.moveInGoal(message.tokenId, message.fieldId)
+                    game.calculateAvailableGameActions(board)
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) moved in the goal!"
+                    sendUpdateToAllPlayers(game, info);
+                }
+            }
+            break
+
         case "chatMessage":
             for (const game of games) {
                 if (game.gameId === message.gameId) {
@@ -281,20 +277,7 @@ function checkClientMessage(message, playerId) {
                     break
                 }
             }
-            return {type: 'message', message: `Chat message send.`};
-
-        case "action_MOVE_GOAL":
-            for (const game of games) {
-                if (game.gameId === message.gameId) {
-                    game.moveInGoal(message.tokenId, message.fieldId)
-                game.calculateAvailableGameActions(board)
-                let aPlayer = game.getPlayerById(message.playerId);
-                let info = aPlayer.name + " (" + aPlayer.color + " player) moved in the goal!"
-                sendUpdateToAllPlayers(game, info);
-                }
-            }
             break
-
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
             return {type: 'message', message: `Server: Sorry, we are out of ${message.type}.`};
