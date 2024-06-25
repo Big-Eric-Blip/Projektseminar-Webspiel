@@ -551,9 +551,11 @@ function validateMoveToken(tokenId) {
                 return availableGameActions[i]
             }
         }
-        console.log("This move is not possible!")
+        //TODO needs message in log? "This token cannot be moved" (after log merge)
+        console.log("This token cannot be moved!")
         return false
     } else {
+        //TODO needs message in screen log? "It's not your turn to play"
         console.log("It's not your turn to play!")
         return false
     }
@@ -624,8 +626,8 @@ function handleGameUpdate(message) {
             currentGame.winners.push({
                 playerName: winner.playerName, moveCounter: winner.moveCounter
             })
-            console.log(winner.playerName + " is a winner")
         })
+        console.log(currentGame.winners)
         //TODO include popup with game over screen
         //TODO remove the following two lines, they are only for testing
         document.getElementById("inGameMessage").innerHTML = message.message

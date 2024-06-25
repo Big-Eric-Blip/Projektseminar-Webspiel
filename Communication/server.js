@@ -34,7 +34,7 @@ function checkClientMessage(message, playerId) {
                     let aPlayer = game.player[game.getCurrentPlayerIndex()];
                     game.currentDieValue = dieValue
                     game.calculateAvailableGameActions(board)
-                    let info = aPlayer.name + " (" + aPlayer.color + " player) rolled a " + game.currentDieValue
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) rolled a " + dieValue
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
                         message: info,

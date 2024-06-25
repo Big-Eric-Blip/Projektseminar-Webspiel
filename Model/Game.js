@@ -248,35 +248,37 @@ class Game {
                 this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
             }
         } else {
-            //check if player is on own starting position -> force the move away
-            let startingPosition = board.getStartingPosition(currentPlayer.getColor())
-            let nextPosition = board.getNextPosition(startingPosition, this.currentDieValue, 1)
-            let startingFieldToken = this.isFieldEmpty(startingPosition)
-            if (startingFieldToken.playerId === currentPlayer.playerId) {
-                //case nextField is empty
-                if (this.isFieldEmpty(nextPosition) === true) {
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'MOVE',
-                        startingFieldToken.tokenId, nextPosition, this.currentDieValue))
-                    return
-                    //case nextField harbors enemy token
-                } else if (this.isFieldEmpty(nextPosition).getTokensPlayerId() !== currentPlayer.playerId) {
-                    // check that the next field is populated by an enemy token
-                    this.gameActions.push(new GameAction(currentPlayer.playerId, 'BEAT',
-                        startingFieldToken.tokenId, nextPosition, this.currentDieValue))
-                    return
-                    //case next field harbors own token
-                } else {
-                    //check if token on next field can move
-                    let nextToken = this.getTokenById(this.isFieldEmpty(nextPosition).getTokenId())
-                    let nextTokensNextPosition = board.getNextPosition(nextToken.fieldId, this.currentDieValue, nextToken.traversedDistance)
-                    if (this.isFieldEmpty(nextTokensNextPosition) === true) {
+            if(numberOfTokensInHouse !== 0) {
+                //check if player is on own starting position -> force the move away
+                let startingPosition = board.getStartingPosition(currentPlayer.getColor())
+                let nextPosition = board.getNextPosition(startingPosition, this.currentDieValue, 1)
+                let startingFieldToken = this.isFieldEmpty(startingPosition)
+                if (startingFieldToken.playerId === currentPlayer.playerId) {
+                    //case nextField is empty
+                    if (this.isFieldEmpty(nextPosition) === true) {
                         this.gameActions.push(new GameAction(currentPlayer.playerId, 'MOVE',
-                            nextToken.tokenId, nextTokensNextPosition, this.currentDieValue))
+                            startingFieldToken.tokenId, nextPosition, this.currentDieValue))
                         return
-                    } else if (this.isFieldEmpty((nextTokensNextPosition)).getTokensPlayerId() !== currentPlayer.playerId) {
+                        //case nextField harbors enemy token
+                    } else if (this.isFieldEmpty(nextPosition).getTokensPlayerId() !== currentPlayer.playerId) {
+                        // check that the next field is populated by an enemy token
                         this.gameActions.push(new GameAction(currentPlayer.playerId, 'BEAT',
-                            nextToken.tokenId, nextTokensNextPosition, this.currentDieValue))
+                            startingFieldToken.tokenId, nextPosition, this.currentDieValue))
                         return
+                        //case next field harbors own token
+                    } else {
+                        //check if token on next field can move
+                        let nextToken = this.getTokenById(this.isFieldEmpty(nextPosition).getTokenId())
+                        let nextTokensNextPosition = board.getNextPosition(nextToken.fieldId, this.currentDieValue, nextToken.traversedDistance)
+                        if (this.isFieldEmpty(nextTokensNextPosition) === true) {
+                            this.gameActions.push(new GameAction(currentPlayer.playerId, 'MOVE',
+                                nextToken.tokenId, nextTokensNextPosition, this.currentDieValue))
+                            return
+                        } else if (this.isFieldEmpty((nextTokensNextPosition)).getTokensPlayerId() !== currentPlayer.playerId) {
+                            this.gameActions.push(new GameAction(currentPlayer.playerId, 'BEAT',
+                                nextToken.tokenId, nextTokensNextPosition, this.currentDieValue))
+                            return
+                        }
                     }
                 }
             }
