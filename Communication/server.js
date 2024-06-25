@@ -58,15 +58,17 @@ function checkClientMessage(message, playerId) {
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType, "LOBBY");
             let player = new Player(playerId, message.playerColor, message.playerName);
-            
+
             addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
             games.push(game);
-            
+
             return {
                 type: 'createGame',
                 gameId: gameId,
                 playerId: playerId,
+                playerColor: message.playerColor,
+                playerName: message.playerName,
                 fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
             };
 
@@ -95,10 +97,12 @@ function checkClientMessage(message, playerId) {
                     for (const player of game.player) {
                         if (player.color !== "") {
                             takenColors.push(player.color)
-                        let playerHelp={
-                            name:player.name,
-                            color:player.color}
-                        players.push(playerHelp)
+                            let playerHelp = {
+                                name: player.name,
+                                color: player.color,
+                                id: player.playerId
+                            }
+                            players.push(playerHelp)
                         }
                     }
 
@@ -119,41 +123,20 @@ function checkClientMessage(message, playerId) {
 
             };
 
-        case 'pickColor':
+
+        case 'tryPickColor':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
+                    let takenColors = []
+                    let takenNames = []
                     for (const player of game.player) {
-                            if (player.color !== "") {
-                                takenColors.push(player.color)
-                            }}
-                        console.log(takenColors)
-                    for (const player of game.player) {
-                        if (player.playerId === message.playerId) {
-                            player.color = message.playerColor
-                            player.name = message.playerName
-                            addTokensOnPlayerJoin(message, playerId, game);
-                            return { type: 'pickedColor', message: `Successfully picked color!` }
+                        if (player.color !== "") {
+                            takenColors.push(player.color)
+                            takenNames.push(player.name)
                         }
-                    }
-                    return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
-                }
-            }
-            return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
-
-
-            case 'tryPickColor':
-                for (const game of games) {
-                    if (game.gameId === message.gameId) {
-                        let takenColors = []
-                        let takenNames = []
-                        for (const player of game.player) {
-                            if (player.color !== "") {
-                                takenColors.push(player.color)
-                                takenNames.push(player.name)   
-                            }
                         console.log(takenColors)
-                        for (const player of game.player){
-                            if (player.playerId === message.playerId&&!takenColors.includes(message.playerColor)) {
+                        for (const player of game.player) {
+                            if (player.playerId === message.playerId && !takenColors.includes(message.playerColor)) {
                                 player.color = message.playerColor
                                 takenColors.push(message.playerColor)
                                 player.name = message.playerName
@@ -161,12 +144,14 @@ function checkClientMessage(message, playerId) {
                                 sendMessageToAllPlayers(game, {
                                     type: "newPlayer",
                                     name: message.playerName,
-                                    color: message.playerColor})
-                                return { type: 'pickedColor', message: `Successfully picked color!` }
-                            }else if(takenColors.includes(message.playerColor)){
-                                return { type: 'colorTaken', message: `The color ${message.playerColor} is already taken.`,color:message.playerColor }
-                            }else if(takenNames.includes(message.playerName)){
-                                return { type: 'nameTaken', message: `The name ${message.playerName} is already taken.`,name:message.playerName } 
+                                    color: message.playerColor,
+                                    playerId : message.playerId
+                                })
+                                return { type: 'pickedColor', message: `Successfully picked color!`, playerColor: message.playerColor, playerName: message.playerName}
+                            } else if (takenColors.includes(message.playerColor)) {
+                                return { type: 'colorTaken', message: `The color ${message.playerColor} is already taken.`, color: message.playerColor }
+                            } else if (takenNames.includes(message.playerName)) {
+                                return { type: 'nameTaken', message: `The name ${message.playerName} is already taken.`, name: message.playerName }
                             }
                         }
                         return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
@@ -245,14 +230,14 @@ function checkClientMessage(message, playerId) {
         case "action_LEAVE_HOUSE":
             //TODO implement
             console.log("Arrived at the server side of action_LEAVE_HOUSE")
-            return{
+            return {
                 type: 'message',
                 message: "Arrived at the server side of action_LEAVE_HOUSE"
             }
 
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
-            return {type: 'message', message: `Server: Sorry, we are out of ${message.type}.`};
+            return { type: 'message', message: `Server: Sorry, we are out of ${message.type}.` };
     }
 }
 

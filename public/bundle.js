@@ -98,6 +98,12 @@ function fromServerMessage(event) {
     }
 }
 
+
+//Überall currentGame.playerName/Color anstatt clientname?
+//Wer dran ist => über getGameActions => Zeile 539
+//Überall das playerArray checken (playerID kommt noch dazu (Serverresponses irgendwo anpassen?))
+
+
 function sendMessage(message) {
     if (!socket || !isSocketOpen) {
         console.log('Socket not open. Initializing WebSocket...');
@@ -210,7 +216,7 @@ function createGame() {
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
     changeRollDiceImage("./pictures/" + dieColor + ".png")
     clientName = playerName;
-    players.push({ name: playerName, color: selectedColor })
+   
 
     if (playerName != '') {
 
@@ -346,6 +352,10 @@ function handleCreateGameResponse(response) {
     document.getElementById("inGameMessage").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
+    currentGame.playerColor = response.playerColor;
+    currentGame.playerName = response.playerName; 
+    players.push({ name: response.playerName, color: response.playerColor, id: response.playerId})
+
 
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
@@ -498,14 +508,16 @@ function startJoinedGame() {
 }
 
 function handleNewPlayer(response) {
-    players.push({ name: response.name, color: response.color })
+    players.push({ name: response.name, color: response.color, playerId: response.playerId})
     renderPlayerPanels();
 }
 
 function handlePickedColor(response) {
-    renderPlayerPanels();
     currentGame.playerName = response.playerName
     currentGame.playerColor = response.playerColor
+    console.log(response)
+    console.log(currentGame)
+    renderPlayerPanels();
     document.getElementById('succesfullJoinPopup').style.display = 'none'
 }
 
@@ -611,7 +623,7 @@ function renderPlayerPanels() {
         img.alt = `Image ${i + 1}`;
         
         // Update text
-        if (players[i].name === clientName) {
+        if (players[i].name === currentGame.playerName) {
         nameDiv.textContent = players[i].name+" - You";}
         else{
             nameDiv.textContent = players[i].name
@@ -621,6 +633,11 @@ function renderPlayerPanels() {
         panel.style.display = 'flex';
     }
 }
+
+function renderPlayersTurn(){
+    
+}
+
 
 function dieAnimation(final) {
     const images = [
