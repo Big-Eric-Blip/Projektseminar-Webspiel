@@ -16,7 +16,6 @@ let availableGameActions = [];
 let players = [];
 
 let dieColor;
-let clientName;
 
 let socket = null;
 let isSocketOpen = false;
@@ -71,7 +70,6 @@ function fromServerMessage(event) {
         case 'pickedColor':
             handlePickedColor(message)
             break;
-            break
         case 'colorTaken':
             handleColorTaken(message)
             break;
@@ -353,7 +351,7 @@ function handleCreateGameResponse(response) {
     currentGame.playerId = response.playerId;
     currentGame.playerColor = response.playerColor;
     currentGame.playerName = response.playerName;
-    players.push({ name: response.playerName, color: response.playerColor, id: response.playerId })
+    players.push({ name: response.playerName, color: response.playerColor, playerId: response.playerId })
 
 
     const gameId = document.getElementById("gameId");
@@ -524,7 +522,7 @@ function handlePickedColor(response) {
  * the HTML element with id "inGameMessage"
  */
 function rollDice() {
-    renderPlayersTurn()
+    renderPlayersTurn(availableGameActions[0].playerId)
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
         sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
@@ -580,7 +578,7 @@ function isGameActionNone() {
  * @return {string} the playerId of the player whose turn it is
  */
 function whoseTurnIsIt() {
-    //return availableGameActions[0].playerId
+    return availableGameActions[0].playerId
 }
 
 /**
@@ -628,15 +626,15 @@ function handleRollDiceResponse(response) {
 }
 
 function renderPlayersTurn() {
+    console.log("AvailableGameActions: ", availableGameActions)
+    console.log("Players: ", players)
     stopBlinking()
     for (let i = 0; i < players.length; i++) {
-        document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "white";
+        document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "transparent";
     }
 
-
     for (let i = 0; i < players.length; i++) {
-        if (players[i].playerId === whoseTurnIsIt()) {
-            console.log(whoseTurnIsIt())
+        if (players[i].playerId === availableGameActions[0].playerId) {
             document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgreen";
             if (players[i].name === currentGame.playerName) {
                 startBlinking()
@@ -725,7 +723,6 @@ function moveToken(tokenId) {
  * @param message
  */
 function handleGameUpdate(message) {
-    renderPlayersTurn()
     if (message.status !== currentGame.gameState) {
         setGameState(message.status)
     }
@@ -735,6 +732,7 @@ function handleGameUpdate(message) {
     updateGameActions(gameActions)
     // if the server calculated that you have no gameActions
     console.log("AvailableGameActions: ", availableGameActions)
+    renderPlayersTurn()
     if (message.dieValue) {
         dieAnimation(message.dieValue)
     }
@@ -821,11 +819,13 @@ function handleGameStarted(message) {
     console.log("Handle game started: ", message)
     document.getElementById("inGameMessage").innerHTML = message.message;
     handleGameUpdate(message)
+    console.log("availableGameActions: ", availableGameActions)
+    if (availableGameActions[0].playerId === currentGame.playerId) {
+        console.log("It works!")
+    }
+    renderPlayersTurn()
     setGameState("GAME_RUNNING")
     console.log("The current state is: " + currentGame.gameState);
-    console.log(availableGameActions)
-    //renderPlayersTurn()
-
 }
 
 function handleServerMessage(response) {

@@ -99,7 +99,7 @@ function checkClientMessage(message, playerId) {
                             let playerHelp = {
                                 name: player.name,
                                 color: player.color,
-                                id: player.playerId
+                                playerId: player.playerId
                             }
                             players.push(playerHelp)
                         }
