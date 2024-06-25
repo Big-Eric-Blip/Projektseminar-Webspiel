@@ -338,20 +338,6 @@ function addTokensOnPlayerJoin(message, playerId, game) {
         }
     }
 }
-/*
-function addTestTokensOnPlayerJoin(message, playerId, game) {
-    for(let i = 0; i< 4;i++) {
-        let tokenId = message.playerColor+ (i+1)
-        let start
-        switch (message.playerColor) {
-            case "blue": start = 30; break
-            case "red": start = 0; break
-            case "green": start = 10; break
-            case "yellow": start = 20; break
-        }
-        game.addToken(tokenId, playerId, board.gameArray[start+i].fieldId, message.playerColor,31+i)
-    }
-}*/
 
 wss.on('connection', function connection(ws) {
     const playerId = uuidv4();

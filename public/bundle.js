@@ -79,8 +79,6 @@ function fromServerMessage(event) {
         case 'updateGame':
             handleGameUpdate(message);
             break;
-        case 'gameOver':
-            handleGameOver(message);
         default:
             console.log(`Client: Sorry, we are out of ${message.type}.`);
     }
@@ -607,16 +605,12 @@ function moveToken(tokenId) {
     //if yes
     if (validatedAction) {
         chooseGameAction(validatedAction, tokenId)
-        console.log("Execute game action " + validatedAction.action)
     } else {
         document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
     }
 }
 
-/**
- * Gets the game update from the server and
- * @param message
- */
+
 function handleGameUpdate(message) {
     if (message.status !== currentGame.gameState) {
         setGameState(message.status)

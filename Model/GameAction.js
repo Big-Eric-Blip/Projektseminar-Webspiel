@@ -7,7 +7,5 @@ class GameAction {
         this.amount = amount
     }
 
-
-
 }
 module.exports = GameAction;

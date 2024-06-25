@@ -10,13 +10,7 @@ class Token {
         this.inGame = false;
         this.inGoal = false;
     }
-    getCurrentFieldId() {
-        return this.fieldId
-    }
 
-    setNewFieldId(fieldId) {
-        this.fieldId = fieldId
-    }
     updateTraversedDistance(increment) {
         this.traversedDistance = this.traversedDistance + increment;
     }

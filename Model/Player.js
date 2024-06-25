@@ -15,8 +15,6 @@ class Player {
         this.moveCounter = 0
     }
 
-    //TODO: implement getters and setters
-
     setPlayersTurn(change) {
         if (change === true || change === false) {
             this.playersTurn = change
@@ -35,9 +33,6 @@ class Player {
     incrementMoveCounter() {
         this.moveCounter++
     }
-
-
-
 }
 
 module.exports = Player;
