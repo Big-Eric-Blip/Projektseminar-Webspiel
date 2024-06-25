@@ -1,11 +1,11 @@
 const Field = require('./Field');
 
 class Board {
+
     /**
-     *
-     * @param {*} numberOfTokens
-     * @param {*} maxPlayers
-     * @param {*} boardFields
+     * Constructs a board with coordinates that match the 1100 x 1100 HTML Canvas board in the Renderer
+     * @param {number} numberOfTokens the number of tokens per player, usually four
+     * @param {number} maxPlayers the maximum amount of players that can play on the board
      */
     constructor(numberOfTokens, maxPlayers) {
         this.numberOfTokens = numberOfTokens
@@ -131,20 +131,6 @@ class Board {
     }
 
 
-    getFieldType(fieldId) {
-        switch (fieldId.substring(1,2)) {
-            case 'i':
-                return "GOAL"
-            case 't':
-                return "HOME"
-            case 'p':
-                return "REGULAR"
-            default:
-                return "UNKNOWN"
-        }
-
-    }
-
     /**
      * Gets the next position of a token for a given die value
      * @param {string} currentFieldId the current token position
@@ -164,7 +150,6 @@ class Board {
         let nextIndex = (currentIndex + trueDieValue)
         console.log("Index: " + nextIndex)
         if (traversedDistance + trueDieValue > 40) {
-            let goalArrayIndex = (traversedDistance + trueDieValue) - 40
             return "goalArray"
         } else {
             if (currentIndex + trueDieValue > 39) {
