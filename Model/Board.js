@@ -39,7 +39,7 @@ class Board {
             new Field('wp26', 650, 750, "white", 'REGULAR'),
             new Field('wp27', 650, 850, "white", 'REGULAR'),
             new Field('wp28', 650, 950, "white", 'REGULAR'),
-            new Field('wp39', 650, 1050, "white", 'REGULAR'),
+            new Field('wp29', 650, 1050, "white", 'REGULAR'),
             new Field('wp30', 550, 1050, "white", 'REGULAR'),
             new Field('wp31', 450, 1050, "yellow", 'REGULAR'),
             new Field('wp32', 450, 950, "white", 'REGULAR'),
@@ -67,16 +67,16 @@ class Board {
                 new Field('ri4', 550, 450, "red", 'GOAL')],
             //green safe (Starting position 2)
             [
-                new Field('gi1', 650, 550, "green", 'GOAL'),
-                new Field('gi2', 750, 550, "green", 'GOAL'),
-                new Field('gi3', 850, 550, "green", 'GOAL'),
-                new Field('gi4', 950, 550, "green", 'GOAL')],
+                new Field('gi1', 950, 550, "green", 'GOAL'),
+                new Field('gi2', 850, 550, "green", 'GOAL'),
+                new Field('gi3', 750, 550, "green", 'GOAL'),
+                new Field('gi4', 650, 550, "green", 'GOAL')],
             // yellow safe (Starting position 3)
             [
-                new Field('yi1', 550, 650, "yellow", 'GOAL'),
-                new Field('yi2', 550, 750, "yellow", 'GOAL'),
-                new Field('yi3', 550, 850, "yellow", 'GOAL'),
-                new Field('yi4', 550, 950, "yellow", 'GOAL')]
+                new Field('yi1', 550, 950, "yellow", 'GOAL'),
+                new Field('yi2', 550, 850, "yellow", 'GOAL'),
+                new Field('yi3', 550, 750, "yellow", 'GOAL'),
+                new Field('yi4', 550, 650, "yellow", 'GOAL')]
         ]
 
         this.homeArray = [
@@ -153,25 +153,38 @@ class Board {
      * @return {*|string|string} the fieldId of the field where the token is positioned next
      */
     getNextPosition(currentFieldId, dieValue, traversedDistance) {
+        let trueDieValue
+        if(dieValue instanceof Number){
+            trueDieValue = dieValue
+        } else {
+            trueDieValue = Number(dieValue)
+        }
         let currentIndex = this.gameArray.findIndex(field => field.fieldId === currentFieldId);
         let fieldId = "test"
-        let nextIndex = (currentIndex + dieValue)
-        if (traversedDistance + dieValue > 40) {
-            let goalArrayIndex = (traversedDistance + dieValue) - 40
+        let nextIndex = (currentIndex + trueDieValue)
+        console.log("Index: " + nextIndex)
+        if (traversedDistance + trueDieValue > 40) {
+            let goalArrayIndex = (traversedDistance + trueDieValue) - 40
             return "goalArray"
         } else {
-            if (currentIndex + dieValue > 39) {
-                nextIndex = (currentIndex + dieValue) - 40
+            if (currentIndex + trueDieValue > 39) {
+                nextIndex = (currentIndex + trueDieValue) - 40
+                console.log("Index: " + nextIndex)
             }
-            fieldId = this.gameArray[nextIndex].fieldId
-            console.log(fieldId)
+            let field = this.gameArray[nextIndex]
+            fieldId = field.fieldId
         }
         return fieldId
     }
 
     getNextGoalPosition(currentFieldId, dieValue, goalArrayIndex) {
-        let currentIndex = this.goalArray[goalArrayIndex].findIndex(field => field.fieldId === currentFieldId)
-        if (currentIndex + dieValue < 4) {
+        let currentIndex = -50
+        for(let i = 0; i < this.goalArray[goalArrayIndex].length; i++) {
+            if(this.goalArray[goalArrayIndex][i].fieldId === currentFieldId) {
+                currentIndex = i
+            }
+        }
+        if (-1 < currentIndex + dieValue < 4) {
             return this.goalArray[goalArrayIndex][currentIndex + dieValue].fieldId
         } else {
             return false
