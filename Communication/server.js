@@ -137,9 +137,9 @@ function checkClientMessage(message, playerId) {
                         for (const player of game.player) {
                             if (player.playerId === message.playerId && !takenColors.includes(message.playerColor)) {
                                 player.color = message.playerColor
-                                takenColors.push(message.playerColor)
-                                player.name = message.playerName
                                 addTokensOnPlayerJoin(message, playerId, game);
+                                player.name = message.playerName
+                                takenColors.push(message.playerColor)
                                 sendMessageToAllPlayers(game, {
                                     type: "newPlayer",
                                     name: message.playerName,

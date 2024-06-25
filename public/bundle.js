@@ -10,7 +10,7 @@ let currentGame = {
     gameState: "PRE_GAME", //also available: LOBBY, GAME_RUNNING, GAME_OVER
     currentTokenId: '',
     playerColor: "",
-    playerName: "", //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    playerName: "" //also available: LOBBY, GAME_RUNNING, GAME_OVER
 }
 let availableGameActions = [];
 
@@ -78,7 +78,7 @@ function fromServerMessage(event) {
             handleNameTaken(message)
             break;
         case 'newPlayer':
-            handleNewPlayer(message);
+            handleNewPlayer(message)
             break;
         case 'message':
             handleServerMessage(message);
@@ -90,12 +90,6 @@ function fromServerMessage(event) {
             console.log(`Client: Sorry, we are out of ${message.type}.`);
     }
 }
-
-
-//Überall currentGame.playerName/Color anstatt clientname?
-//Wer dran ist => über getGameActions => Zeile 539
-//Überall das playerArray checken (playerID kommt noch dazu (Serverresponses irgendwo anpassen?))
-
 
 function sendMessage(message) {
     if (!socket || !isSocketOpen) {
@@ -214,12 +208,10 @@ function createGame() {
     const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
     const playerName = document.getElementById('adminNameInput').value;
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
+    console.log(dieColor);
     changeRollDiceImage("./pictures/" + dieColor + ".png")
 
-
-
     if (playerName != '') {
-
         setGameState("LOBBY")
         document.getElementById('createGamePopup').style.display = 'none';
 
@@ -229,6 +221,7 @@ function createGame() {
             playerName: playerName,
             playerColor: selectedColor
         });
+        
     } else {
         document.getElementById('createGameErrorMessage').textContent = 'Do not forget to Enter a Name!'
         makeTextBlink('createGameErrorMessage')
@@ -350,14 +343,13 @@ function handleCreateGameResponse(response) {
     document.getElementById("inGameMessage").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
-    currentGame.playerColor = response.playerColor;
     currentGame.playerName = response.playerName;
+    currentGame.playerColor = response.playerColor;
     players.push({ name: response.playerName, color: response.playerColor, playerId: response.playerId })
-
+    renderPlayerPanels()
 
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
-    renderPlayerPanels();
     console.log(currentGame);
     initRenderer(response)
 }
@@ -403,38 +395,35 @@ function handleNameTaken(response) {
 }
 
 function handleJoinGameResponse(response) {
+    console.log("response"+response)
     if (response.playerId) {
-        players.push(...response.players)
-        console.log("hier")
-        console.log(players)
-        renderPlayerPanels();
+        
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
 
-
         //Make taken colors unavailable
-        if (response.takenColors.includes("Blue")) {
+        if (response.takenColors.includes("blue")) {
             document.getElementById('blueOption').querySelector('input').disabled = true
             document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
         }
 
-        if (response.takenColors.includes("Yellow")) {
+        if (response.takenColors.includes("yellow")) {
             document.getElementById('yellowOption').querySelector('input').disabled = true
             document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
         }
 
-        if (response.takenColors.includes("Green")) {
+        if (response.takenColors.includes("green")) {
             document.getElementById('greenOption').querySelector('input').disabled = true
             document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
         }
 
-        if (response.takenColors.includes("Red")) {
+        if (response.takenColors.includes("red")) {
             document.getElementById('redOption').querySelector('input').disabled = true
             document.getElementById('redImage').src = "pictures/figureRedCross.png"
 
         }
-
-
+        players.push(...response.players)
+        renderPlayerPanels();
         currentGame.playerId = response.playerId;
         let serverResponseText = document.getElementById("inGameMessage");
         serverResponseText.innerHTML = "You've joined the game. " +
@@ -511,8 +500,6 @@ function handleNewPlayer(response) {
 function handlePickedColor(response) {
     currentGame.playerName = response.playerName
     currentGame.playerColor = response.playerColor
-    console.log(response)
-    console.log(currentGame)
     renderPlayerPanels();
     document.getElementById('succesfullJoinPopup').style.display = 'none'
 }
@@ -523,7 +510,6 @@ function handlePickedColor(response) {
  * the HTML element with id "inGameMessage"
  */
 function rollDice() {
-    renderPlayersTurn(availableGameActions[0].playerId)
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
         sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
@@ -619,13 +605,6 @@ function chooseGameAction(gameAction, tokenId) {
 }
 
 
-function handleRollDiceResponse(response) {
-    console.log(response);
-    console.log(response.dieValue);
-    dieAnimation(response.dieValue)
-    updateGameActions(JSON.parse(response.gameActions))
-}
-
 function renderPlayersTurn() {
     console.log("AvailableGameActions: ", availableGameActions)
     console.log("Players: ", players)
@@ -655,7 +634,7 @@ function stopBlinking() {
 }
 
 function renderPlayerPanels() {
-
+    console.log("Players: ", players)
     players = players.filter(player => player.name !== undefined);
     for (let i = 0; i < players.length; i++) {
         const panel = document.getElementById(`player-panel${i + 1}`);
@@ -679,7 +658,6 @@ function renderPlayerPanels() {
         panel.style.display = 'flex';
     }
 }
-
 
 
 function dieAnimation(final) {
@@ -731,9 +709,9 @@ function handleGameUpdate(message) {
     let tokens = JSON.parse(message.tokens)
     let gameActions = JSON.parse(message.gameActions)
     updateGameActions(gameActions)
+    renderPlayersTurn()
     // if the server calculated that you have no gameActions
     console.log("AvailableGameActions: ", availableGameActions)
-    renderPlayersTurn()
     if (message.dieValue) {
         dieAnimation(message.dieValue)
     }
@@ -756,10 +734,9 @@ function tokenToRenderer(tokens) {
     tokens.forEach(token => {
         let xCoord = getTokenXCoord(token.fieldId);
         let yCoord = getTokenYCoord(token.fieldId);
-        renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
+        renderer.tokens.push({tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
 
     })
-
     renderer.drawFields();
     renderer.drawTokens();
 
@@ -817,16 +794,15 @@ function handleLeftGame(message) {
 
 function handleGameStarted(message) {
     //     todo show in response text or something like that
+    
     console.log("Handle game started: ", message)
     document.getElementById("inGameMessage").innerHTML = message.message;
     handleGameUpdate(message)
-    console.log("availableGameActions: ", availableGameActions)
-    if (availableGameActions[0].playerId === currentGame.playerId) {
-        console.log("It works!")
-    }
     renderPlayersTurn()
     setGameState("GAME_RUNNING")
     console.log("The current state is: " + currentGame.gameState);
+
+
 }
 
 function handleServerMessage(response) {
@@ -844,7 +820,7 @@ function onCanvasClick(event) {
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
 
-    const clickPoint = { x: clickX, y: clickY };
+    const clickPoint = {x: clickX, y: clickY };
 
     renderer.tokens.forEach(token => {
         // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen

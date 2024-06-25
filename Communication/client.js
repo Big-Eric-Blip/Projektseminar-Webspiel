@@ -211,7 +211,6 @@ function createGame() {
     changeRollDiceImage("./pictures/" + dieColor + ".png")
 
     if (playerName != '') {
-
         setGameState("LOBBY")
         document.getElementById('createGamePopup').style.display = 'none';
 
@@ -221,6 +220,7 @@ function createGame() {
             playerName: playerName,
             playerColor: selectedColor
         });
+        
     } else {
         document.getElementById('createGameErrorMessage').textContent = 'Do not forget to Enter a Name!'
         makeTextBlink('createGameErrorMessage')
@@ -342,6 +342,10 @@ function handleCreateGameResponse(response) {
     document.getElementById("inGameMessage").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
+    currentGame.playerName = response.playerName;
+    currentGame.playerColor = response.playerColor;
+    players.push({ name: response.playerName, color: response.playerColor, playerId: response.playerId })
+    renderPlayerPanels()
 
     const gameId = document.getElementById("gameId");
     gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
@@ -390,14 +394,11 @@ function handleNameTaken(response) {
 }
 
 function handleJoinGameResponse(response) {
+    console.log("response"+response)
     if (response.playerId) {
-        players.push(...response.players)
-        renderPlayerPanels();
+        
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
-
-
-
 
         //Make taken colors unavailable
         if (response.takenColors.includes("blue")) {
@@ -420,8 +421,8 @@ function handleJoinGameResponse(response) {
             document.getElementById('redImage').src = "pictures/figureRedCross.png"
 
         }
-
-
+        players.push(...response.players)
+        renderPlayerPanels();
         currentGame.playerId = response.playerId;
         let serverResponseText = document.getElementById("inGameMessage");
         serverResponseText.innerHTML = "You've joined the game. " +
@@ -602,6 +603,62 @@ function chooseGameAction(gameAction, tokenId) {
     })
 }
 
+
+function renderPlayersTurn() {
+    console.log("AvailableGameActions: ", availableGameActions)
+    console.log("Players: ", players)
+    stopBlinking()
+    for (let i = 0; i < players.length; i++) {
+        document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "transparent";
+    }
+
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].playerId === availableGameActions[0].playerId) {
+            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgreen";
+            if (players[i].name === currentGame.playerName) {
+                startBlinking()
+            }
+        }
+    }
+}
+
+function startBlinking() {
+    const button = document.getElementById('rollDiceButton');
+    button.classList.add('blinking-border');
+}
+
+function stopBlinking() {
+    const button = document.getElementById('rollDiceButton');
+    button.classList.remove('blinking-border');
+}
+
+function renderPlayerPanels() {
+    console.log("Players: ", players)
+    players = players.filter(player => player.name !== undefined);
+    for (let i = 0; i < players.length; i++) {
+        const panel = document.getElementById(`player-panel${i + 1}`);
+        const pictureDiv = panel.querySelector('.player-panel-picture');
+        const nameDiv = panel.querySelector('.player-panel-name h2');
+
+        // Update picture
+        const img = pictureDiv.querySelector('img');
+        img.src = "pictures/figure" + players[i].color + ".png";
+        img.alt = `Image ${i + 1}`;
+
+        // Update text
+        if (players[i].name === currentGame.playerName) {
+            nameDiv.textContent = players[i].name + " - You";
+        }
+        else {
+            nameDiv.textContent = players[i].name
+        }
+
+        // Show the panel   
+        panel.style.display = 'flex';
+    }
+}
+
+
 function dieAnimation(final) {
     const images = [
         'pictures/' + dieColor + '1.png',
@@ -651,6 +708,7 @@ function handleGameUpdate(message) {
     let tokens = JSON.parse(message.tokens)
     let gameActions = JSON.parse(message.gameActions)
     updateGameActions(gameActions)
+    renderPlayersTurn()
     // if the server calculated that you have no gameActions
     console.log("AvailableGameActions: ", availableGameActions)
     if (message.dieValue) {
@@ -735,9 +793,11 @@ function handleLeftGame(message) {
 
 function handleGameStarted(message) {
     //     todo show in response text or something like that
+    
     console.log("Handle game started: ", message)
     document.getElementById("inGameMessage").innerHTML = message.message;
     handleGameUpdate(message)
+    renderPlayersTurn()
     setGameState("GAME_RUNNING")
     console.log("The current state is: " + currentGame.gameState);
 
