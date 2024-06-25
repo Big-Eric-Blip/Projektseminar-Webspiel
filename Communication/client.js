@@ -154,14 +154,17 @@ function closeJoinGamePopup() {
 function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
 }
+
 function closeRulePopup() {
 
     document.getElementById('rulesPopup').style.display = 'none';
 }
+
 function closeCreateGamePopup() {
     document.getElementById('createGameErrorMessage').textContent = '';
     document.getElementById('createGamePopup').style.display = 'none';
 }
+
 function openRulesPopup() {
     document.getElementById('rulesPopup').style.display = 'block';
 }
@@ -336,13 +339,13 @@ function endGame() {
 }
 
 function handleCreateGameResponse(response) {
-    addMessageToChat("Nice. You've created a game.")
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
     currentGame.playerColor = response.playerColor;
     currentGame.playerName = response.playerName;
 
-    addMessageToChat("Send the game id to your friends to join your game: " + currentGame.gameId)
+    addMessageToChat("Nice. You've created a game. Send the game id to your friends to join your game: "
+        + currentGame.gameId)
     console.log(currentGame);
     initRenderer(response)
 }
@@ -412,7 +415,6 @@ function handleJoinGameResponse(response) {
 
 
         currentGame.playerId = response.playerId;
-        addMessageToChat("You've joined the game. " + "Please choose a name and a color")
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
@@ -644,7 +646,7 @@ function tokenToRenderer(tokens) {
         let yCoord = getTokenYCoord(token.fieldId);
         renderer.tokens.push({tn: token.tokenId, x: xCoord, y: yCoord, color: token.color})
     })
-    
+
     renderer.drawFields();
     renderer.drawTokens();
 
@@ -695,7 +697,6 @@ function handleLeftGame(message) {
 }
 
 function handleGameStarted(message) {
-    addMessageToChat(message.message)
     handleGameUpdate(message)
     setGameState("GAME_RUNNING")
     console.log("The current state is: " + currentGame.gameState);
@@ -704,7 +705,7 @@ function handleGameStarted(message) {
 }
 
 function handleServerMessage(response) {
-    addMessageToChat(response.message)
+    console.log(response.message)
 }
 
 function onCanvasClick(event) {
@@ -732,7 +733,7 @@ function onCanvasClick(event) {
         ) {
             console.log(`Game piece clicked:`, token);
             currentGame.currentTokenId = token.tn
-            moveToken(token.tn)           
+            moveToken(token.tn)
         }
     });
 }
