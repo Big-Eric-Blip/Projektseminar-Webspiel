@@ -149,6 +149,12 @@ function closeJoinGamePopup() {
 
 function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
+    const createGameForm = document.getElementById('createGameForm')
+    createGameForm.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+        }
+    });
 }
 function closeRulePopup() {
 
@@ -396,6 +402,12 @@ function handleJoinGameResponse(response) {
     if (response.playerId) {
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
+        const successfullJoinForm = document.getElementById('successfullJoinForm')
+        successfullJoinForm.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
 
 
         //Make taken colors unavailable
@@ -765,20 +777,24 @@ function onCanvasClick(event) {
     });
 }
 },{"../View/Renderer":2}],2:[function(require,module,exports){
+
 class Renderer {
     constructor(canvasID) {
+
         this.scale = 1;
         this.tokens = [];
         this.fields = [];
         this.canvas = document.getElementById(canvasID);
         this.ctx = this.canvas.getContext("2d");
-        this.images = this.loadImages();
+
         this.drawFields();
         this.drawTokens();
+
     }
 
 
     drawFields() {
+        console.log(this.fields)
         let ctx = this.ctx;
         let size = 45 * this.scale;
         this.fields.forEach((field) => {
@@ -790,33 +806,26 @@ class Renderer {
         });
     }
 
-    loadImages() {
-        let images = {};
-        images['red'] = new Image();
-        images['red'].src = 'pictures/figureRed.png';
-        images['blue'] = new Image();
-        images['blue'].src = 'pictures/figureBlue.png';
-        images['green'] = new Image();
-        images['green'].src = 'pictures/figureGreen.png';
-        images['yellow'] = new Image();
-        images['yellow'].src = 'pictures/figureYellow.png';
-        return images;        
-    }
 
     drawTokens() {
+
         let ctx = this.ctx;
-        let size = 50 * this.scale;
+
+
+        let size = 35 * this.scale;
+
         this.tokens.forEach((token) => {
-            let img = this.images[token.color];          
-                ctx.drawImage(
-                    img,
-                    token.x * this.scale - size / 2,
-                    token.y * this.scale - size / 2,
-                    size,
-                    size);
+            ctx.beginPath();
+            ctx.scale(1, 1)
+            ctx.fillStyle = token.color;
+            ctx.fillRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
+            ctx.stroke();
         });
     }
 }
+
 document.addEventListener("DOMContentLoaded", function () {
     window.renderer = new Renderer("myCanvas");
 })

@@ -325,8 +325,6 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(fromClientMessage) {
         console.log(`Received message from ${playerId}: ${fromClientMessage}`);
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
-        console.log(`Current clients:`, [...clients.keys()]);
-        console.log('Current games:', games)
         // Check if empty just in case there is no message to return
         if (sendBackToClient) {
             ws.send(JSON.stringify(sendBackToClient));
@@ -337,9 +335,6 @@ wss.on('connection', function connection(ws) {
         clients.delete(playerId);
         // check if the client is still in a game
         leaveGameOnCloseWindow(playerId);
-
-        console.log(`Client disconnected: ${playerId}`);
-        console.log(`Currently connected clients:`, [...clients.keys()]);
     });
 
 

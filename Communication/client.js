@@ -148,6 +148,12 @@ function closeJoinGamePopup() {
 
 function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
+    const createGameForm = document.getElementById('createGameForm')
+    createGameForm.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+        }
+    });
 }
 function closeRulePopup() {
 
@@ -395,6 +401,12 @@ function handleJoinGameResponse(response) {
     if (response.playerId) {
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
+        const successfullJoinForm = document.getElementById('successfullJoinForm')
+        successfullJoinForm.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
 
 
         //Make taken colors unavailable
