@@ -628,6 +628,11 @@ function handleGameUpdate(message) {
             console.log(winner.playerName + " is a winner")
         })
         //TODO include popup with game over screen
+        
+        displayGameOver(winners);
+        
+        
+        
         //TODO remove the following two lines, they are only for testing
         document.getElementById("inGameMessage").innerHTML = message.message
         tokenToRenderer(tokens);
@@ -645,6 +650,18 @@ function handleGameUpdate(message) {
             tokenToRenderer(tokens);
         }
     }
+}
+function displayGameOver(players) {
+    //document.getElementById('gameOverPopup').style.display = 'block';        
+    let gameOverPopup = document.getElementById('gameOverPopup');
+    let winnersList = document.getElementById('winnersList');
+    winnersList.innerHTML = '';
+    players.forEach(player => {
+        let winnerMessage = document.createElement('p');
+        winnerMessage.textContent = `Player ${player.playerName} needed ${player.moveCounter} moves to reach the goal.`;
+        winnersList.appendChild(winnerMessage);
+    });
+    gameOverPopup.style.display = "block"
 }
 
 function tokenToRenderer(tokens) {
