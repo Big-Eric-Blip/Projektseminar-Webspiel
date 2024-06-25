@@ -311,6 +311,7 @@ input[type="radio"]:checked + img {
 
 .message.incoming {
     background-color: #28a745;
+    align-self: flex-start;
     max-width: 80%;
     color: white;
 }

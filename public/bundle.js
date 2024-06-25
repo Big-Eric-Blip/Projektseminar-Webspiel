@@ -83,6 +83,9 @@ function fromServerMessage(event) {
         case 'updateGame':
             handleGameUpdate(message);
             break;
+        case 'chatMessage':
+            handleIncomingChatMessages(message);
+            break;
         default:
             console.log(`Client: Sorry, we are out of ${message.type}.`);
     }
@@ -779,6 +782,11 @@ function sendChatMessage() {
     const chatInput = document.getElementById('chatInput');
     const message = chatInput.value.trim();
     if (message) {
+        sendMessage({
+            type: 'chatMessage',
+            gameId: currentGame.gameId,
+            chatMessage: message
+        })
         addMessageToChat(message, 'outgoing');
         chatInput.value = '';
     }
@@ -796,8 +804,13 @@ function attachListenerToChatInput() {
     });
 }
 
-
-
+function handleIncomingChatMessages(message) {
+    console.log(message)
+    console.log(currentGame.playerColor)
+    if (message.playerColor !== currentGame.playerColor) {
+        addMessageToChat(message.chatMessage, 'incoming')
+    }
+}
 },{"../View/Renderer":2}],2:[function(require,module,exports){
 
 class Renderer {
