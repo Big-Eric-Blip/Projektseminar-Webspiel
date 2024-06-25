@@ -61,7 +61,7 @@ class Game {
         let winners = []
         for(let i = 0; i < this.winner.length; i++) {
             winners.push(new Object({
-                playersName: this.winner[i].name,
+                playerName: this.winner[i].name,
                 moveCounter: this.winner[i].moveCounter
             }));
         }
