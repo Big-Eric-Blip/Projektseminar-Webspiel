@@ -675,7 +675,7 @@ function tokenToRenderer(tokens) {
     tokens.forEach(token => {
         let xCoord = getTokenXCoord(token.fieldId);
         let yCoord = getTokenYCoord(token.fieldId);
-        renderer.tokens.push({ tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
+        renderer.tokens.push({tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
 
     })
     renderer.drawFields();
@@ -759,7 +759,7 @@ function onCanvasClick(event) {
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
 
-    const clickPoint = { x: clickX, y: clickY };
+    const clickPoint = {x: clickX, y: clickY };
 
     renderer.tokens.forEach(token => {
         // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
