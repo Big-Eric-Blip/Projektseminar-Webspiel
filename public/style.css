@@ -292,35 +292,33 @@ input[type="radio"]:checked + img {
     height: 300px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: white;
+    background-color: azure;
     padding: 10px;
 }
 
 .message {
-    background-color: #007bff;
+    background-color: azure;
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 5px;
+    color: black;
 }
 
 .message.incoming {
-    background-color: #28a745;
     align-self: flex-start;
     max-width: 80%;
-    color: white;
+    border: 7px groove;
 }
 
 .message.outgoing {
-    background-color: #007bff;
     align-self: flex-end;
     max-width: 80%;
-    color: white;
+    border: 7px groove;
 }
 
 .message.server {
-    background-color: #f7ca4d;
     max-width: 100%;
-    color: black;
+    border: 7px groove #af79ff;
 }
 
 #messagesContainer {
@@ -341,6 +339,7 @@ input[type="radio"]:checked + img {
     font: medium Arial;
     border: 1px solid #ccc;
     border-radius: 5px;
+    background-color: azure;
 }
 
 #sendButton {

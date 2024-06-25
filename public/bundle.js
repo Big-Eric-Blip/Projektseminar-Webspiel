@@ -743,10 +743,11 @@ function onCanvasClick(event) {
  * Adds a message to the chat array
  * @param {string} message to display in chat
  * @param {string} type style of the message, possible are 'incoming', 'outgoing' and 'server'
+ * @param {string} playerColor color of the player which wrote a message
  * @return {void}
  */
-function addMessageToChat(message, type = 'server') {
-    messages.push({text: message, type});
+function addMessageToChat(message, type = 'server', playerColor = undefined) {
+    messages.push({text: message, type, playerColor});
     displayMessages();
 }
 
@@ -763,6 +764,11 @@ function displayMessages() {
         messageElement.classList.add('message');
         messageElement.classList.add(msg.type);
         messageElement.textContent = msg.text;
+        if (msg.type === 'incoming' || msg.type === 'outgoing') {
+            if (msg.playerColor) {
+                messageElement.style.borderColor = msg.playerColor;
+            }
+        }
         messagesContainer.appendChild(messageElement);
     });
 
@@ -783,7 +789,7 @@ function sendChatMessage() {
             gameId: currentGame.gameId,
             chatMessage: message
         })
-        addMessageToChat(message, 'outgoing');
+        addMessageToChat(message, 'outgoing', currentGame.playerColor);
         chatInput.value = '';
     }
 }
@@ -800,11 +806,14 @@ function attachListenerToChatInput() {
     });
 }
 
+/**
+ * Handles a message from another player
+ * */
 function handleIncomingChatMessages(message) {
     console.log(message)
     console.log(currentGame.playerColor)
     if (message.playerColor !== currentGame.playerColor) {
-        addMessageToChat(message.chatMessage, 'incoming')
+        addMessageToChat(message.chatMessage, 'incoming', message.playerColor)
     }
 }
 },{"../View/Renderer":2}],2:[function(require,module,exports){
