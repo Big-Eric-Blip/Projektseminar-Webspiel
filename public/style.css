@@ -46,13 +46,11 @@ summary::marker {
     float: left;
     width: 15vw;
     min-width: 150px;
-    height: 85vh;
-    margin-bottom: 60px;
-    padding: 5px;
+    height: 100%;
+    padding: 7px;
     margin-right: 10px;
     border-right-style: inset;
     background-color: lightgray;
-    box-sizing: border-box;
 }
 
 
@@ -62,8 +60,6 @@ summary::marker {
     background-color: #ffca1a;
     width: 90vh;
     height: 90vh;
-    max-height: 70vw;
-    max-width: 70vw;
 }
 
 .pre-game {
@@ -293,9 +289,7 @@ input[type="radio"]:checked + img {
 #chat-container {
     resize: vertical;
     overflow-y: auto;
-    height: 85%;
-    min-height: 20%;
-    max-height: 85%;
+    height: 300px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: white;
