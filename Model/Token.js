@@ -27,6 +27,7 @@ class Token {
     getTokenId(){
         return this.tokenId
     }
+
 }
 
 
