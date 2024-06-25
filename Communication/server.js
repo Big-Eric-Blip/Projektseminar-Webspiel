@@ -31,12 +31,13 @@ function checkClientMessage(message, playerId) {
                     let dieValue = (Math.floor(Math.random() * 6) + 1)
                     //keep the following line for testing purposes
                     //let dieValue = 6
+                    let aPlayer = game.player[game.getCurrentPlayerIndex()];
                     game.currentDieValue = dieValue
                     game.calculateAvailableGameActions(board)
-
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) rolled a " + dieValue
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
-                        message: "Updated actions after rolling the dice",
+                        message: info,
                         status: game.status,
                         gameId: game.gameId,
                         gameActions: JSON.stringify(game.gameActions),
@@ -57,7 +58,7 @@ function checkClientMessage(message, playerId) {
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType, "LOBBY");
             let player = new Player(playerId, message.playerColor, message.playerName);
-
+            //TODO clean up after testing
             addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
             games.push(game);
@@ -171,7 +172,7 @@ function checkClientMessage(message, playerId) {
                 if (games[i].gameId === message.gameId) {
                     const leavingPlayer = games[i].removePlayer(playerId);
                     // if the game is empty delete the game
-                    if (games[i].player.length === 0) {
+                    if (games[i].player.length === 0 && games[i].winner.length ===0) {
                         games.splice(i, 1);
                         // TODO else if (games[i].player.length === 1) trigger winning screen
                     } else {
@@ -214,7 +215,6 @@ function checkClientMessage(message, playerId) {
                         type: 'message',
                         message: "You've started the game."
                     }
-                    //     todo check in joinGame case if game is in status LOBBY
                 }
             }
             return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
@@ -256,9 +256,26 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.enterGoal(message.tokenId, message.fieldId)
-                game.calculateAvailableGameActions(board)
                 let aPlayer = game.getPlayerById(message.playerId);
                 let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
+                    // if game is won fully
+                    if(game.areAllPlayersWinners()) {
+                        let winners = JSON.stringify(game.getWinners())
+                        let finalInfo = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal. The game is now over!"
+                        sendMessageToAllPlayers(game, {
+                            type: "updateGame",
+                            message: finalInfo,
+                            status: game.status,
+                            gameId: game.gameId,
+                            tokens: JSON.stringify(game.tokens),
+                            winners: winners
+                        })
+                        return
+                    // If game is won partially
+                    } else if (game.isPlayerWinner(game.getPlayerById(message.playerId))) {
+                        info = aPlayer.name + " (" + aPlayer.color + " player) finished the game!"
+                    }
+                game.calculateAvailableGameActions(board)
                 sendUpdateToAllPlayers(game, info);
                 }
             }
@@ -285,6 +302,12 @@ function checkClientMessage(message, playerId) {
 function sendMessageToAllPlayers(game, jsonMessage) {
     for (const player of game.player) {
         let client = clients.get(player.playerId)
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(jsonMessage));
+        }
+    }
+    for (const winner of game.winner) {
+        let client = clients.get(winner.playerId)
         if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(jsonMessage));
         }

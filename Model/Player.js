@@ -12,9 +12,8 @@ class Player {
         this.name = name
         this.playersTurn = false
         this.turnCounter = 0
+        this.moveCounter = 0
     }
-
-    //TODO: implement getters and setters
 
     setPlayersTurn(change) {
         if (change === true || change === false) {
@@ -31,8 +30,9 @@ class Player {
         return this. playerId
     }
 
-
-
+    incrementMoveCounter() {
+        this.moveCounter++
+    }
 }
 
 module.exports = Player;
