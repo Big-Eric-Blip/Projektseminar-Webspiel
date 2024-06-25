@@ -391,6 +391,11 @@ class Game {
                 //if there is only one player, let them roll the dice again
                 this.gameActions.push(new GameAction(currentPlayer.playerId, 'ROLL_DIE'))
             } else {
+                if(this.areAllPlayersWinners()) {
+                    console.log("ALL PLAYERS HAVE WON")
+                    return
+                }
+
                 if(this.threeInGoal === true) {
                     if(currentPlayer.turnCounter < 2) {
                         currentPlayer.turnCounter++

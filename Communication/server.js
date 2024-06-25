@@ -261,30 +261,25 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.enterGoal(message.tokenId, message.fieldId)
-
                 let aPlayer = game.getPlayerById(message.playerId);
                 let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
-                    // treat cases where a game is won partially or fully
+                    // if game is won fully
                     if(game.areAllPlayersWinners()) {
-                        info = aPlayer.name + " (" + aPlayer.color + " player) finished the game! The game is now over"
+                        let winners = JSON.stringify(game.getWinners())
+                        let finalInfo = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal. The game is now over!"
                         sendMessageToAllPlayers(game, {
                             type: "updateGame",
-                            message: info,
+                            message: finalInfo,
                             status: game.status,
                             gameId: game.gameId,
                             tokens: JSON.stringify(game.tokens),
-                            winners: JSON.stringify(game.getWinners())
+                            winners: winners
                         })
-                        break
-                    } else if (game.isPlayerWinner(message.playerId)) {
+                        //TODO: close game on server side?
+                        return
+                    // If game is won partially
+                    } else if (game.isPlayerWinner(game.getPlayerById(message.playerId))) {
                         info = aPlayer.name + " (" + aPlayer.color + " player) finished the game!"
-                        /*sendMessageToAllPlayers(game, {
-                            type: "updateGame",
-                            message: info,
-                            status: game.status,
-                            gameId: game.gameId,
-                            gameActions: JSON.stringify(game.gameActions)
-                        })*/
                     }
                 game.calculateAvailableGameActions(board)
                 sendUpdateToAllPlayers(game, info);
@@ -313,6 +308,12 @@ function checkClientMessage(message, playerId) {
 function sendMessageToAllPlayers(game, jsonMessage) {
     for (const player of game.player) {
         let client = clients.get(player.playerId)
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(jsonMessage));
+        }
+    }
+    for (const winner of game.winner) {
+        let client = clients.get(winner.playerId)
         if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(jsonMessage));
         }
