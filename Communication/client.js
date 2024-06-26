@@ -758,7 +758,9 @@ function displayGameOver(players) {
     players.forEach(player => {
         let winnerMessage = document.createElement('p');
         winnerMessage.textContent = `Player ${player.playerName} needed ${player.moveCounter} moves to reach the goal.`;
+        winnerMessage.style.fontSize = "1.2 em";
         winnersList.appendChild(winnerMessage);
+            
     });
     gameOverPopup.style.display = "block"
 }
