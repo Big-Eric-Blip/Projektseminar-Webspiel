@@ -237,7 +237,7 @@ function checkClientMessage(message, playerId) {
         case "action_BEAT":
             for (const game of games) {
                 if (game.gameId === message.gameId) {
-                    game.beatToken(board,message.tokenId,message.fieldId, game.currentDieValue)
+                    game.beatToken(board, message.tokenId, message.fieldId, game.currentDieValue)
                     game.calculateAvailableGameActions(board)
                     let aPlayer = game.getPlayerById(message.playerId);
                     let info = aPlayer.name + " (" + aPlayer.color + " player) beat another token!"
@@ -278,14 +278,33 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.moveInGoal(message.tokenId, message.fieldId)
-                game.calculateAvailableGameActions(board)
-                let aPlayer = game.getPlayerById(message.playerId);
-                let info = aPlayer.name + " (" + aPlayer.color + " player) moved in the goal!"
-                sendUpdateToAllPlayers(game, info);
+                    game.calculateAvailableGameActions(board)
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) moved in the goal!"
+                    sendUpdateToAllPlayers(game, info);
                 }
             }
             break
 
+        case "chatMessage":
+            for (const game of games) {
+                if (game.gameId === message.gameId) {
+                    let colorOfSendingPlayer = ""
+                    for (const aPlayer of game.player) {
+                        if (aPlayer.playerId === playerId) {
+                            colorOfSendingPlayer = aPlayer.color
+                            break
+                        }
+                    }
+                    sendMessageToAllPlayers(game, {
+                        type: 'chatMessage',
+                        playerColor: colorOfSendingPlayer,
+                        chatMessage: message.chatMessage
+                    })
+                    break
+                }
+            }
+            break
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
             return { type: 'message', message: `Server: Sorry, we are out of ${message.type}.` };
@@ -318,7 +337,6 @@ function sendUpdateToAllPlayers(game, info) {
     }
     sendMessageToAllPlayers(game, jsonMessage);
 }
-
 
 function addTokensOnPlayerJoin(message, playerId, game) {
     for (const fields of board.homeArray) {

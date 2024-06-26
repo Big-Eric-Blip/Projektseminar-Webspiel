@@ -28,18 +28,14 @@
 
 <body id="body">
 <aside class="panel-left lobby game-running game-over">
-    <button class="lobby test-button" id="testlobby">test lobby visibility</button>
-    <button class="game-running test-button">test game running visibility</button>
-    <button class="game-over test-button">test game over visibility</button>
-    <button id="startGameButton" class="server-communication-button panel-button lobby">Start Game</button>
-    <button id="rollDiceButton" class="server-communication-button game-running">
-        <img src="pictures/dieBl.png" alt="Roll Dice">
-    </button>
-    <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave Game</button>
-    <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
-    <h3 id="inGameMessage"></h3>
-    <p id="gameId"></p>
-    <br>
+    <div>
+        <button id="startGameButton" class="server-communication-button panel-button lobby">Start Game</button>
+        <button id="rollDiceButton" class="server-communication-button game-running">
+            <img src="pictures/dieBl.png" alt="Roll Dice">
+        </button>
+        <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave Game</button>
+        <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
+    </div>
     <div class="player-panel-container">
         <div id="player-panel1" class="player-panel" style="display: none;">
             <div class="player-panel-picture">
@@ -73,8 +69,21 @@
                 <h2>Text for panel 3</h2>
             </div>
         </div>
+    </div>
+    <div>
         <button id="copyGameIdButton" class="server-communication-button panel-button lobby">Copy Game ID</button>
         <p id="copyNotification" style="display:none;">Game ID copied to clipboard!</p>
+    </div>
+    <div class="chatAndInputContainer">
+        <div id="chat-container">
+            <div id="messagesContainer"></div>
+        </div>
+        <div id="input-container">
+            <input type="text" id="chatInput" class="lobby game-running game-over"
+                   placeholder="Type a message...">
+            <button class="server-communication-button panel-button lobby game-running game-over" id="sendButton">Send
+            </button>
+        </div>
     </div>
 </aside>
 

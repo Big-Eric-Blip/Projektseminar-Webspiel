@@ -14,11 +14,9 @@ let currentGame = {
     winners: []
 }
 let availableGameActions = [];
-
+const messages = [];
 let players = [];
-
 let dieColor;
-
 let socket = null;
 let isSocketOpen = false;
 
@@ -87,6 +85,9 @@ function fromServerMessage(event) {
         case 'updateGame':
             handleGameUpdate(message);
             break;
+        case 'chatMessage':
+            handleIncomingChatMessages(message);
+            break;
         default:
             console.log(`Client: Sorry, we are out of ${message.type}.`);
     }
@@ -134,6 +135,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Copy Game ID
         copyGameIdButton: copyGameIdToClipboard,
+
+        // Send a chat message
+        sendButton: sendChatMessage
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -159,14 +163,17 @@ function closeJoinGamePopup() {
 function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
 }
+
 function closeRulePopup() {
 
     document.getElementById('rulesPopup').style.display = 'none';
 }
+
 function closeCreateGamePopup() {
     document.getElementById('createGameErrorMessage').textContent = '';
     document.getElementById('createGamePopup').style.display = 'none';
 }
+
 function openRulesPopup() {
     document.getElementById('rulesPopup').style.display = 'block';
 }
@@ -180,8 +187,7 @@ function cancel() {
 }
 
 function copyGameIdToClipboard() {
-    const gameIdElement = document.getElementById('gameId');
-    const gameIdText = gameIdElement.textContent.split(": ")[1];
+    const gameIdText = currentGame.gameId;
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(gameIdText).then(() => {
@@ -202,7 +208,6 @@ function showCopyNotification() {
         notificationElement.style.display = 'none';
     }, 2000);
 }
-
 
 
 function createGame() {
@@ -317,10 +322,11 @@ function setLobby() {
     const preGameElements = document.querySelectorAll('.pre-game')
     preGameElements.forEach((element) => element.style.display = 'none')
     const lobbyElements = document.querySelectorAll('.lobby')
-    lobbyElements.forEach((element) => element.style.display = 'block')
+    lobbyElements.forEach((element) => element.style.display = 'flex')
     document.getElementById('body').style.backgroundColor = 'azure'
     document.getElementById('body').style.marginTop = '20px'
     document.getElementById('main-area').style.marginLeft = '40px'
+    attachListenerToChatInput()
 
 }
 
@@ -329,7 +335,7 @@ function setGameRunning() {
     const lobbyElements = document.querySelectorAll('.lobby')
     const gameRunningElements = document.querySelectorAll('.game-running')
     lobbyElements.forEach((element) => element.style.display = 'none')
-    gameRunningElements.forEach((element) => element.style.display = 'block')
+    gameRunningElements.forEach((element) => element.style.display = 'flex')
 }
 
 function endGame() {
@@ -337,11 +343,10 @@ function endGame() {
     const gameRunningElements = document.querySelectorAll('.game-running')
     const gameOverElements = document.querySelectorAll('.game-over')
     gameRunningElements.forEach((element) => element.style.display = 'none')
-    gameOverElements.forEach((element) => element.style.display = 'block')
+    gameOverElements.forEach((element) => element.style.display = 'flex')
 }
 
 function handleCreateGameResponse(response) {
-    document.getElementById("inGameMessage").innerHTML = "Nice. You've created a game."
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
     currentGame.playerName = response.playerName;
@@ -349,8 +354,8 @@ function handleCreateGameResponse(response) {
     players.push({ name: response.playerName, color: response.playerColor, playerId: response.playerId })
     renderPlayerPanels()
 
-    const gameId = document.getElementById("gameId");
-    gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
+    addMessageToChat("Nice. You've created a game. Send the game id to your friends to join your game: "
+        + currentGame.gameId)
     console.log(currentGame);
     initRenderer(response)
 }
@@ -426,14 +431,10 @@ function handleJoinGameResponse(response) {
         players.push(...response.players)
         renderPlayerPanels();
         currentGame.playerId = response.playerId;
-        let serverResponseText = document.getElementById("inGameMessage");
-        serverResponseText.innerHTML = "You've joined the game. " +
-            "Please choose a name and a color";
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
-        const gameId = document.getElementById("gameId");
-        gameId.innerHTML = "Send the game id to your friends to join your game: " + currentGame.gameId;
+        addMessageToChat("Send the game id to your friends to join your game: " + currentGame.gameId)
         initRenderer(response)
 
 
@@ -507,16 +508,16 @@ function handlePickedColor(response) {
 
 /**
  * Checks the eligibility of the player clicking on the die symbol and if the player is eligible for the action
- * ROLL_DIE, a message is sent to the server communicating the action. Otherwise, an error message is printed in
- * the HTML element with id "inGameMessage"
+ * ROLL_DIE, a message is sent to the server communicating the action. Otherwise, an error message is printed
+ * to the chat.
  */
 function rollDice() {
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
         sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
     } else {
-        //send message to the sideboard
-        document.getElementById("inGameMessage").innerHTML = "It's not your turn to roll the die."
+        //send message to the chat
+        addMessageToChat("It's not your turn")
     }
 
 }
@@ -703,7 +704,7 @@ function moveToken(tokenId) {
     if (validatedAction) {
         chooseGameAction(validatedAction, tokenId)
     } else {
-        document.getElementById("inGameMessage").innerHTML = "It's not your turn to move.";
+        addMessageToChat("It's not your turn to move.")
     }
 }
 
@@ -725,7 +726,7 @@ function handleGameUpdate(message) {
         console.log(currentGame.winners)
         //TODO include popup with game over screen
         //TODO remove the following two lines, they are only for testing
-        document.getElementById("inGameMessage").innerHTML = message.message
+        addMessageToChat(message.message)
         tokenToRenderer(tokens);
     } else {
         let gameActions = JSON.parse(message.gameActions)
@@ -736,9 +737,9 @@ function handleGameUpdate(message) {
             dieAnimation(message.dieValue)
         }
         if (isGameActionNone()) {
-            console.log("You have no available game action. It's the next players turn.")
+            addMessageToChat("You have no available game action. It's the next players Turn.")
         } else {
-            document.getElementById("inGameMessage").innerHTML = message.message
+            addMessageToChat(message.message)
             tokenToRenderer(tokens);
         }
     }
@@ -749,9 +750,9 @@ function tokenToRenderer(tokens) {
     tokens.forEach(token => {
         let xCoord = getTokenXCoord(token.fieldId);
         let yCoord = getTokenYCoord(token.fieldId);
-        renderer.tokens.push({tn: token.tokenId, x: xCoord, y: yCoord, color: token.color })
-
+        renderer.tokens.push({tn: token.tokenId, x: xCoord, y: yCoord, color: token.color})
     })
+
     renderer.drawFields();
     renderer.drawTokens();
 
@@ -787,31 +788,21 @@ function updateGameActions(gameActions) {
 }
 
 function handlePlayerJoinedResponse(message) {
-    document.getElementById("inGameMessage").innerHTML =
-        "A new player joined your game. There are now " + message.numberOfPlayers + " players in your game."
+    addMessageToChat("A new player joined your game. There are now " + message.numberOfPlayers +
+        " players in your game.")
 }
 
 function handleAPlayerLeftGame(message) {
-    const serverResponseText = message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
-        ' player) left the game.\n There are now ' + message.numberOfPlayers + ' player' +
-        (message.numberOfPlayers <= 1 ? "" : "s") + ' in your game.';
-    document.getElementById("inGameMessage").innerHTML = serverResponseText;
-    console.log(serverResponseText)
-    console.log("There are now " + message.numberOfPlayers + " players in your game.")
+    addMessageToChat(message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
+        ' player) left the game.\n' + (message.numberOfPlayers === 1 ? "You are the only player in the game." :
+            ' There are now ' + message.numberOfPlayers + ' players in your game.'))
 }
 
 function handleLeftGame(message) {
-    const serverResponseText = 'You left the game.\n Game id: ' + message.gameId;
-    document.getElementById("inGameMessage").innerHTML = serverResponseText;
-    document.getElementById("gameId").innerHTML = "";
-    console.log(serverResponseText);
+    addMessageToChat('You left the game.\n Game id: ' + message.gameId)
 }
 
 function handleGameStarted(message) {
-    //     todo show in response text or something like that
-    
-    console.log("Handle game started: ", message)
-    document.getElementById("inGameMessage").innerHTML = message.message;
     handleGameUpdate(message)
     renderPlayersTurn()
     setGameState("GAME_RUNNING")
@@ -821,10 +812,7 @@ function handleGameStarted(message) {
 }
 
 function handleServerMessage(response) {
-    // TODO show message in game in grey block on the left or maybe implement chat and show it there
-    const serverResponseText = response.message;
-    document.getElementById("inGameMessage").innerHTML = serverResponseText;
-    console.log(serverResponseText);
+    console.log(response.message)
 }
 
 function onCanvasClick(event) {
@@ -855,6 +843,84 @@ function onCanvasClick(event) {
             moveToken(token.tn)
         }
     });
+}
+
+/**
+ * Adds a message to the chat array
+ * @param {string} message to display in chat
+ * @param {string} type style of the message, possible are 'incoming', 'outgoing' and 'server'
+ * @param {string} playerColor color of the player which wrote a message
+ * @return {void}
+ */
+function addMessageToChat(message, type = 'server', playerColor = undefined) {
+    messages.push({text: message, type, playerColor});
+    displayMessages();
+}
+
+/**
+ * applies the new message to the chat
+ */
+function displayMessages() {
+    const messagesContainer = document.getElementById('messagesContainer');
+    messagesContainer.innerHTML = ''; // Clear the container
+    const chatContainer = document.getElementById('chat-container');
+
+    messages.forEach(msg => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.classList.add(msg.type);
+        messageElement.textContent = msg.text;
+        if (msg.type === 'incoming' || msg.type === 'outgoing') {
+            if (msg.playerColor) {
+                messageElement.style.borderColor = msg.playerColor;
+            }
+        }
+        messagesContainer.appendChild(messageElement);
+    });
+
+    // Scroll to the bottom of the chat
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+
+/**
+ * Adds the text in chat input field to the chat
+ * */
+function sendChatMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const message = chatInput.value.trim();
+    if (message) {
+        sendMessage({
+            type: 'chatMessage',
+            gameId: currentGame.gameId,
+            chatMessage: message
+        })
+        addMessageToChat(message, 'outgoing', currentGame.playerColor);
+        chatInput.value = '';
+    }
+}
+
+/**
+ * Inputs in the chat input field can be send with the enter button
+ * */
+function attachListenerToChatInput() {
+    const chatInput = document.getElementById('chatInput');
+    chatInput.addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            sendChatMessage();
+        }
+    });
+}
+
+/**
+ * Handles a message from another player
+ * */
+function handleIncomingChatMessages(message) {
+    console.log(message)
+    console.log(currentGame.playerColor)
+    if (message.playerColor !== currentGame.playerColor) {
+        addMessageToChat(message.chatMessage, 'incoming', message.playerColor)
+    }
 }
 },{"../View/Renderer":2}],2:[function(require,module,exports){
 class Renderer {
