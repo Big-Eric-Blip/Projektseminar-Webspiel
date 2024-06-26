@@ -15,6 +15,7 @@ let currentGame = {
 }
 let availableGameActions = [];
 const messages = [];
+let players = [];
 let dieColor;
 let socket = null;
 let isSocketOpen = false;
@@ -72,6 +73,12 @@ function fromServerMessage(event) {
         case 'colorTaken':
             handleColorTaken(message)
             break;
+        case 'nameTaken':
+            handleNameTaken(message)
+            break;
+        case 'newPlayer':
+            handleNewPlayer(message)
+            break;
         case 'message':
             handleServerMessage(message);
             break;
@@ -94,7 +101,7 @@ function sendMessage(message) {
         // Wait for the socket to open before sending the message
         socket.addEventListener('open', function () {
             socket.send(JSON.stringify(message));
-        }, {once: true});
+        }, { once: true });
     } else {
         socket.send(JSON.stringify(message));
     }
@@ -204,7 +211,6 @@ function showCopyNotification() {
 
 
 function createGame() {
-
     const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
     const playerName = document.getElementById('adminNameInput').value;
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
@@ -212,7 +218,6 @@ function createGame() {
     changeRollDiceImage("./pictures/" + dieColor + ".png")
 
     if (playerName != '') {
-
         setGameState("LOBBY")
         document.getElementById('createGamePopup').style.display = 'none';
 
@@ -222,6 +227,7 @@ function createGame() {
             playerName: playerName,
             playerColor: selectedColor
         });
+        
     } else {
         document.getElementById('createGameErrorMessage').textContent = 'Do not forget to Enter a Name!'
         makeTextBlink('createGameErrorMessage')
@@ -343,8 +349,10 @@ function endGame() {
 function handleCreateGameResponse(response) {
     currentGame.gameId = response.gameId;
     currentGame.playerId = response.playerId;
-    currentGame.playerColor = response.playerColor;
     currentGame.playerName = response.playerName;
+    currentGame.playerColor = response.playerColor;
+    players.push({ name: response.playerName, color: response.playerColor, playerId: response.playerId })
+    renderPlayerPanels()
 
     addMessageToChat("Nice. You've created a game. Send the game id to your friends to join your game: "
         + currentGame.gameId)
@@ -387,11 +395,17 @@ function handleColorTaken(response) {
     makeTextBlink('joinGameErrorMessage')
 }
 
+function handleNameTaken(response) {
+    document.getElementById('joinGameErrorMessage').textContent = 'This name is already taken! Please choose another one.'
+    makeTextBlink('joinGameErrorMessage')
+}
+
 function handleJoinGameResponse(response) {
+    console.log("response"+response)
     if (response.playerId) {
+        
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
-
 
         //Make taken colors unavailable
         if (response.takenColors.includes("blue")) {
@@ -414,8 +428,8 @@ function handleJoinGameResponse(response) {
             document.getElementById('redImage').src = "pictures/figureRedCross.png"
 
         }
-
-
+        players.push(...response.players)
+        renderPlayerPanels();
         currentGame.playerId = response.playerId;
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
@@ -480,9 +494,15 @@ function startJoinedGame() {
     }
 }
 
+function handleNewPlayer(response) {
+    players.push({ name: response.name, color: response.color, playerId: response.playerId })
+    renderPlayerPanels();
+}
+
 function handlePickedColor(response) {
     currentGame.playerName = response.playerName
     currentGame.playerColor = response.playerColor
+    renderPlayerPanels();
     document.getElementById('succesfullJoinPopup').style.display = 'none'
 }
 
@@ -494,7 +514,7 @@ function handlePickedColor(response) {
 function rollDice() {
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
-        sendMessage({type: 'rollDice', gameId: currentGame.gameId});
+        sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
     } else {
         //send message to the chat
         addMessageToChat("It's not your turn")
@@ -543,6 +563,14 @@ function isGameActionNone() {
 }
 
 /**
+ * Checks whose turn it is and returns the playerId
+ * @return {string} the playerId of the player whose turn it is
+ */
+function whoseTurnIsIt() {
+    return availableGameActions[0].playerId
+}
+
+/**
  * Checks whether the current player can move a given token
  * if the player is not eligible or the token can't be moved, this is logged to the console
  * @param {string} tokenId the token to be moved
@@ -579,6 +607,70 @@ function chooseGameAction(gameAction, tokenId) {
         fieldId: gameAction.fieldId
     })
 }
+
+
+function renderPlayersTurn() {
+    console.log("AvailableGameActions: ", availableGameActions)
+    console.log("Players: ", players)
+    stopBlinking()
+    for (let i = 0; i < players.length; i++) {
+        document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "transparent";
+    }
+
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].playerId === availableGameActions[0].playerId) {
+            if(players[i].color === "green") {
+            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgreen";
+        }else if(players[i].color === "red") {
+            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightcoral";
+        }else if(players[i].color === "blue") {
+            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightblue";
+        }else if(players[i].color === "yellow") {
+            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgoldenrodyellow";
+        }
+            if (players[i].name === currentGame.playerName) {
+                startBlinking()
+            }
+        }
+    }
+}
+
+function startBlinking() {
+    const button = document.getElementById('rollDiceButton');
+    button.classList.add('blinking-border');
+}
+
+function stopBlinking() {
+    const button = document.getElementById('rollDiceButton');
+    button.classList.remove('blinking-border');
+}
+
+function renderPlayerPanels() {
+    console.log("Players: ", players)
+    players = players.filter(player => player.name !== undefined);
+    for (let i = 0; i < players.length; i++) {
+        const panel = document.getElementById(`player-panel${i + 1}`);
+        const pictureDiv = panel.querySelector('.player-panel-picture');
+        const nameDiv = panel.querySelector('.player-panel-name h2');
+
+        // Update picture
+        const img = pictureDiv.querySelector('img');
+        img.src = "pictures/figure" + players[i].color + ".png";
+        img.alt = `Image ${i + 1}`;
+
+        // Update text
+        if (players[i].name === currentGame.playerName) {
+            nameDiv.textContent = players[i].name + " - You";
+        }
+        else {
+            nameDiv.textContent = players[i].name
+        }
+
+        // Show the panel   
+        panel.style.display = 'flex';
+    }
+}
+
 
 function dieAnimation(final) {
     const images = [
@@ -639,6 +731,7 @@ function handleGameUpdate(message) {
     } else {
         let gameActions = JSON.parse(message.gameActions)
         updateGameActions(gameActions)
+        renderPlayersTurn()
         // if the server calculated that you have no gameActions
         if (message.dieValue) {
             dieAnimation(message.dieValue)
@@ -711,6 +804,7 @@ function handleLeftGame(message) {
 
 function handleGameStarted(message) {
     handleGameUpdate(message)
+    renderPlayersTurn()
     setGameState("GAME_RUNNING")
     console.log("The current state is: " + currentGame.gameState);
 
@@ -729,7 +823,7 @@ function onCanvasClick(event) {
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
 
-    const clickPoint = {x: clickX, y: clickY};
+    const clickPoint = {x: clickX, y: clickY };
 
     renderer.tokens.forEach(token => {
         // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen

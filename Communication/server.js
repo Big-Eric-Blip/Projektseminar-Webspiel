@@ -93,17 +93,26 @@ function checkClientMessage(message, playerId) {
                         fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     });
                     let takenColors = []
+                    let players = []
                     for (const player of game.player) {
                         if (player.color !== "") {
                             takenColors.push(player.color)
+                            let playerHelp = {
+                                name: player.name,
+                                color: player.color,
+                                playerId: player.playerId
+                            }
+                            players.push(playerHelp)
                         }
                     }
+
                     let player = new Player(playerId, "", "");
                     game.addPlayer(player);
                     return {
                         type: 'joinGame',
                         playerId: playerId,
                         takenColors: takenColors,
+                        players: players,
                         fields: board.gameArray.concat(board.homeArray.flat(Infinity), board.goalArray.flat(Infinity))
                     };
                 }
@@ -114,33 +123,35 @@ function checkClientMessage(message, playerId) {
 
             };
 
+
         case 'tryPickColor':
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     let takenColors = []
-
+                    let takenNames = []
                     for (const player of game.player) {
                         if (player.color !== "") {
                             takenColors.push(player.color)
+                            takenNames.push(player.name)
                         }
-                    }
-                    console.log(takenColors)
-                    for (const player of game.player) {
-                        if (player.playerId === message.playerId && !takenColors.includes(message.playerColor)) {
-                            player.color = message.playerColor
-                            player.name = message.playerName
-                            addTokensOnPlayerJoin(message, playerId, game);
-                            return {
-                                type: 'pickedColor',
-                                playerName: player.name,
-                                playerColor: player.color,
-                                message: `Successfully picked color!`
-                            }
-                        } else if (takenColors.includes(message.playerColor)) {
-                            return {
-                                type: 'colorTaken',
-                                message: `The color ${message.playerColor} is already taken.`,
-                                color: message.playerColor
+                        console.log(takenColors)
+                        for (const player of game.player) {
+                            if (player.playerId === message.playerId && !takenColors.includes(message.playerColor)) {
+                                player.color = message.playerColor
+                                addTokensOnPlayerJoin(message, playerId, game);
+                                player.name = message.playerName
+                                takenColors.push(message.playerColor)
+                                sendMessageToAllPlayers(game, {
+                                    type: "newPlayer",
+                                    name: message.playerName,
+                                    color: message.playerColor,
+                                    playerId : message.playerId
+                                })
+                                return { type: 'pickedColor', message: `Successfully picked color!`, playerColor: message.playerColor, playerName: message.playerName}
+                            } else if (takenColors.includes(message.playerColor)) {
+                                return { type: 'colorTaken', message: `The color ${message.playerColor} is already taken.`, color: message.playerColor }
+                            } else if (takenNames.includes(message.playerName)) {
+                                return { type: 'nameTaken', message: `The name ${message.playerName} is already taken.`, name: message.playerName }
                             }
                         }
                     }
@@ -148,7 +159,6 @@ function checkClientMessage(message, playerId) {
                 }
             }
             return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
-
 
         case 'leaveGame':
             for (let i = 0; i < games.length; i++) {
@@ -297,7 +307,7 @@ function checkClientMessage(message, playerId) {
             break
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
-            return {type: 'message', message: `Server: Sorry, we are out of ${message.type}.`};
+            return { type: 'message', message: `Server: Sorry, we are out of ${message.type}.` };
     }
 }
 
