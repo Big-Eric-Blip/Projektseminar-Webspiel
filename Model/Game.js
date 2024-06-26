@@ -178,9 +178,9 @@ class Game {
     isFurtherMovingPossible(token, board){
         let currentFieldIndex = Number.parseInt(token.fieldId.substring(2)) -1
         if (currentFieldIndex === 3) {
-            return true
+            return false
         } else {
-            return this.isGoalPathClear(board,1,currentFieldIndex)
+            return this.isGoalPathClear(board,1,currentFieldIndex+1)
         }
     }
 
