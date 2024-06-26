@@ -183,12 +183,13 @@ function checkClientMessage(message, playerId) {
                         games.splice(i, 1);
                         // TODO else if (games[i].player.length === 1) trigger winning screen
                     } else {
+                        games[i].tokens = games[i].tokens.filter(token => token.color !== leavingPlayer.color);
                         if (games[i].status === "GAME_RUNNING") {
                             games[i].calculateAvailableGameActions(board)
                             let info = leavingPlayer.name + " (" + leavingPlayer.color + " player) left the game."
                             sendUpdateToAllPlayers(games[i], info)
                         }
-                        games[i].tokens = games[i].tokens.filter(token => token.color !== leavingPlayer.color);
+                    
                         sendMessageToAllPlayers(games[i], {
                             type: 'aPlayerLeftGame',
                             colorOfLeavingPlayer: leavingPlayer.color,
