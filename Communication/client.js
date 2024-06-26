@@ -821,11 +821,7 @@ function handleGameUpdate(message) {
         })
         console.log(currentGame.winners)
         //TODO include popup with game over screen
-        
         displayGameOver(winners);
-        
-        
-        
         //TODO remove the following two lines, they are only for testing
         addMessageToChat(message.message)
         tokenToRenderer(tokens);
@@ -840,7 +836,7 @@ function handleGameUpdate(message) {
         if (isGameActionNone()) {
             addMessageToChat("You have no available game action. It's the next player's turn.")
         } else {
-            if(message.message) {
+            if(message.message && message.message !== '') {
                 addMessageToChat(message.message)
             }
             tokenToRenderer(tokens);
@@ -1023,7 +1019,7 @@ function sendChatMessage() {
 }
 
 /**
- * Inputs in the chat input field can be send with the enter button
+ * Inputs in the chat input field can be sent with the enter button
  * */
 function attachListenerToChatInput() {
     const chatInput = document.getElementById('chatInput');
