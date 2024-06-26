@@ -34,10 +34,10 @@ function checkClientMessage(message, playerId) {
                     let aPlayer = game.player[game.getCurrentPlayerIndex()];
                     game.currentDieValue = dieValue
                     game.calculateAvailableGameActions(board)
-                    let info = aPlayer.name + " (" + aPlayer.color + " player) rolled a " + dieValue
+                    //let info = aPlayer.name + " rolled a " + dieValue
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
-                        message: info,
+                        //message: info,
                         status: game.status,
                         gameId: game.gameId,
                         gameActions: JSON.stringify(game.gameActions),
@@ -58,7 +58,6 @@ function checkClientMessage(message, playerId) {
             const gameId = uuidv4();
             let game = new Game(gameId, [], message.boardType, "LOBBY");
             let player = new Player(playerId, message.playerColor, message.playerName);
-            //TODO clean up after testing
             addTokensOnPlayerJoin(message, playerId, game);
             game.addPlayer(player);
             games.push(game);

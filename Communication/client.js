@@ -765,7 +765,9 @@ function handleGameUpdate(message) {
         if (isGameActionNone()) {
             addMessageToChat("You have no available game action. It's the next player's turn.")
         } else {
-            addMessageToChat(message.message)
+            if(message.message) {
+                addMessageToChat(message.message)
+            }
             tokenToRenderer(tokens);
         }
     }
