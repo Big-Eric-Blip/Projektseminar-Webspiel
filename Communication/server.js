@@ -219,7 +219,7 @@ function checkClientMessage(message, playerId) {
             game.moveToken(board, message.tokenId, message.fieldId, game.currentDieValue);
             game.calculateAvailableGameActions(board)
             let aPlayer = game.getPlayerById(message.playerId);
-            let info = aPlayer.name + " (" + aPlayer.color + " player) moved a game piece."
+            let info = aPlayer.name + " moved a game piece."
             sendUpdateToAllPlayers(game, info);
         }
     }
@@ -230,7 +230,7 @@ function checkClientMessage(message, playerId) {
             game.leaveHouse(board, message.playerId, message.tokenId)
             game.calculateAvailableGameActions(board)
             let aPlayer = game.getPlayerById(message.playerId);
-            let info = aPlayer.name + " (" + aPlayer.color + " player) moved out of the house"
+            let info = aPlayer.name + " moved out of the house"
             sendUpdateToAllPlayers(game, info);
         }
     }
@@ -241,7 +241,7 @@ function checkClientMessage(message, playerId) {
             game.beatToken(board, message.tokenId, message.fieldId, game.currentDieValue)
             game.calculateAvailableGameActions(board)
             let aPlayer = game.getPlayerById(message.playerId);
-            let info = aPlayer.name + " (" + aPlayer.color + " player) beat another token!"
+            let info = aPlayer.name + " beat another token!"
             sendUpdateToAllPlayers(game, info);
         }
     }
@@ -251,11 +251,11 @@ function checkClientMessage(message, playerId) {
         if (game.gameId === message.gameId) {
             game.enterGoal(message.tokenId, message.fieldId)
             let aPlayer = game.getPlayerById(message.playerId);
-            let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
+            let info = aPlayer.name + " moved into the goal!"
             // if game is won fully
             if (game.areAllPlayersWinners()) {
                 let winners = JSON.stringify(game.getWinners())
-                let finalInfo = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal. The game is now over!"
+                let finalInfo = aPlayer.name + " moved into the goal. The game is now over!"
                 sendMessageToAllPlayers(game, {
                     type: "updateGame",
                     message: finalInfo,
@@ -267,7 +267,7 @@ function checkClientMessage(message, playerId) {
                 return
                 // If game is won partially
             } else if (game.isPlayerWinner(game.getPlayerById(message.playerId))) {
-                info = aPlayer.name + " (" + aPlayer.color + " player) finished the game!"
+                info = aPlayer.name  + " finished the game!"
             }
             game.calculateAvailableGameActions(board)
             sendUpdateToAllPlayers(game, info);
@@ -281,7 +281,7 @@ function checkClientMessage(message, playerId) {
             game.moveInGoal(message.tokenId, message.fieldId)
             game.calculateAvailableGameActions(board)
             let aPlayer = game.getPlayerById(message.playerId);
-            let info = aPlayer.name + " (" + aPlayer.color + " player) moved in the goal!"
+            let info = aPlayer.name + " moved in the goal!"
             sendUpdateToAllPlayers(game, info);
         }
     }
