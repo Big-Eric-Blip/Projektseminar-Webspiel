@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
         createGameButton: createGame,
         openRulesPopupButton: openRulesPopup,
         closeRulePopupButton: closeRulePopup,
+        openRulesPopupIngameButton: openRulesPopup,
         //Join Game
         joinGamePopupButton: openJoinGamePopup,
         closeJoinGamePopupButton: closeJoinGamePopup,
@@ -434,6 +435,7 @@ function handleJoinGameResponse(response) {
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
+        document.getElementById('openRulesPopupIngameButton').style.display = 'block';
         addMessageToChat("Send the game id to your friends to join your game: " + currentGame.gameId)
         initRenderer(response)
 

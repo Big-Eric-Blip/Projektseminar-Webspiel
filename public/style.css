@@ -24,7 +24,9 @@ summary::marker {
     color: crimson;
     font-size: 1.2em;
   }
-
+.winnerslist {
+    font-size: 1.1em;
+}
 .img1 {
     padding: 0;
     display: flex;
