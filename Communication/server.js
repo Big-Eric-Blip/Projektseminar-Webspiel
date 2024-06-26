@@ -267,7 +267,7 @@ function checkClientMessage(message, playerId) {
                     // If game is won partially
                     } else if (game.isPlayerWinner(game.getPlayerById(message.playerId))) {
                         info = aPlayer.name + " (" + aPlayer.color + " player) finished the game!"
-                    }
+                    }                        
                 game.calculateAvailableGameActions(board)
                 sendUpdateToAllPlayers(game, info);
                 }

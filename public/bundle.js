@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         joinGamePopupButton: openJoinGamePopup,
         closeJoinGamePopupButton: closeJoinGamePopup,
         joinGameButton: joinGame,
+        closeGameOverPopup: closeGameOver,
 
         //Succesfull Join
         startJoinedGameButton: startJoinedGame,
@@ -159,6 +160,9 @@ function openJoinGamePopup() {
 
 function closeJoinGamePopup() {
     document.getElementById('joinGamePopup').style.display = 'none';
+}
+function closeGameOver () {
+    document.getElementById('gameOverPopup').style.display = 'none';
 }
 
 function openCreateGamePopup() {
@@ -751,14 +755,14 @@ function handleGameUpdate(message) {
         }
     }
 }
-function displayGameOver(players) {
+function displayGameOver(winners) {
     //document.getElementById('gameOverPopup').style.display = 'block';        
     let gameOverPopup = document.getElementById('gameOverPopup');
     let winnersList = document.getElementById('winnersList');
     winnersList.innerHTML = '';
-    players.forEach(player => {
+    winners.forEach(winner => {
         let winnerMessage = document.createElement('p');
-        winnerMessage.textContent = `Player ${player.playerName} needed ${player.moveCounter} moves to reach the goal.`;
+        winnerMessage.textContent = `Player ${winner.playerName} needed ${winner.moveCounter} moves to reach the goal.`;
         winnerMessage.style.fontSize = "1.2 em";
         winnersList.appendChild(winnerMessage);
             
