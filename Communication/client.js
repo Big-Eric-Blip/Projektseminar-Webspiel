@@ -117,10 +117,12 @@ document.addEventListener('DOMContentLoaded', function () {
         createGameButton: createGame,
         openRulesPopupButton: openRulesPopup,
         closeRulePopupButton: closeRulePopup,
+        openRulesPopupIngameButton: openRulesPopup,
         //Join Game
         joinGamePopupButton: openJoinGamePopup,
         closeJoinGamePopupButton: closeJoinGamePopup,
         joinGameButton: joinGame,
+        closeGameOverPopup: closeGameOver,
 
         //Succesfull Join
         startJoinedGameButton: startJoinedGame,
@@ -159,6 +161,9 @@ function openJoinGamePopup() {
 
 function closeJoinGamePopup() {
     document.getElementById('joinGamePopup').style.display = 'none';
+}
+function closeGameOver () {
+    document.getElementById('gameOverPopup').style.display = 'none';
 }
 
 function openCreateGamePopup() {
@@ -471,6 +476,7 @@ function handleJoinGameResponse(response) {
         setGameState('LOBBY');
         document.getElementById('startGameButton').style.display = 'none';
         document.getElementById('leaveGameButton').style.display = 'block';
+        document.getElementById('openRulesPopupIngameButton').style.display = 'block';
         addMessageToChat("Send the game id to your friends to join your game: " + currentGame.gameId)
         initRenderer(response)
 
@@ -791,6 +797,11 @@ function handleGameUpdate(message) {
         })
         console.log(currentGame.winners)
         //TODO include popup with game over screen
+        
+        displayGameOver(winners);
+        
+        
+        
         //TODO remove the following two lines, they are only for testing
         addMessageToChat(message.message)
         tokenToRenderer(tokens);
@@ -809,6 +820,20 @@ function handleGameUpdate(message) {
             tokenToRenderer(tokens);
         }
     }
+}
+function displayGameOver(winners) {
+    //document.getElementById('gameOverPopup').style.display = 'block';        
+    let gameOverPopup = document.getElementById('gameOverPopup');
+    let winnersList = document.getElementById('winnersList');
+    winnersList.innerHTML = '';
+    winners.forEach(winner => {
+        let winnerMessage = document.createElement('p');
+        winnerMessage.textContent = `Player ${winner.playerName} needed ${winner.moveCounter} moves to reach the goal.`;
+        winnerMessage.style.fontSize = "1.2 em";
+        winnersList.appendChild(winnerMessage);
+            
+    });
+    gameOverPopup.style.display = "block"
 }
 
 function tokenToRenderer(tokens) {
