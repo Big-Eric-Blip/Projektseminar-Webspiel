@@ -522,13 +522,15 @@ class Game {
         if(token.inHouse === true) {
             token.inHouse = false
             token.inGame = true
+            token.updateTraversedDistance(1)
+        } else {
+            token.updateTraversedDistance(dieValue)
         }
-        token.updateTraversedDistance(dieValue)
+
         if (dieValue < 6) {
             this.updatePlayersTurn()
         }
         this.currentDieValue = 0
-
     }
 
     /**
@@ -554,6 +556,7 @@ class Game {
     sendTokenBackToHouse(token, board) {
         token.inGame = false
         token.inHouse = true
+        token.traversedDistance = 0
         let index = this.getHomeArrayIndex(token.color)
         let fieldIds = []
         //find empty home field
