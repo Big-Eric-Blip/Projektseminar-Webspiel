@@ -1,6 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 //constant variables
-const url = "ws://127.0.0.1:3000";
+const url = "ws://192.168.43.231:3000";
 const Renderer = require('../View/Renderer');
 
 //dynamic variables
@@ -1074,23 +1074,26 @@ class Renderer {
         images['green'].src = 'pictures/figureGreen.png';
         images['yellow'] = new Image();
         images['yellow'].src = 'pictures/figureYellow.png';
-        return images;
+        return images;        
     }
 
     drawTokens() {
         let ctx = this.ctx;
         let size = 50 * this.scale;
         this.tokens.forEach((token) => {
-            let img = this.images[token.color];
-            ctx.drawImage(
-                img,
-                token.x * this.scale - size / 2,
-                token.y * this.scale - size / 2,
-                size,
-                size);
+            let img = this.images[token.color];          
+                ctx.drawImage(
+                    img,
+                    token.x * this.scale - size / 2,
+                    token.y * this.scale - size / 2,
+                    size,
+                    size);
         });
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    window.renderer = new Renderer("myCanvas");
+})
 
 module.exports = Renderer;
 },{}],3:[function(require,module,exports){
