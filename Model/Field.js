@@ -1,35 +1,19 @@
 class Field {
     /**
-     * 
-     * @param {*} fieldId
-     * @param {*} color 
-     * @param {*} type : available types: START, REGULAR, GOAL
-     * @param {*} xCoord 
-     * @param {*} yCoord 
+     * Constructs a field that is part of a board
+     * @param {string} fieldId the id of the field, used throughout the game
+     * @param {string} color the color of the field
+     * @param {*} type available types: START, REGULAR, GOAL
+     * @param {*} xCoordinate
+     * @param {*} yCoordinate
      */
-    constructor(fieldId, xCoord, yCoord, color, type) {
+    constructor(fieldId, xCoordinate, yCoordinate, color, type) {
         this.fieldId = fieldId
         this.color = color
         this.type = type
-        this.xCoord = xCoord
-        this.yCoord = yCoord
+        this.xCoord = xCoordinate
+        this.yCoord = yCoordinate
     }
-
-    /*TODO: create getters and setters for type
-    with the available types START, REGULAR, GOAL
-    */
-   getXCoord() {
-    return this.xCoord
-   }
-   getYCoord() {
-    return this.yCoord
-   }
-   getFieldId() {
-    return this.fieldId
-   }
-   getFieldType() {
-       return this.type
-   }
 }
 
 module.exports = Field;

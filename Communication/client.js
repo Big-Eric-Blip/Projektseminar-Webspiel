@@ -9,7 +9,8 @@ let currentGame = {
     gameState: "PRE_GAME", //also available: LOBBY, GAME_RUNNING, GAME_OVER
     currentTokenId: '',
     playerColor: "",
-    playerName: "" //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    playerName: "", //also available: LOBBY, GAME_RUNNING, GAME_OVER
+    winners: []
 }
 let availableGameActions = [];
 const messages = [];
@@ -553,9 +554,11 @@ function validateMoveToken(tokenId) {
                 return availableGameActions[i]
             }
         }
-        console.log("This move is not possible!")
+        //TODO needs message in log? "This token cannot be moved" (after log merge)
+        console.log("This token cannot be moved!")
         return false
     } else {
+        //TODO needs message in screen log? "It's not your turn to play"
         console.log("It's not your turn to play!")
         return false
     }
@@ -607,36 +610,45 @@ function moveToken(tokenId) {
     //if yes
     if (validatedAction) {
         chooseGameAction(validatedAction, tokenId)
-        console.log("Execute game action " + validatedAction.action)
     } else {
         addMessageToChat("It's not your turn to move.")
     }
 }
 
-/**
- * Gets the game update from the server and
- * @param message
- */
+
 function handleGameUpdate(message) {
     if (message.status !== currentGame.gameState) {
         setGameState(message.status)
     }
     //update available game actions
     let tokens = JSON.parse(message.tokens)
-    let gameActions = JSON.parse(message.gameActions)
-    updateGameActions(gameActions)
-    // if the server calculated that you have no gameActions
-    console.log("AvailableGameActions: ", availableGameActions)
-    if (message.dieValue) {
-        dieAnimation(message.dieValue)
-    }
-    if (isGameActionNone()) {
-        addMessageToChat("You have no available game action. It's the next players Turn.")
-    } else {
+    if(message.winners) {
+        tokenToRenderer(tokens);
+        let winners = JSON.parse(message.winners)
+        winners.forEach(winner => {
+            currentGame.winners.push({
+                playerName: winner.playerName, moveCounter: winner.moveCounter
+            })
+        })
+        console.log(currentGame.winners)
+        //TODO include popup with game over screen
+        //TODO remove the following two lines, they are only for testing
         addMessageToChat(message.message)
         tokenToRenderer(tokens);
+    } else {
+        let gameActions = JSON.parse(message.gameActions)
+        updateGameActions(gameActions)
+        // if the server calculated that you have no gameActions
+        if (message.dieValue) {
+            dieAnimation(message.dieValue)
+        }
+        if (isGameActionNone()) {
+            addMessageToChat("You have no available game action. It's the next players Turn.")
+        } else {
+            addMessageToChat(message.message)
+            tokenToRenderer(tokens);
+        }
     }
-
 }
 
 function tokenToRenderer(tokens) {
