@@ -128,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //Succesfull Join
         startJoinedGameButton: startJoinedGame,
         cancelButton: cancel,
+        muteMusic: muteMusic,
 
         //Lobby
         startGameButton: startGame,
@@ -155,6 +156,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+function muteMusic() {
+    const audioElement = document.getElementById('elevator');
+    const muteButton = document.getElementById('muteMusic');
+    
+        muteButton.addEventListener('click', () => {
+            if (audioElement.muted) {
+                audioElement.muted = false;
+                muteButton.textContent = 'Mute';
+            } else {
+                audioElement.muted = true;
+                muteButton.textContent = 'Unmute';
+            }
+        });
+}
 
 function openJoinGamePopup() {
     document.getElementById('joinGamePopup').style.display = 'block';
@@ -228,6 +244,7 @@ function createGame() {
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
     console.log(dieColor);
     changeRollDiceImage("./pictures/" + dieColor + ".png")
+    
 
     if (playerName != '') {
         setGameState("LOBBY")
@@ -255,6 +272,13 @@ function changeRollDiceImage(newSrc) {
     if (rollDiceButtonImg) {
         rollDiceButtonImg.src = newSrc;
     }
+}
+function audioOn() {
+    const muteMusic = document.getElementById('muteMusic');
+    const elevator = document.getElementById('elevator');
+    elevator.play();
+    muteMusic.textContent = 'Mute';
+
 }
 
 function makeTextBlink(elementId) {
@@ -339,7 +363,7 @@ function setPreGame() {
     document.getElementById('body').style.backgroundColor = '#f7ca4d'
     document.getElementById('body').style.marginTop = '100px'
     document.getElementById('main-area').style.marginLeft = '0'
-
+    
 }
 
 function setLobby() {
@@ -352,7 +376,7 @@ function setLobby() {
     document.getElementById('body').style.marginTop = '20px'
     document.getElementById('main-area').style.marginLeft = '40px'
     attachListenerToChatInput()
-
+    audioOn();
 }
 
 function setGameRunning() {

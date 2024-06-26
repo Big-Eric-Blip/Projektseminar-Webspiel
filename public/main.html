@@ -22,76 +22,83 @@
             <button id="createGamePopupButton" class="server-communication-button red-button">Create game</button>
             <button id="joinGamePopupButton" class="server-communication-button red-button">Join game</button>
             <button id="openRulesPopupButton" class="server-communication-button red-button">Read the rules!</button>
-
+            
         </nav>
     </div>
 </header>
 
 <body id="body">
-<aside class="panel-left lobby game-running game-over">
-    <div>
-        <button id="startGameButton" class="server-communication-button panel-button lobby">Start Game</button>
-        <button id="rollDiceButton" class="server-communication-button game-running">
-            <img src="pictures/dieBl.png" alt="Roll Dice">
-        </button>
-        <button id="openRulesPopupIngameButton" class="server-communication-button game-running panel-button">Read the rules!</button>
-        <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave Game</button>
-        <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
-    </div>
-    <div class="player-panel-container">
-        <div id="player-panel1" class="player-panel" style="display: none;">
-            <div class="player-panel-picture">
-                <img src="pictures/figureYellow.png" alt="Image 1">
-            </div>
-            <div class="player-panel-name">
-                <h2>Text for Panel 1</h2>
-            </div>
-        </div>
-        <div id="player-panel2" class="player-panel" style="display: none;">
-            <div class="player-panel-picture">
-                <img src="pictures/figureBlue.png" alt="Image 2">
-            </div>
-            <div class="player-panel-name">
-                <h2>Text for panel 2</h2>
-            </div>
-        </div>
-        <div id="player-panel3" class="player-panel" style="display: none;">
-            <div class="player-panel-picture">
-                <img src="pictures/figureRed.png" alt="Image 3">
-            </div>
-            <div class="player-panel-name">
-                <h2>Text for panel 3</h2>
-            </div>
-        </div>
-        <div id="player-panel4" class="player-panel" style="display: none;">
-            <div class="player-panel-picture">
-                <img src="pictures/figureRed.png" alt="Image 3">
-            </div>
-            <div class="player-panel-name">
-                <h2>Text for panel 3</h2>
-            </div>
-        </div>
-    </div>
-    <div>
-        <button id="copyGameIdButton" class="server-communication-button panel-button lobby">Copy Game ID</button>
-        <p id="copyNotification" style="display:none;">Game ID copied to clipboard!</p>
-    </div>
-    <div class="chatAndInputContainer">
-        <div id="chat-container">
-            <div id="messagesContainer"></div>
-        </div>
-        <div id="input-container">
-            <input type="text" id="chatInput" class="lobby game-running game-over"
-                   placeholder="Type a message...">
-            <button class="server-communication-button panel-button lobby game-running game-over" id="sendButton">Send
+    <audio id="elevator" autoplay loop>
+        <source src="pictures/stayCoolBuddy.mp3" type="audio/mpeg">
+        Your Browser doesn't want to play audio....
+    </audio>
+    <aside class="panel-left lobby game-running game-over">
+        <div>
+            <button id="startGameButton" class="server-communication-button panel-button lobby">Start Game</button>
+            <button id="rollDiceButton" class="server-communication-button game-running">
+                <img src="pictures/dieBl.png" alt="Roll Dice">
             </button>
+            <button id="openRulesPopupIngameButton" class="server-communication-button game-running panel-button">Read
+                the rules!</button>
+            <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave
+                Game</button>
+            <button id="muteMusic" class="server-communication-button panel-button game-running">Mute</button>
+            <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
         </div>
-    </div>
-</aside>
+        <div class="player-panel-container">
+            <div id="player-panel1" class="player-panel" style="display: none;">
+                <div class="player-panel-picture">
+                    <img src="pictures/figureYellow.png" alt="Image 1">
+                </div>
+                <div class="player-panel-name">
+                    <h2>Text for Panel 1</h2>
+                </div>
+            </div>
+            <div id="player-panel2" class="player-panel" style="display: none;">
+                <div class="player-panel-picture">
+                    <img src="pictures/figureBlue.png" alt="Image 2">
+                </div>
+                <div class="player-panel-name">
+                    <h2>Text for panel 2</h2>
+                </div>
+            </div>
+            <div id="player-panel3" class="player-panel" style="display: none;">
+                <div class="player-panel-picture">
+                    <img src="pictures/figureRed.png" alt="Image 3">
+                </div>
+                <div class="player-panel-name">
+                    <h2>Text for panel 3</h2>
+                </div>
+            </div>
+            <div id="player-panel4" class="player-panel" style="display: none;">
+                <div class="player-panel-picture">
+                    <img src="pictures/figureRed.png" alt="Image 3">
+                </div>
+                <div class="player-panel-name">
+                    <h2>Text for panel 3</h2>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button id="copyGameIdButton" class="server-communication-button panel-button lobby">Copy Game ID</button>
+            <p id="copyNotification" style="display:none;">Game ID copied to clipboard!</p>
+        </div>
+        <div class="chatAndInputContainer">
+            <div id="chat-container">
+                <div id="messagesContainer"></div>
+            </div>
+            <div id="input-container">
+                <input type="text" id="chatInput" class="lobby game-running game-over" placeholder="Type a message...">
+                <button class="server-communication-button panel-button lobby game-running game-over"
+                    id="sendButton">Send
+                </button>
+            </div>
+        </div>
+    </aside>
 
-<div class="main-area" id="main-area">
-    <br>
-    <br>
+    <div class="main-area" id="main-area">
+        <br>
+        <br>
 
         <!-- Begin Join Game Popup-->
         <div class="popup" id="joinGamePopup">
@@ -117,83 +124,92 @@
                 </div>
             </div>
         </div>
-    <!-- Begin Rules Popup-->
-    <div class="popup" id="rulesPopup">
-        <div class="popup-content">
-            <h1>Game Rules - Stay Cool Buddy!</h1>
-            <details>
-                <summary>Goal of the game</summary>
-                <ul>
-                    <li>Ready, set, go! The aim of this thrilling game is to be the first to get all four of your pieces
-                        from the starting square to the finish line.
-                    </li>
-                </ul>
-            </details>
-            <details>
-                <summary>Setting up the fun</summary>
-                <ul>
-                    <li>Now for the fun part! Each player gets to choose a colour, and then the playing pieces are
-                        placed at the start of the game.
-                    </li>
-                    <li>Once all players are ready to go, it's time for the game creator to get the party started!</li>
-                    <li>A random player gets to start, and then the next player has to stay cool.</li>
-                </ul>
-            </details>
-            <details>
-                <summary>Coming out of the house</summary>
-                <ul>
-                    <li>When all the figures are at home, you can roll the dice three times!</li>
-                    <li>A player must roll a 6 to move one of his figures from the starting square to the starting
-                        square in his colour (the first square of the circuit).
-                    </li>
-                    <li>If a 6 is rolled, a piece from home must be placed on the playing field.</li>
-                    <li>The starting field must be cleared immediately if possible.</li>
-                    <li>If a player no longer has any pieces in the starting square, he may also move on with the pieces
-                        on the playing field.
-                    </li>
-                </ul>
-            </details>
-            <details>
-                <summary>Moving the token</summary>
-                <ul>
-                    <li>Once the game begins, the player gets to move their figure in a clockwise direction, with the
-                        number of dice rolled determining how far they go!
-                    </li>
-                    <li>If the player rolls a 6, he may roll the dice again.</li>
-                    <li>If a piece lands on a square occupied by an opponent's piece, the opponent's piece is returned
-                        to its home ("beat").
-                    </li>
-                    <li>You can't capture your own pieces, and you can't place them on squares with your own pieces.
-                    </li>
-                </ul>
-            </details>
-            <details>
-                <summary>Just pull to the finish and you'll be done!</summary>
-                <ul>
-                    <li>Once a piece has made its way around the playing field, it reaches the finish line! This is
-                        where it's unbeatable!
-                    </li>
-                    <li>Let's say you've got a figure three spaces in front of the target area. If you roll a 4, that
-                        figure can move to the target and you've won!
-                    </li>
-                    <li>Once all the pawns are either at home or at the finish, it's time to roll the dice again!</li>
-                </ul>
-            </details>
-            <details>
-                <summary>The end is near</summary>
-                <ul>
-                    <li>The game ends for each player when all four figures in their own colour have reached the finish
-                        area. Congratulations to the winner!
-                    </li>
-                    <li>The remaining players are all in it to win! Whoever is last on the field has lost, but the rest
-                        of the players are going all out to avoid that fate.
-                    </li>
-                </ul>
-            </details>
-            <button id="closeRulePopupButton" class="server-communication-button popup-button">Close</button>
+        <!-- Begin Rules Popup-->
+        <div class="popup" id="rulesPopup">
+            <div class="popup-content">
+                <h1>Game Rules - Stay Cool Buddy!</h1>
+                <details>
+                    <summary>Goal of the game</summary>
+                    <ul>
+                        <li>Ready, set, go! The aim of this thrilling game is to be the first to get all four of your
+                            pieces
+                            from the starting square to the finish line.
+                        </li>
+                    </ul>
+                </details>
+                <details>
+                    <summary>Setting up the fun</summary>
+                    <ul>
+                        <li>Now for the fun part! Each player gets to choose a colour, and then the playing pieces are
+                            placed at the start of the game.
+                        </li>
+                        <li>Once all players are ready to go, it's time for the game creator to get the party started!
+                        </li>
+                        <li>A random player gets to start, and then the next player has to stay cool.</li>
+                    </ul>
+                </details>
+                <details>
+                    <summary>Coming out of the house</summary>
+                    <ul>
+                        <li>When all the figures are at home, you can roll the dice three times!</li>
+                        <li>A player must roll a 6 to move one of his figures from the starting square to the starting
+                            square in his colour (the first square of the circuit).
+                        </li>
+                        <li>If a 6 is rolled, a piece from home must be placed on the playing field.</li>
+                        <li>The starting field must be cleared immediately if possible.</li>
+                        <li>If a player no longer has any pieces in the starting square, he may also move on with the
+                            pieces
+                            on the playing field.
+                        </li>
+                    </ul>
+                </details>
+                <details>
+                    <summary>Moving the token</summary>
+                    <ul>
+                        <li>Once the game begins, the player gets to move their figure in a clockwise direction, with
+                            the
+                            number of dice rolled determining how far they go!
+                        </li>
+                        <li>If the player rolls a 6, he may roll the dice again.</li>
+                        <li>If a piece lands on a square occupied by an opponent's piece, the opponent's piece is
+                            returned
+                            to its home ("beat").
+                        </li>
+                        <li>You can't capture your own pieces, and you can't place them on squares with your own pieces.
+                        </li>
+                    </ul>
+                </details>
+                <details>
+                    <summary>Just pull to the finish and you'll be done!</summary>
+                    <ul>
+                        <li>Once a piece has made its way around the playing field, it reaches the finish line! This is
+                            where it's unbeatable!
+                        </li>
+                        <li>Let's say you've got a figure three spaces in front of the target area. If you roll a 4,
+                            that
+                            figure can move to the target and you've won!
+                        </li>
+                        <li>Once all the pawns are either at home or at the finish, it's time to roll the dice again!
+                        </li>
+                    </ul>
+                </details>
+                <details>
+                    <summary>The end is near</summary>
+                    <ul>
+                        <li>The game ends for each player when all four figures in their own colour have reached the
+                            finish
+                            area. Congratulations to the winner!
+                        </li>
+                        <li>The remaining players are all in it to win! Whoever is last on the field has lost, but the
+                            rest
+                            of the players are going all out to avoid that fate.
+                        </li>
+                    </ul>
+                </details>
+                <button id="closeRulePopupButton" class="server-communication-button popup-button">Close</button>
+            </div>
         </div>
-    </div>
-    <!-- End Rules Popup-->
+        <!-- End Rules Popup-->
 
     <!-- Begin Succesfull Join Popup-->
     <div class="popup" id="succesfullJoinPopup">
@@ -261,81 +277,83 @@
     </div>
 
 
-    <!-- Begin Create Game Popup-->
-    <div class="popup" id="createGamePopup">
-        <div class="popup-content">
-            <h2>Create a new game</h2>
-            <form id="createGameForm">
-                <h3>Enter your Name</h3>
-                <input type="text" id="adminNameInput" placeholder="Enter name">
-                <h3>Select your Color</h3>
-                <label>
-                    <input type="radio" name="playerColor" value="blue">
-                    <img src="pictures/figureBlue.png" alt="Blue">
-                </label>
-                <label>
-                    <input type="radio" name="playerColor" value="green" checked>
-                    <img src="./pictures/figureGreen.png" alt="Green">
-                </label>
-                <label>
-                    <input type="radio" name="playerColor" value="red">
-                    <img src="./pictures/figureRed.png" alt="Red">
-                </label>
-                <label>
-                    <input type="radio" name="playerColor" value="yellow">
-                    <img src="./pictures/figureYellow.png" alt="Yellow">
-                </label>
-            </form>
-            <h3>Select your Die Skin</h3>
-            <form>
-                <label>
-                    <input type="radio" name="dieOptionServer" value="dieBl">
-                    <img src="./pictures/dieBl.png" alt="Blue Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionServer" value="dieBlck" checked>
-                    <img src="./pictures/dieBlck.png" alt="Black Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionServer" value="diePurp">
-                    <img src="./pictures/diePurp.png" alt="Purple Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionServer" value="dieGrn">
-                    <img src="./pictures/dieGrn.png" alt="Green Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionServer" value="dieYlw">
-                    <img src="./pictures/dieYlw.png" alt="Yellow Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionServer" value="dieTurq">
-                    <img src="./pictures/dieTurq.png" alt="Turquoise Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionServer" value="dieRed">
-                    <img src="./pictures/dieRed.png" alt="Red Die">
-                </label>
-            </form>
-            <h2 id="createGameErrorMessage" class="errorMessage"></h2>
-            <div class="button-container">
-                <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
-                <button id="closeCreateGamePopupButton" class="server-communication-button popup-button">Back</button>
+        <!-- Begin Create Game Popup-->
+        <div class="popup" id="createGamePopup">
+            <div class="popup-content">
+                <h2>Create a new game</h2>
+                <form>
+                    <h3>Enter your Name</h3>
+                    <input type="text" id="adminNameInput" placeholder="Enter name">
+                    <h3>Select your Color</h3>
+                    <label>
+                        <input type="radio" name="playerColor" value="blue">
+                        <img src="pictures/figureBlue.png" alt="Blue">
+                    </label>
+                    <label>
+                        <input type="radio" name="playerColor" value="green" checked>
+                        <img src="./pictures/figureGreen.png" alt="Green">
+                    </label>
+                    <label>
+                        <input type="radio" name="playerColor" value="red">
+                        <img src="./pictures/figureRed.png" alt="Red">
+                    </label>
+                    <label>
+                        <input type="radio" name="playerColor" value="yellow">
+                        <img src="./pictures/figureYellow.png" alt="Yellow">
+                    </label>
+                </form>
+                <h3>Select your Die Skin</h3>
+                <form>
+                    <label>
+                        <input type="radio" name="dieOptionServer" value="dieBl">
+                        <img src="./pictures/dieBl.png" alt="Blue Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionServer" value="dieBlck" checked>
+                        <img src="./pictures/dieBlck.png" alt="Black Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionServer" value="diePurp">
+                        <img src="./pictures/diePurp.png" alt="Purple Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionServer" value="dieGrn">
+                        <img src="./pictures/dieGrn.png" alt="Green Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionServer" value="dieYlw">
+                        <img src="./pictures/dieYlw.png" alt="Yellow Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionServer" value="dieTurq">
+                        <img src="./pictures/dieTurq.png" alt="Turquoise Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionServer" value="dieRed">
+                        <img src="./pictures/dieRed.png" alt="Red Die">
+                    </label>
+                </form>
+                <h2 id="createGameErrorMessage" class="errorMessage"></h2>
+                <div class="button-container">
+                    <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
+                    <button id="closeCreateGamePopupButton"
+                        class="server-communication-button popup-button">Back</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- End Create Game Popup-->
 
-    <div class="game-board lobby game-running" id="board">
-        <canvas id="myCanvas" width="1100" height="1100"></canvas>
-    </div>
-    <div class="landing-page pre-game"><img class='img1' src="./pictures/background_landing_page.png"
-                                            alt="Logo of 'Stay cool, buddy!'">
-    </div>
 
-    <br>
-</div>
+        <div class="game-board lobby game-running" id="board">
+            <canvas id="myCanvas" width="1100" height="1100"></canvas>
+        </div>
+        <div class="landing-page pre-game"><img class='img1' src="./pictures/background_landing_page.png"
+                alt="Logo of 'Stay cool, buddy!'">
+        </div>
+
+        <br>
+    </div>
 </body>
 
 </html>
