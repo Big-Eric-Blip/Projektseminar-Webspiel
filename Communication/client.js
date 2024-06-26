@@ -172,7 +172,6 @@ function openCreateGamePopup() {
 }
 
 function closeRulePopup() {
-
     document.getElementById('rulesPopup').style.display = 'none';
 }
 

@@ -145,13 +145,26 @@ function checkClientMessage(message, playerId) {
                                     type: "newPlayer",
                                     name: message.playerName,
                                     color: message.playerColor,
-                                    playerId : message.playerId
+                                    playerId: message.playerId
                                 })
-                                return { type: 'pickedColor', message: `Successfully picked color!`, playerColor: message.playerColor, playerName: message.playerName}
+                                return {
+                                    type: 'pickedColor',
+                                    message: `Successfully picked color!`,
+                                    playerColor: message.playerColor,
+                                    playerName: message.playerName
+                                }
                             } else if (takenColors.includes(message.playerColor)) {
-                                return { type: 'colorTaken', message: `The color ${message.playerColor} is already taken.`, color: message.playerColor }
+                                return {
+                                    type: 'colorTaken',
+                                    message: `The color ${message.playerColor} is already taken.`,
+                                    color: message.playerColor
+                                }
                             } else if (takenNames.includes(message.playerName)) {
-                                return { type: 'nameTaken', message: `The name ${message.playerName} is already taken.`, name: message.playerName }
+                                return {
+                                    type: 'nameTaken',
+                                    message: `The name ${message.playerName} is already taken.`,
+                                    name: message.playerName
+                                }
                             }
                         }
                     }
@@ -165,19 +178,21 @@ function checkClientMessage(message, playerId) {
                 if (games[i].gameId === message.gameId) {
                     const leavingPlayer = games[i].removePlayer(playerId);
                     // if the game is empty delete the game
-                    if (games[i].player.length === 0 && games[i].winner.length ===0) {
+                    if (games[i].player.length === 0 && games[i].winner.length === 0) {
                         games.splice(i, 1);
                         // TODO else if (games[i].player.length === 1) trigger winning screen
                     } else {
-                        games[i].calculateAvailableGameActions(board)
+                        if (games[i].status === "GAME_RUNNING") {
+                            games[i].calculateAvailableGameActions(board)
+                            let info = leavingPlayer.name + " (" + leavingPlayer.color + " player) left the game."
+                            sendUpdateToAllPlayers(games[i], info)
+                        }
                         sendMessageToAllPlayers(games[i], {
                             type: 'aPlayerLeftGame',
                             colorOfLeavingPlayer: leavingPlayer.color,
                             nameOfLeavingPlayer: leavingPlayer.name,
                             numberOfPlayers: games[i].player.length
                         });
-                        let info = leavingPlayer.name + " (" + leavingPlayer.color + " player) left the game."
-                        sendUpdateToAllPlayers(games[i], info)
                     }
                     return {
                         type: 'leftGame',
@@ -249,10 +264,10 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     game.enterGoal(message.tokenId, message.fieldId)
-                let aPlayer = game.getPlayerById(message.playerId);
-                let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
+                    let aPlayer = game.getPlayerById(message.playerId);
+                    let info = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal!"
                     // if game is won fully
-                    if(game.areAllPlayersWinners()) {
+                    if (game.areAllPlayersWinners()) {
                         let winners = JSON.stringify(game.getWinners())
                         let finalInfo = aPlayer.name + " (" + aPlayer.color + " player) moved into the goal. The game is now over!"
                         sendMessageToAllPlayers(game, {
@@ -264,12 +279,12 @@ function checkClientMessage(message, playerId) {
                             winners: winners
                         })
                         return
-                    // If game is won partially
+                        // If game is won partially
                     } else if (game.isPlayerWinner(game.getPlayerById(message.playerId))) {
                         info = aPlayer.name + " (" + aPlayer.color + " player) finished the game!"
                     }
-                game.calculateAvailableGameActions(board)
-                sendUpdateToAllPlayers(game, info);
+                    game.calculateAvailableGameActions(board)
+                    sendUpdateToAllPlayers(game, info);
                 }
             }
             break
@@ -307,7 +322,7 @@ function checkClientMessage(message, playerId) {
             break
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
-            return { type: 'message', message: `Server: Sorry, we are out of ${message.type}.` };
+            return {type: 'message', message: `Server: Sorry, we are out of ${message.type}.`};
     }
 }
 
