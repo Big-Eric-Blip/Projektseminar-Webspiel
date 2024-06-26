@@ -973,8 +973,21 @@ function onCanvasClick(event) {
  * @return {void}
  */
 function addMessageToChat(message, type = 'server', playerColor = undefined) {
+    message = breakLongWordsInMessages(message);
     messages.push({text: message, type, playerColor});
     displayMessages();
+}
+
+/**
+ * Breaks very long messages into smaller ones to make the chat more readable
+ * */
+function breakLongWordsInMessages(text) {
+    return text.split(' ').map(word => {
+        if (word.length > 10) {
+            return word.match(/.{1,13}/g).join(' ');
+        }
+        return word;
+    }).join(' ');
 }
 
 /**
