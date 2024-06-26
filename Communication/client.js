@@ -339,8 +339,10 @@ function setGameRunning() {
 function endGame() {
     displayLeaveGameMessage()
     currentGame.gameState = "GAME_OVER"
+    const lobbyElements = document.querySelectorAll('.lobby')
     const gameRunningElements = document.querySelectorAll('.game-running')
     const gameOverElements = document.querySelectorAll('.game-over')
+    lobbyElements.forEach((element) => element.style.display = 'none')
     gameRunningElements.forEach((element) => element.style.display = 'none')
     gameOverElements.forEach((element) => element.style.display = 'block')
 }
