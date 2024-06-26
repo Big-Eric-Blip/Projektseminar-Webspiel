@@ -974,6 +974,9 @@ function onCanvasClick(event) {
  * @return {void}
  */
 function addMessageToChat(message, type = 'server', playerColor = undefined) {
+    if (message === "") {
+        return
+    }
     message = breakLongWordsInMessages(message);
     messages.push({text: message, type, playerColor});
     displayMessages();
