@@ -1,6 +1,8 @@
 :root {
     --button-color: crimson;
+    --options-button-color: lightgray;
     --button-hover-over-color: #9d0b28;
+    --options-button-hover-over-color: #6b6b6b;
 }
 
 body {
@@ -56,6 +58,18 @@ summary::marker {
     background-color: lightgray;
 }
 
+.panel-right {
+    flex-direction: column;
+    justify-content: space-between;
+    float: right;
+    width: 15vw;
+    min-width: 150px;
+    height: 100%;
+    padding: 7px;
+    margin-left: 10px;
+    background-color: transparent;
+}
+
 
 #myCanvas {
     border-style: solid;
@@ -91,6 +105,8 @@ summary::marker {
     font-size: large;
     width: auto;
     padding: 10px 20px;
+    margin-bottom: 10px;
+    padding-top: 10px;
     margin-left: 30px;
     margin-right: 30px;
     cursor: pointer;
@@ -98,6 +114,31 @@ summary::marker {
 
 .red-button:hover {
     background-color: var(--button-hover-over-color);
+}
+
+.options-button {
+    color: whitesmoke;
+    background-color: var(--options-button-color);
+    border: none;
+    border-radius: 10px;
+    font-size: large;
+    width: auto;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    margin-right: 30px;
+    cursor: pointer;
+}
+
+.die-btn-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.options-button:hover {
+    background-color: var(--options-button-hover-over-color);
 }
 
 .popup-button {
@@ -237,6 +278,7 @@ summary {
     height: auto;
     max-height: 150px;
     padding: 8px 20px;
+    justify-content: center;
 }
 
         .blinking-border {
@@ -318,6 +360,8 @@ input[type="radio"]:checked + img {
 
 .player-panel-container {
     display: flex;
+    margin-top: 10px;
+    margin-bottom: 10px;
     flex-direction: column;
     gap: 10px; 
     align-items: stretch;

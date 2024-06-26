@@ -19,6 +19,7 @@ let players = [];
 let dieColor;
 let socket = null;
 let isSocketOpen = false;
+let mute = false;
 
 function initWebSocketConnection() {
     socket = new WebSocket(url);
@@ -160,16 +161,16 @@ function muteMusic() {
     const audioElement = document.getElementById('elevator');
     const muteButton = document.getElementById('muteMusic');
     
-        muteButton.addEventListener('click', () => {
-            if (audioElement.muted) {
-                audioElement.muted = false;
-                muteButton.textContent = 'Mute';
-            } else {
-                audioElement.muted = true;
-                muteButton.textContent = 'Unmute';
-            }
-        });
-}
+    if (audioElement.muted) {
+        audioElement.muted = false;
+        muteButton.textContent = 'Mute';}
+        else{audioElement.muted = true;
+            muteButton.textContent = 'Unmute';}
+
+    }
+
+
+
 
 function openJoinGamePopup() {
     document.getElementById('joinGamePopup').style.display = 'block';
@@ -300,6 +301,7 @@ function makeTextBlink(elementId) {
 }
 
 function returnToLandingPage() {
+    muteMusic()
     setGameState('PRE_GAME')
 }
 

@@ -32,18 +32,25 @@
         <source src="pictures/stayCoolBuddy.mp3" type="audio/mpeg">
         Your Browser doesn't want to play audio....
     </audio>
+
+    <aside class="panel-right lobby game-running game-over">
+        <div>
+            <button id="leaveGameButton" class="server-communication-button options-button">Leave Game</button>
+            <button id="muteMusic" class="server-communication-button options-button">Mute</button>
+            <button id="openRulesPopupIngameButton" class="server-communication-button options-button">Read
+                the rules!</button>
+        </div>
+    </aside>
+
     <aside class="panel-left lobby game-running game-over">
         <div>
             <button id="startGameButton" class="server-communication-button panel-button lobby">Start Game</button>
+            <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
+        </div>
+            <div class="die-btn-container">
             <button id="rollDiceButton" class="server-communication-button game-running">
                 <img src="pictures/dieBl.png" alt="Roll Dice">
             </button>
-            <button id="openRulesPopupIngameButton" class="server-communication-button game-running panel-button">Read
-                the rules!</button>
-            <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave
-                Game</button>
-            <button id="muteMusic" class="server-communication-button panel-button game-running">Mute</button>
-            <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
         </div>
         <div class="player-panel-container">
             <div id="player-panel1" class="player-panel" style="display: none;">
