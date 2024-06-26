@@ -75,9 +75,7 @@ class Game {
         let numberOfPlayers = this.player.length
         let turn = Math.floor(Math.random() * (numberOfPlayers)) + 1;
         this.player[turn - 1].setPlayersTurn(true)
-        console.log("Player " + this.player[turn - 1].getPlayerId() + " has player's turn set to TRUE")
     }
-
 
     /**
      * Helper function for calculateGameAction
@@ -516,6 +514,10 @@ class Game {
         //send enemy token back to house
         this.sendTokenBackToHouse(enemyToken, board)
         token.fieldId = contestedField
+        if(token.inHouse === true) {
+            token.inHouse = false
+            token.inGame = true
+        }
         token.updateTraversedDistance(dieValue)
         if (dieValue < 6) {
             this.updatePlayersTurn()
