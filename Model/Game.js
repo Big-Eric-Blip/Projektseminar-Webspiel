@@ -57,6 +57,11 @@ class Game {
             }
         }
     }
+
+    /**
+     * Gathers the infos the client needs for the winner pop up
+     * @return {*[]} an array of objects containing winner name and move counter
+     */
     getWinners() {
         let winners = []
         for(let i = 0; i < this.winner.length; i++) {
@@ -170,12 +175,12 @@ class Game {
      * @param {Board} board the board the comparison applies to
      * @return {boolean} true if no further move is possible, else return false
      */
-    isFurtherMovingImpossible(token, board){
+    isFurtherMovingPossible(token, board){
         let currentFieldIndex = Number.parseInt(token.fieldId.substring(2)) -1
         if (currentFieldIndex === 3) {
             return true
         } else {
-            return !this.isGoalPathClear(board,1,currentFieldIndex)
+            return this.isGoalPathClear(board,1,currentFieldIndex)
         }
     }
 
@@ -225,7 +230,7 @@ class Game {
                 this.playersTokens.push(this.tokens[i])
                 if (this.tokens[i].inHouse === true) {
                     numberOfTokensInHouse++
-                } else if (this.tokens[i].inGoal === true && this.isFurtherMovingImpossible(this.tokens[i],board)) {
+                } else if (this.tokens[i].inGoal === true && !this.isFurtherMovingPossible(this.tokens[i],board)) {
                     numberOfTokensInGoal++
                 }
             }

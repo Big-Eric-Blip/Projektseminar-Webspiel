@@ -538,7 +538,7 @@ function rollDice() {
         sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
     } else {
         //send message to the chat
-        addMessageToChat("It's not your turn")
+        addMessageToChat("It's not your turn to roll the dice")
     }
 
 }
@@ -725,7 +725,7 @@ function moveToken(tokenId) {
     if (validatedAction) {
         chooseGameAction(validatedAction, tokenId)
     } else {
-        addMessageToChat("It's not your turn to move.")
+        addMessageToChat("This token cannot be moved.")
     }
 }
 
@@ -763,7 +763,7 @@ function handleGameUpdate(message) {
             dieAnimation(message.dieValue)
         }
         if (isGameActionNone()) {
-            addMessageToChat("You have no available game action. It's the next players Turn.")
+            addMessageToChat("You have no available game action. It's the next player's turn.")
         } else {
             addMessageToChat(message.message)
             tokenToRenderer(tokens);
