@@ -278,6 +278,10 @@ function audioOn() {
 
 }
 
+window.onbeforeunload = function() {
+    return "If you close this window, you will leave the game. Are you sure?";
+ };
+
 function makeTextBlink(elementId) {
     const element = document.getElementById(elementId);
     let blinkCount = 0;
