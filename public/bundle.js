@@ -20,6 +20,7 @@ let players = [];
 let dieColor;
 let socket = null;
 let isSocketOpen = false;
+let mute = false;
 
 function initWebSocketConnection() {
     socket = new WebSocket(url);
@@ -99,7 +100,7 @@ function sendMessage(message) {
         // Wait for the socket to open before sending the message
         socket.addEventListener('open', function () {
             socket.send(JSON.stringify(message));
-        }, { once: true });
+        }, {once: true});
     } else {
         socket.send(JSON.stringify(message));
     }
@@ -125,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //Succesfull Join
         startJoinedGameButton: startJoinedGame,
         cancelButton: cancel,
-        muteMusic: muteMusic,
+        muteMusicButton: muteMusic,
 
         //Lobby
         startGameButton: startGame,
@@ -156,18 +157,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function muteMusic() {
     const audioElement = document.getElementById('elevator');
-    const muteButton = document.getElementById('muteMusic');
+    const muteButton = document.getElementById('muteMusicButton');
     
-        muteButton.addEventListener('click', () => {
-            if (audioElement.muted) {
-                audioElement.muted = false;
-                muteButton.textContent = 'Mute';
-            } else {
-                audioElement.muted = true;
-                muteButton.textContent = 'Unmute';
-            }
-        });
-}
+    if (audioElement.muted) {
+        audioElement.muted = false;
+        muteButton.textContent = 'Mute';}
+        else{audioElement.muted = true;
+            muteButton.textContent = 'Unmute';}
+
+    }
+
+
+
 
 function openJoinGamePopup() {
     document.getElementById('joinGamePopup').style.display = 'block';
@@ -176,7 +177,8 @@ function openJoinGamePopup() {
 function closeJoinGamePopup() {
     document.getElementById('joinGamePopup').style.display = 'none';
 }
-function closeGameOver () {
+
+function closeGameOver() {
     document.getElementById('gameOverPopup').style.display = 'none';
 }
 
@@ -238,7 +240,7 @@ function createGame() {
     const playerName = document.getElementById('adminNameInput').value;
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
     changeRollDiceImage("./pictures/" + dieColor + ".png")
-    
+
 
     if (playerName != '') {
         setGameState("LOBBY")
@@ -250,7 +252,7 @@ function createGame() {
             playerName: playerName,
             playerColor: selectedColor
         });
-        
+
     } else {
         document.getElementById('createGameErrorMessage').textContent = 'Do not forget to Enter a Name!'
         makeTextBlink('createGameErrorMessage')
@@ -267,8 +269,9 @@ function changeRollDiceImage(newSrc) {
         rollDiceButtonImg.src = newSrc;
     }
 }
+
 function audioOn() {
-    const muteMusic = document.getElementById('muteMusic');
+    const muteMusic = document.getElementById('muteMusicButton');
     const elevator = document.getElementById('elevator');
     elevator.play();
     muteMusic.textContent = 'Mute';
@@ -295,6 +298,7 @@ function makeTextBlink(elementId) {
 }
 
 function returnToLandingPage() {
+    muteMusic()
     setGameState('PRE_GAME')
 }
 
@@ -312,15 +316,16 @@ function leaveGame() {
     if (currentGame.playerColor == 'blue') {
         document.getElementById('blueOption').querySelector('input').disabled = false
         document.getElementById('blueImage').src = "pictures/figureBlue.png"
-    } else if(currentGame.playerColor == 'yellow') {
+    } else if (currentGame.playerColor == 'yellow') {
         document.getElementById('yellowOption').querySelector('input').disabled = false
         document.getElementById('yellowImage').src = "pictures/figureYellow.png"
-    } else if(currentGame.playerColor == 'green') {
+    } else if (currentGame.playerColor == 'green') {
         document.getElementById('greenOption').querySelector('input').disabled = false
         document.getElementById('greenImage').src = "pictures/figureGreen.png"
-    }else if(currentGame.playerColor == 'red') {
+    } else if (currentGame.playerColor == 'red') {
         document.getElementById('redOption').querySelector('input').disabled = false
-        document.getElementById('redImage').src = "pictures/figureRed.png"}
+        document.getElementById('redImage').src = "pictures/figureRed.png"
+    }
     setGameState('GAME_OVER')
     sendMessage({
         type: 'leaveGame',
@@ -357,7 +362,7 @@ function setPreGame() {
     document.getElementById('body').style.backgroundColor = '#f7ca4d'
     document.getElementById('body').style.marginTop = '100px'
     document.getElementById('main-area').style.marginLeft = '0'
-    
+
 }
 
 function setLobby() {
@@ -406,7 +411,7 @@ function handleCreateGameResponse(response) {
     currentGame.playerId = response.playerId;
     currentGame.playerName = response.playerName;
     currentGame.playerColor = response.playerColor;
-    players.push({ name: response.playerName, color: response.playerColor, playerId: response.playerId })
+    players.push({name: response.playerName, color: response.playerColor, playerId: response.playerId})
     renderPlayerPanels()
 
     addMessageToChat("Nice. You've created a game. Send the game id to your friends to join your game: "
@@ -456,7 +461,7 @@ function handleNameTaken(response) {
 
 function handleJoinGameResponse(response) {
     if (response.playerId) {
-        
+
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
         const successfullJoinForm = document.getElementById('successfullJoinForm')
@@ -555,23 +560,23 @@ function startJoinedGame() {
 }
 
 function handleNewPlayer(response) {
-    players.push({ name: response.name, color: response.color, playerId: response.playerId })
+    players.push({name: response.name, color: response.color, playerId: response.playerId})
     renderPlayerPanels();
-    if(currentGame.playerColor==''){
-        if (response.color=="blue") {
+    if (currentGame.playerColor == '') {
+        if (response.color == "blue") {
             document.getElementById('blueOption').querySelector('input').disabled = true
             document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
-        }else if (response.color=="yellow") {
+        } else if (response.color == "yellow") {
             document.getElementById('yellowOption').querySelector('input').disabled = true
             document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
-        }else if (response.color=="green") {
+        } else if (response.color == "green") {
             document.getElementById('greenOption').querySelector('input').disabled = true
             document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
-        }else if (response.color=="red") {
+        } else if (response.color == "red") {
             document.getElementById('redOption').querySelector('input').disabled = true
             document.getElementById('redImage').src = "pictures/figureRedCross.png"
         }
-        
+
     }
 }
 
@@ -590,7 +595,7 @@ function handlePickedColor(response) {
 function rollDice() {
     //check if action allowed
     if (isPlayerEligibleForGameAction('ROLL_DIE')) {
-        sendMessage({ type: 'rollDice', gameId: currentGame.gameId });
+        sendMessage({type: 'rollDice', gameId: currentGame.gameId});
     } else {
         //send message to the chat
         addMessageToChat("It's not your turn to roll the dice")
@@ -688,15 +693,15 @@ function renderPlayersTurn() {
 
     for (let i = 0; i < players.length; i++) {
         if (players[i].playerId === availableGameActions[0].playerId) {
-            if(players[i].color === "green") {
-            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgreen";
-        }else if(players[i].color === "red") {
-            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightcoral";
-        }else if(players[i].color === "blue") {
-            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightblue";
-        }else if(players[i].color === "yellow") {
-            document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgoldenrodyellow";
-        }
+            if (players[i].color === "green") {
+                document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgreen";
+            } else if (players[i].color === "red") {
+                document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightcoral";
+            } else if (players[i].color === "blue") {
+                document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightblue";
+            } else if (players[i].color === "yellow") {
+                document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "lightgoldenrodyellow";
+            }
             if (players[i].name === currentGame.playerName) {
                 startBlinking()
             }
@@ -747,7 +752,6 @@ function renderPlayerPanels() {
         panel.style.display = 'flex';
     }
 }
-
 
 
 function dieAnimation(final) {
@@ -822,6 +826,7 @@ function handleGameUpdate(message) {
         }
     }
 }
+
 function displayGameOver(winners) {
     //document.getElementById('gameOverPopup').style.display = 'block';        
     let gameOverPopup = document.getElementById('gameOverPopup');
@@ -832,7 +837,7 @@ function displayGameOver(winners) {
         winnerMessage.textContent = `Player ${winner.playerName} needed ${winner.moveCounter} moves to reach the goal.`;
         winnerMessage.style.fontSize = "1.2 em";
         winnersList.appendChild(winnerMessage);
-            
+
     });
     gameOverPopup.style.display = "block"
 }
@@ -917,7 +922,7 @@ function onCanvasClick(event) {
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
 
-    const clickPoint = {x: clickX, y: clickY };
+    const clickPoint = {x: clickX, y: clickY};
 
     renderer.tokens.forEach(token => {
         // Die Position des Tokens entsprechend der aktuellen Skalierung berücksichtigen
