@@ -729,6 +729,7 @@ function handleGameUpdate(message) {
     } else {
         let gameActions = JSON.parse(message.gameActions)
         updateGameActions(gameActions)
+        renderPlayersTurn()
         // if the server calculated that you have no gameActions
         if (message.dieValue) {
             dieAnimation(message.dieValue)

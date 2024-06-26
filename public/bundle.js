@@ -714,24 +714,6 @@ function handleGameUpdate(message) {
     }
     //update available game actions
     let tokens = JSON.parse(message.tokens)
-<<<<<<< HEAD
-    let gameActions = JSON.parse(message.gameActions)
-    updateGameActions(gameActions)
-    renderPlayersTurn()
-    // if the server calculated that you have no gameActions
-    console.log("AvailableGameActions: ", availableGameActions)
-    if (message.dieValue) {
-        dieAnimation(message.dieValue)
-    }
-    if (isGameActionNone()) {
-        console.log("You have no available game action. It's the next players Turn.")
-
-        // this will not be shown because it will be instantly overwritten because of the next players turn
-        // TODO if chat like function implemented add to chat otherwise delete these comments
-        // document.getElementById("inGameMessage").innerHTML =
-        //     "You have no available game action. It's the next players Turn."
-    } else {
-=======
     if(message.winners) {
         tokenToRenderer(tokens);
         let winners = JSON.parse(message.winners)
@@ -743,12 +725,12 @@ function handleGameUpdate(message) {
         console.log(currentGame.winners)
         //TODO include popup with game over screen
         //TODO remove the following two lines, they are only for testing
->>>>>>> origin/main
         document.getElementById("inGameMessage").innerHTML = message.message
         tokenToRenderer(tokens);
     } else {
         let gameActions = JSON.parse(message.gameActions)
         updateGameActions(gameActions)
+        renderPlayersTurn()
         // if the server calculated that you have no gameActions
         if (message.dieValue) {
             dieAnimation(message.dieValue)
