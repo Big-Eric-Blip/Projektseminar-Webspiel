@@ -2,14 +2,14 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
 const Game = require('../Model/Game');
 const Player = require('../Model/Player');
 const Board = require('../Model/Board');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({server});
 const clients = new Map();
 let games = [];
 let board = new Board(4, 4);
@@ -133,51 +133,68 @@ function checkClientMessage(message, playerId) {
                             takenColors.push(player.color)
                             takenNames.push(player.name)
                         }
-                    }
-                    console.log("takenColors:" + takenColors)
-                    for (const player of game.player) {
-                        if (player.playerId === message.playerId && !takenColors.includes(message.playerColor)) {
-                            player.color = message.playerColor
-                            addTokensOnPlayerJoin(message, playerId, game);
-                            player.name = message.playerName
-                            takenColors.push(message.playerColor)
-                            sendMessageToAllPlayers(game, {
-                                type: "newPlayer",
-                                name: message.playerName,
-                                color: message.playerColor,
-                                playerId: message.playerId
-                            })
-                            return { type: 'pickedColor', message: `Successfully picked color!`, playerColor: message.playerColor, playerName: message.playerName }
-                        } else if (takenColors.includes(message.playerColor)) {
-                            return { type: 'colorTaken', message: `The color ${message.playerColor} is already taken.`, color: message.playerColor }
-                        } else if (takenNames.includes(message.playerName)) {
-                            return { type: 'nameTaken', message: `The name ${message.playerName} is already taken.`, name: message.playerName }
+                }
+
+                console.log("takenColors:" + takenColors)
+                for (const player of game.player) {
+                    if (player.playerId === message.playerId && !takenColors.includes(message.playerColor)) {
+                        player.color = message.playerColor
+                        addTokensOnPlayerJoin(message, playerId, game);
+                        player.name = message.playerName
+                        takenColors.push(message.playerColor)
+                        sendMessageToAllPlayers(game, {
+                            type: "newPlayer",
+                            name: message.playerName,
+                            color: message.playerColor,
+                            playerId: message.playerId
+                        })
+                        return {
+                            type: 'pickedColor',
+                            message: `Successfully picked color!`,
+                            playerColor: message.playerColor,
+                            playerName: message.playerName
+                        }
+                    } else if (takenColors.includes(message.playerColor)) {
+                        return {
+                            type: 'colorTaken',
+                            message: `The color ${message.playerColor} is already taken.`,
+                            color: message.playerColor
+                        }
+                    } else if (takenNames.includes(message.playerName)) {
+                        return {
+                            type: 'nameTaken',
+                            message: `The name ${message.playerName} is already taken.`,
+                            name: message.playerName
                         }
                     }
-                
-                return { type: 'message', message: `There is no player with playerId: ${playerId} in this game.` }
+                }
+
+                return {type: 'message', message: `There is no player with playerId: ${playerId} in this game.`}
             }
-        }
-    return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
-        
-        case 'leaveGame':
+    }
+    return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
+
+case 'leaveGame':
     for (let i = 0; i < games.length; i++) {
         if (games[i].gameId === message.gameId) {
             const leavingPlayer = games[i].removePlayer(playerId);
             // if the game is empty delete the game
             if (games[i].player.length === 0 && games[i].winner.length === 0) {
                 games.splice(i, 1);
-                // TODO else if (games[i].player.length === 1) trigger winning screen
             } else {
-                games[i].calculateAvailableGameActions(board)
+                games[i].tokens = games[i].tokens.filter(token => token.color !== leavingPlayer.color);
+                if (games[i].status === "GAME_RUNNING") {
+                    games[i].calculateAvailableGameActions(board)
+                    let info = leavingPlayer.name + " (" + leavingPlayer.color + " player) left the game."
+                    sendUpdateToAllPlayers(games[i], info)
+                }
+
                 sendMessageToAllPlayers(games[i], {
                     type: 'aPlayerLeftGame',
                     colorOfLeavingPlayer: leavingPlayer.color,
                     nameOfLeavingPlayer: leavingPlayer.name,
                     numberOfPlayers: games[i].player.length
                 });
-                let info = leavingPlayer.name + " (" + leavingPlayer.color + " player) left the game."
-                sendUpdateToAllPlayers(games[i], info)
             }
             return {
                 type: 'leftGame',
@@ -189,7 +206,7 @@ function checkClientMessage(message, playerId) {
         type: 'message', message: 'There is no game with game id: ' + message.gameId +
             '. Meaning you are not in the game with this id.'
     };
-        case 'startGame':
+case 'startGame':
     //     transfer game status
     for (const game of games) {
         if (game.gameId === message.gameId) {
@@ -210,8 +227,8 @@ function checkClientMessage(message, playerId) {
             }
         }
     }
-    return { type: 'message', message: `There is no game with game id: ${message.gameId}.` };
-        case "action_MOVE":
+    return {type: 'message', message: `There is no game with game id: ${message.gameId}.`};
+case"action_MOVE":
     console.log(message);
     for (const game of games) {
         if (game.gameId === message.gameId) {
@@ -223,7 +240,7 @@ function checkClientMessage(message, playerId) {
         }
     }
     break;
-        case "action_LEAVE_HOUSE":
+case"action_LEAVE_HOUSE":
     for (const game of games) {
         if (game.gameId === message.gameId) {
             game.leaveHouse(board, message.playerId, message.tokenId)
@@ -234,7 +251,7 @@ function checkClientMessage(message, playerId) {
         }
     }
     break
-        case "action_BEAT":
+case"action_BEAT":
     for (const game of games) {
         if (game.gameId === message.gameId) {
             game.beatToken(board, message.tokenId, message.fieldId, game.currentDieValue)
@@ -245,7 +262,7 @@ function checkClientMessage(message, playerId) {
         }
     }
     break
-        case "action_ENTER_GOAL":
+case"action_ENTER_GOAL":
     for (const game of games) {
         if (game.gameId === message.gameId) {
             game.enterGoal(message.tokenId, message.fieldId)
@@ -266,15 +283,15 @@ function checkClientMessage(message, playerId) {
                 return
                 // If game is won partially
             } else if (game.isPlayerWinner(game.getPlayerById(message.playerId))) {
-                info = aPlayer.name  + " finished the game!"
+                info = aPlayer.name + " finished the game!"
             }
             game.calculateAvailableGameActions(board)
             sendUpdateToAllPlayers(game, info);
         }
     }
-    break
 
-        case "action_MOVE_GOAL":
+    break
+case"action_MOVE_GOAL":
     for (const game of games) {
         if (game.gameId === message.gameId) {
             game.moveInGoal(message.tokenId, message.fieldId)
@@ -286,7 +303,7 @@ function checkClientMessage(message, playerId) {
     }
     break
 
-        case "chatMessage":
+case"chatMessage":
     for (const game of games) {
         if (game.gameId === message.gameId) {
             let colorOfSendingPlayer = ""
@@ -305,11 +322,12 @@ function checkClientMessage(message, playerId) {
         }
     }
     break
-        default:
+default:
     console.log(`Server: Sorry, we are out of ${message.type}.`);
-    return { type: 'message', message: `Server: Sorry, we are out of ${message.type}.` };
+    return {type: 'message', message: `Server: Sorry, we are out of ${message.type}.`};
 }
 }
+
 
 function sendMessageToAllPlayers(game, jsonMessage) {
     for (const player of game.player) {
@@ -359,8 +377,6 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(fromClientMessage) {
         console.log(`Received message from ${playerId}: ${fromClientMessage}`);
         let sendBackToClient = checkClientMessage(JSON.parse(fromClientMessage), playerId);
-        console.log(`Current clients:`, [...clients.keys()]);
-        console.log('Current games:', games)
         // Check if empty just in case there is no message to return
         if (sendBackToClient) {
             ws.send(JSON.stringify(sendBackToClient));
@@ -371,9 +387,6 @@ wss.on('connection', function connection(ws) {
         clients.delete(playerId);
         // check if the client is still in a game
         leaveGameOnCloseWindow(playerId);
-
-        console.log(`Client disconnected: ${playerId}`);
-        console.log(`Currently connected clients:`, [...clients.keys()]);
     });
 
 
@@ -383,7 +396,7 @@ function leaveGameOnCloseWindow(playerId) {
     for (const game of games) {
         for (const player of game.player) {
             if (player.playerId === playerId) {
-                checkClientMessage({ type: 'leaveGame', gameId: game.gameId }, playerId);
+                checkClientMessage({type: 'leaveGame', gameId: game.gameId}, playerId);
                 return;
             }
         }

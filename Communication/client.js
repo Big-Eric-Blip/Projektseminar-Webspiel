@@ -13,6 +13,7 @@ let currentGame = {
     winners: []
 }
 let availableGameActions = [];
+let renderer;
 const messages = [];
 let players = [];
 let dieColor;
@@ -106,6 +107,7 @@ function sendMessage(message) {
     }
 }
 
+
 document.addEventListener('DOMContentLoaded', function () {
     // <id of the button being clicked>: name of the function below
     const buttonFunctions = {
@@ -125,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //Succesfull Join
         startJoinedGameButton: startJoinedGame,
         cancelButton: cancel,
+        muteMusic: muteMusic,
 
         //Lobby
         startGameButton: startGame,
@@ -153,6 +156,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+function muteMusic() {
+    const audioElement = document.getElementById('elevator');
+    const muteButton = document.getElementById('muteMusic');
+    
+        muteButton.addEventListener('click', () => {
+            if (audioElement.muted) {
+                audioElement.muted = false;
+                muteButton.textContent = 'Mute';
+            } else {
+                audioElement.muted = true;
+                muteButton.textContent = 'Unmute';
+            }
+        });
+}
+
 function openJoinGamePopup() {
     document.getElementById('joinGamePopup').style.display = 'block';
 }
@@ -166,10 +184,15 @@ function closeGameOver () {
 
 function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
+    const createGameForm = document.getElementById('createGameForm')
+    createGameForm.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+        }
+    });
 }
 
 function closeRulePopup() {
-
     document.getElementById('rulesPopup').style.display = 'none';
 }
 
@@ -220,6 +243,7 @@ function createGame() {
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
     console.log(dieColor);
     changeRollDiceImage("./pictures/" + dieColor + ".png")
+    
 
     if (playerName != '') {
         setGameState("LOBBY")
@@ -247,6 +271,13 @@ function changeRollDiceImage(newSrc) {
     if (rollDiceButtonImg) {
         rollDiceButtonImg.src = newSrc;
     }
+}
+function audioOn() {
+    const muteMusic = document.getElementById('muteMusic');
+    const elevator = document.getElementById('elevator');
+    elevator.play();
+    muteMusic.textContent = 'Mute';
+
 }
 
 function makeTextBlink(elementId) {
@@ -282,6 +313,19 @@ function startGame() {
 }
 
 function leaveGame() {
+    players = [];
+    if (currentGame.playerColor == 'blue') {
+        document.getElementById('blueOption').querySelector('input').disabled = false
+        document.getElementById('blueImage').src = "pictures/figureBlue.png"
+    } else if(currentGame.playerColor == 'yellow') {
+        document.getElementById('yellowOption').querySelector('input').disabled = false
+        document.getElementById('yellowImage').src = "pictures/figureYellow.png"
+    } else if(currentGame.playerColor == 'green') {
+        document.getElementById('greenOption').querySelector('input').disabled = false
+        document.getElementById('greenImage').src = "pictures/figureGreen.png"
+    }else if(currentGame.playerColor == 'red') {
+        document.getElementById('redOption').querySelector('input').disabled = false
+        document.getElementById('redImage').src = "pictures/figureRed.png"}
     setGameState('GAME_OVER')
     sendMessage({
         type: 'leaveGame',
@@ -318,7 +362,7 @@ function setPreGame() {
     document.getElementById('body').style.backgroundColor = '#f7ca4d'
     document.getElementById('body').style.marginTop = '100px'
     document.getElementById('main-area').style.marginLeft = '0'
-
+    
 }
 
 function setLobby() {
@@ -331,7 +375,7 @@ function setLobby() {
     document.getElementById('body').style.marginTop = '20px'
     document.getElementById('main-area').style.marginLeft = '40px'
     attachListenerToChatInput()
-
+    audioOn();
 }
 
 function setGameRunning() {
@@ -343,11 +387,23 @@ function setGameRunning() {
 }
 
 function endGame() {
+    displayLeaveGameMessage()
     currentGame.gameState = "GAME_OVER"
+    const lobbyElements = document.querySelectorAll('.lobby')
     const gameRunningElements = document.querySelectorAll('.game-running')
     const gameOverElements = document.querySelectorAll('.game-over')
+    lobbyElements.forEach((element) => element.style.display = 'none')
     gameRunningElements.forEach((element) => element.style.display = 'none')
     gameOverElements.forEach((element) => element.style.display = 'flex')
+}
+
+function displayLeaveGameMessage() {
+    if (currentGame.gameState === "LOBBY") {
+        // Don't show the game id when the game has already startedd
+        addMessageToChat('You left the game.\n Game id: ' + currentGame.gameId)
+    } else {
+        addMessageToChat('You left the game.')
+    }
 }
 
 function handleCreateGameResponse(response) {
@@ -410,6 +466,12 @@ function handleJoinGameResponse(response) {
         
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
+        const successfullJoinForm = document.getElementById('successfullJoinForm')
+        successfullJoinForm.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
 
         //Make taken colors unavailable
         if (response.takenColors.includes("blue")) {
@@ -450,10 +512,12 @@ function handleJoinGameResponse(response) {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    renderer = new Renderer("myCanvas");
+});
+
 function initRenderer(response) {
-    document.addEventListener("DOMContentLoaded", function () {
-        const renderer = new Renderer("myCanvas");
-    });
+    renderer = new Renderer("myCanvas");
 
     renderer.canvas.addEventListener('click', function (e) {
         onCanvasClick(e)
@@ -667,8 +731,19 @@ function stopBlinking() {
 }
 
 function renderPlayerPanels() {
-    console.log("Players: ", players)
+    console.log("Players: ", players);
+    
+    
+    for (let i = 0; i < 4; i++) {
+        const panel = document.getElementById(`player-panel${i + 1}`);
+        if (panel) {
+            // Hide the panel
+            panel.style.display = 'none';
+        }
+    }
+
     players = players.filter(player => player.name !== undefined);
+
     for (let i = 0; i < players.length; i++) {
         const panel = document.getElementById(`player-panel${i + 1}`);
         const pictureDiv = panel.querySelector('.player-panel-picture');
@@ -682,15 +757,15 @@ function renderPlayerPanels() {
         // Update text
         if (players[i].name === currentGame.playerName) {
             nameDiv.textContent = players[i].name + " - You";
-        }
-        else {
-            nameDiv.textContent = players[i].name
+        } else {
+            nameDiv.textContent = players[i].name;
         }
 
         // Show the panel   
         panel.style.display = 'flex';
     }
 }
+
 
 
 function dieAnimation(final) {
@@ -736,7 +811,7 @@ function handleGameUpdate(message) {
     }
     //update available game actions
     let tokens = JSON.parse(message.tokens)
-    if(message.winners) {
+    if (message.winners) {
         tokenToRenderer(tokens);
         let winners = JSON.parse(message.winners)
         winners.forEach(winner => {
@@ -838,6 +913,11 @@ function handleAPlayerLeftGame(message) {
     addMessageToChat(message.nameOfLeavingPlayer + ' (' + message.colorOfLeavingPlayer +
         ' player) left the game.\n' + (message.numberOfPlayers === 1 ? "You are the only player in the game." :
             ' There are now ' + message.numberOfPlayers + ' players in your game.'))
+
+        players = players.filter(player => player.name !== message.nameOfLeavingPlayer);
+        console.log("players:"+players)
+        renderPlayerPanels()
+
 }
 
 function handleLeftGame(message) {
