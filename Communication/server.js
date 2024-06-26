@@ -192,8 +192,8 @@ function checkClientMessage(message, playerId) {
                 type: 'leftGame',
                 gameId: message.gameId
             }
-        }
-    }
+        
+    
     return {
         type: 'message', message: 'There is no game with game id: ' + message.gameId +
             '. Meaning you are not in the game with this id.'
@@ -283,8 +283,8 @@ function checkClientMessage(message, playerId) {
             }
             game.calculateAvailableGameActions(board)
             sendUpdateToAllPlayers(game, info);
-        }
-    }
+        
+    
     break
 
         case "action_MOVE_GOAL":
@@ -321,9 +321,9 @@ function checkClientMessage(message, playerId) {
         default:
             console.log(`Server: Sorry, we are out of ${message.type}.`);
             return {type: 'message', message: `Server: Sorry, we are out of ${message.type}.`};
-    }
 }
 }
+
 
 function sendMessageToAllPlayers(game, jsonMessage) {
     for (const player of game.player) {
