@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>Stay cool, buddy!</title>
@@ -33,6 +34,7 @@
         <button id="rollDiceButton" class="server-communication-button game-running">
             <img src="pictures/dieBl.png" alt="Roll Dice">
         </button>
+        <button id="openRulesPopupIngameButton" class="server-communication-button game-running panel-button">Read the rules!</button>
         <button id="leaveGameButton" class="server-communication-button panel-button game-running">Leave Game</button>
         <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
     </div>
@@ -91,21 +93,30 @@
     <br>
     <br>
 
-    <!-- Begin Join Game Popup-->
-    <div class="popup" id="joinGamePopup">
-        <div class="popup-content">
-            <h2>Join an existing game</h2>
-            <h3>Please insert your URL/ID-Code:</h3>
-            <input type="text" id="joinGameInputId" placeholder="Enter game id">
-            <h3 id="joinGamePopupServerResponse"></h3>
-            <div class="button-container">
-                <button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
-                <button id="closeJoinGamePopupButton" class="server-communication-button popup-button">Back</button>
+        <!-- Begin Join Game Popup-->
+        <div class="popup" id="joinGamePopup">
+            <div class="popup-content">
+                <h2>Join an existing game</h2>
+                <h3>Please insert your URL/ID-Code:</h3>
+                <input type="text" id="joinGameInputId" placeholder="Enter game id">
+                <h3 id="joinGamePopupServerResponse"></h3>
+                <div class="button-container">
+                    <button id="joinGameButton" class="server-communication-button popup-button">Join Game</button>
+                    <button id="closeJoinGamePopupButton" class="server-communication-button popup-button">Back</button>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- End Join Game Popup-->
 
+        <!-- End Join Game Popup-->
+        <div id="gameOverPopup" class="popup">
+            <div class=popup-content>
+                <div class="gameOverPopupContent">
+                    <h1>AND THE WINNERS ARE</h1>
+                    <div id="winnersList"></div>
+                    <button id="closeGameOverPopup" class="server-communication-button red-button">Close</button>
+                </div>
+            </div>
+        </div>
     <!-- Begin Rules Popup-->
     <div class="popup" id="rulesPopup">
         <div class="popup-content">
@@ -184,71 +195,70 @@
     </div>
     <!-- End Rules Popup-->
 
-    <!-- Begin Succesfull Join Popup-->
-    <div class="popup" id="succesfullJoinPopup">
-        <div class="popup-content">
-            <h2>Join Successful!</h2>
-            <form>
-                <h3>Enter your Name</h3>
-                <input type="text" id="clientNameInput" placeholder="Enter name">
-                <h3>Select your Color</h3>
-                <label id="blueOption">
-                    <input type="radio" name="clientColor" value="blue">
-                    <img id="blueImage" src="pictures/figureBlue.png" alt="Blue" checked>
-                </label>
-                <label id="greenOption">
-                    <input type="radio" name="clientColor" value="green">
-                    <img id="greenImage" src="pictures/figureGreen.png" alt="Green">
-                </label>
-                <label id="redOption">
-                    <input type="radio" name="clientColor" value="red">
-                    <img id="redImage" src="pictures/figureRed.png" alt="Red">
-                </label>
-                <label id="yellowOption">
-                    <input type="radio" name="clientColor" value="yellow">
-                    <img id="yellowImage" src="pictures/figureYellow.png" alt="Yellow">
-                </label>
-            </form>
-            <h3>Select your Die Skin</h3>
-            <form>
-                <label>
-                    <input type="radio" name="dieOptionClient" value="dieBl">
-                    <img src="./pictures/dieBl.png" alt="Blue Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionClient" value="dieBlck" checked>
-                    <img src="./pictures/dieBlck.png" alt="Black Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionClient" value="diePurp">
-                    <img src="./pictures/diePurp.png" alt="Purple Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionClient" value="dieGrn">
-                    <img src="./pictures/dieGrn.png" alt="Green Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionClient" value="dieYlw">
-                    <img src="./pictures/dieYlw.png" alt="Yellow Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionClient" value="dieTurq">
-                    <img src="./pictures/dieTurq.png" alt="Turquoise Die">
-                </label>
-                <label>
-                    <input type="radio" name="dieOptionClient" value="dieRed">
-                    <img src="./pictures/dieRed.png" alt="Red Die">
-                </label>
-            </form>
-            <h3 id="joinGameErrorMessage" class="errorMessage"></h3>
-            <div class="button-container">
-                <button id="startJoinedGameButton" class="server-communication-button popup-button">Stay Cool, Buddy!
-                </button>
-                <button id="cancelButton" class="server-communication-button popup-button">Cancel</button>
+        <!-- Begin Succesfull Join Popup-->
+        <div class="popup" id="succesfullJoinPopup">
+            <div class="popup-content">
+                <h2>Join Successful!</h2>
+                <form>
+                    <h3>Enter your Name</h3>
+                    <input type="text" id="clientNameInput" placeholder="Enter name">
+                    <h3>Select your Color</h3>
+                    <label id="blueOption">
+                        <input type="radio" name="clientColor" value="blue">
+                        <img id="blueImage" src="pictures/figureBlue.png" alt="Blue" checked>
+                    </label>
+                    <label id="greenOption">
+                        <input type="radio" name="clientColor" value="green">
+                        <img id="greenImage" src="pictures/figureGreen.png" alt="Green">
+                    </label>
+                    <label id="redOption">
+                        <input type="radio" name="clientColor" value="red">
+                        <img id="redImage" src="pictures/figureRed.png" alt="Red">
+                    </label>
+                    <label id="yellowOption">
+                        <input type="radio" name="clientColor" value="yellow">
+                        <img id="yellowImage" src="pictures/figureYellow.png" alt="Yellow">
+                    </label>
+                </form>
+                <h3>Select your Die Skin</h3>
+                <form>
+                    <label>
+                        <input type="radio" name="dieOptionClient" value="dieBl">
+                        <img src="./pictures/dieBl.png" alt="Blue Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionClient" value="dieBlck" checked>
+                        <img src="./pictures/dieBlck.png" alt="Black Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionClient" value="diePurp">
+                        <img src="./pictures/diePurp.png" alt="Purple Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionClient" value="dieGrn">
+                        <img src="./pictures/dieGrn.png" alt="Green Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionClient" value="dieYlw">
+                        <img src="./pictures/dieYlw.png" alt="Yellow Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionClient" value="dieTurq">
+                        <img src="./pictures/dieTurq.png" alt="Turquoise Die">
+                    </label>
+                    <label>
+                        <input type="radio" name="dieOptionClient" value="dieRed">
+                        <img src="./pictures/dieRed.png" alt="Red Die">
+                    </label>
+                </form>
+                <h3 id="joinGameErrorMessage" class="errorMessage"></h3>
+                <div class="button-container">
+                    <button id="startJoinedGameButton" class="server-communication-button popup-button">Stay Cool,
+                        Buddy!</button>
+                    <button id="cancelButton" class="server-communication-button popup-button">Cancel</button>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- End Successfull Join Popup-->
 
 
     <!-- Begin Create Game Popup-->
@@ -311,10 +321,10 @@
             <div class="button-container">
                 <button id="createGameButton" class="server-communication-button popup-button">Create Game</button>
                 <button id="closeCreateGamePopupButton" class="server-communication-button popup-button">Back</button>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- End Create Game Popup-->
+        <!-- End Create Game Popup-->
 
 
     <div class="game-board lobby game-running" id="board">
