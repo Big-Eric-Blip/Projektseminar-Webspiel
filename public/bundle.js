@@ -497,6 +497,22 @@ function startJoinedGame() {
 function handleNewPlayer(response) {
     players.push({ name: response.name, color: response.color, playerId: response.playerId })
     renderPlayerPanels();
+    if(currentGame.playerColor==''){
+        if (response.color=="blue") {
+            document.getElementById('blueOption').querySelector('input').disabled = true
+            document.getElementById('blueImage').src = "pictures/figureBlueCross.png"
+        }else if (response.color=="yellow") {
+            document.getElementById('yellowOption').querySelector('input').disabled = true
+            document.getElementById('yellowImage').src = "pictures/figureYellowCross.png"
+        }else if (response.color=="green") {
+            document.getElementById('greenOption').querySelector('input').disabled = true
+            document.getElementById('greenImage').src = "pictures/figureGreenCross.png"
+        }else if (response.color=="red") {
+            document.getElementById('redOption').querySelector('input').disabled = true
+            document.getElementById('redImage').src = "pictures/figureRedCross.png"
+        }
+        
+    }
 }
 
 function handlePickedColor(response) {
