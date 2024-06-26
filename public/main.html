@@ -28,75 +28,76 @@
 </header>
 
 <body id="body">
-    <audio id="elevator" autoplay loop>
-        <source src="pictures/stayCoolBuddy.mp3" type="audio/mpeg">
-        Your Browser doesn't want to play audio....
-    </audio>
+<audio id="elevator" autoplay loop>
+    <source src="pictures/stayCoolBuddy.mp3" type="audio/mpeg">
+    Your Browser doesn't want to play audio....
+</audio>
 
-    <aside class="panel-right lobby game-running game-over">
-        <div>
-            <button id="leaveGameButton" class="server-communication-button options-button">Leave Game</button>
-            <button id="muteMusic" class="server-communication-button options-button">Mute</button>
-            <button id="openRulesPopupIngameButton" class="server-communication-button options-button">Read
-                the rules!</button>
-        </div>
-    </aside>
+<aside class="panel-right lobby game-running game-over">
+    <div>
+        <button id="leaveGameButton" class="server-communication-button options-button">Leave Game</button>
+        <button id="muteMusicButton" class="server-communication-button options-button">Mute</button>
+        <button id="openRulesPopupIngameButton" class="server-communication-button options-button">Read
+            the rules!
+        </button>
+    </div>
+</aside>
 
-    <aside class="panel-left lobby game-running game-over">
-        <div>
-            <button id="startGameButton" class="server-communication-button panel-button lobby">Start Game</button>
-            <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
-        </div>
-            <div class="die-btn-container">
-            <button id="rollDiceButton" class="server-communication-button game-running">
-                <img src="pictures/dieBl.png" alt="Roll Dice">
-            </button>
-        </div>
-        <div class="player-panel-container">
-            <div id="player-panel1" class="player-panel" style="display: none;">
-                <div class="player-panel-picture">
-                    <img src="pictures/figureYellow.png" alt="Image 1">
-                </div>
-                <div class="player-panel-name">
-                    <h2>Text for Panel 1</h2>
-                </div>
+<aside class="panel-left lobby game-running game-over">
+    <div>
+        <button id="startGameButton" class="server-communication-button panel-button lobby">Start Game</button>
+        <button id="landingPageButton" class="server-communication-button panel-button game-over">New Game</button>
+    </div>
+    <div class="die-btn-container">
+        <button id="rollDiceButton" class="server-communication-button game-running">
+            <img src="pictures/dieBl.png" alt="Roll Dice">
+        </button>
+    </div>
+    <div class="player-panel-container">
+        <div id="player-panel1" class="player-panel" style="display: none;">
+            <div class="player-panel-picture">
+                <img src="pictures/figureYellow.png" alt="Image 1">
             </div>
-            <div id="player-panel2" class="player-panel" style="display: none;">
-                <div class="player-panel-picture">
-                    <img src="pictures/figureBlue.png" alt="Image 2">
-                </div>
-                <div class="player-panel-name">
-                    <h2>Text for panel 2</h2>
-                </div>
-            </div>
-            <div id="player-panel3" class="player-panel" style="display: none;">
-                <div class="player-panel-picture">
-                    <img src="pictures/figureRed.png" alt="Image 3">
-                </div>
-                <div class="player-panel-name">
-                    <h2>Text for panel 3</h2>
-                </div>
-            </div>
-            <div id="player-panel4" class="player-panel" style="display: none;">
-                <div class="player-panel-picture">
-                    <img src="pictures/figureRed.png" alt="Image 3">
-                </div>
-                <div class="player-panel-name">
-                    <h2>Text for panel 3</h2>
-                </div>
+            <div class="player-panel-name">
+                <h2>Text for Panel 1</h2>
             </div>
         </div>
-        <div>
-            <button id="copyGameIdButton" class="server-communication-button panel-button lobby">Copy Game ID</button>
-            <p id="copyNotification" style="display:none;">Game ID copied to clipboard!</p>
-        </div>
-        <div class="chatAndInputContainer">
-            <div id="chat-container">
-                <div id="messagesContainer"></div>
+        <div id="player-panel2" class="player-panel" style="display: none;">
+            <div class="player-panel-picture">
+                <img src="pictures/figureBlue.png" alt="Image 2">
             </div>
-            <div id="input-container">
-                <input type="text" id="chatInput" class="lobby game-running game-over" placeholder="Type a message...">
-                <button class="server-communication-button panel-button lobby game-running game-over"
+            <div class="player-panel-name">
+                <h2>Text for panel 2</h2>
+            </div>
+        </div>
+        <div id="player-panel3" class="player-panel" style="display: none;">
+            <div class="player-panel-picture">
+                <img src="pictures/figureRed.png" alt="Image 3">
+            </div>
+            <div class="player-panel-name">
+                <h2>Text for panel 3</h2>
+            </div>
+        </div>
+        <div id="player-panel4" class="player-panel" style="display: none;">
+            <div class="player-panel-picture">
+                <img src="pictures/figureRed.png" alt="Image 3">
+            </div>
+            <div class="player-panel-name">
+                <h2>Text for panel 3</h2>
+            </div>
+        </div>
+    </div>
+    <div>
+        <button id="copyGameIdButton" class="server-communication-button panel-button lobby">Copy Game ID</button>
+        <p id="copyNotification" style="display:none;">Game ID copied to clipboard!</p>
+    </div>
+    <div class="chatAndInputContainer">
+        <div id="chat-container">
+            <div id="messagesContainer"></div>
+        </div>
+        <div id="input-container">
+            <input type="text" id="chatInput" class="lobby game-running game-over" placeholder="Type a message...">
+            <button class="server-communication-button panel-button lobby game-running game-over"
                     id="sendButton">Send
             </button>
         </div>

@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function muteMusic() {
     const audioElement = document.getElementById('elevator');
-    const muteButton = document.getElementById('muteMusic');
+    const muteButton = document.getElementById('muteMusicButton');
     
     if (audioElement.muted) {
         audioElement.muted = false;
