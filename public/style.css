@@ -60,6 +60,8 @@ summary::marker {
     background-color: #ffca1a;
     width: 90vh;
     height: 90vh;
+    max-height: 70vw;
+    max-width: 70vw;
 }
 
 .pre-game {
