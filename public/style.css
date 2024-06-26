@@ -1,3 +1,8 @@
+:root {
+    --button-color: crimson;
+    --button-hover-over-color: #9d0b28;
+}
+
 body {
     background-color: #f7ca4d;
     margin-top: 100px;
@@ -32,20 +37,21 @@ summary::marker {
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
 }
 
 .panel-left {
-    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     float: left;
-    width: 20vw;
+    width: 15vw;
+    min-width: 150px;
     height: 100%;
-    padding: 5px;
+    padding: 7px;
     margin-right: 10px;
     border-right-style: inset;
     background-color: lightgray;
 }
-
 
 
 #myCanvas {
@@ -56,7 +62,6 @@ summary::marker {
     height: 90vh;
     max-height: 70vw;
     max-width: 70vw;
-    
 }
 
 .pre-game {
@@ -77,7 +82,7 @@ summary::marker {
 
 .red-button {
     color: whitesmoke;
-    background-color: crimson;
+    background-color: var(--button-color);
     border: none;
     border-radius: 10px;
     font-size: large;
@@ -85,30 +90,39 @@ summary::marker {
     padding: 10px 20px;
     margin-left: 30px;
     margin-right: 30px;
+    cursor: pointer;
+}
 
+.red-button:hover {
+    background-color: var(--button-hover-over-color);
 }
 
 .popup-button {
     color: whitesmoke;
-    background-color: crimson;
+    background-color: var(--button-color);
     border: none;
     float: right;
-    border-radius:10px;
+    border-radius: 10px;
     font-size: medium;
     width: auto;
     padding: 8px 20px;
     margin-bottom: 30px;
     margin-left: 20px;
     display: block;
+    cursor: pointer;
 }
 
-.errorMessage{
+.popup-button:hover {
+    background-color: var(--button-hover-over-color);
+}
+
+.errorMessage {
     text-align: center;
 }
 
 .panel-button {
     color: whitesmoke;
-    background-color: crimson;
+    background-color: var(--button-color);
     border: none;
     border-radius: 10px;
     font-size: medium;
@@ -117,6 +131,11 @@ summary::marker {
     display: none;
     margin-bottom: 15px;
     margin-top: 15px;
+    cursor: pointer;
+}
+
+.panel-button:hover {
+    background-color: var(--button-hover-over-color);
 }
 
 .game-board {
@@ -169,7 +188,7 @@ summary {
 }
 
 .popup-content {
-    overflow-y:auto;
+    overflow-y: auto;
     background-color: rgba(217, 217, 217, 255);
     width: 50%;
     max-width: 800px;
@@ -195,16 +214,46 @@ summary {
     display: none;
 }
 
+ @keyframes blink {
+            0% { border-color: transparent; }
+            50% { border-color: red; }
+            100% { border-color: transparent; }
+        }
+        
 #rollDiceButton img {
-    color: whitesmoke;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    color: transparent;
     background-color: whitesmoke;
-    border: none;
+    border: black;
     border-radius: 10px;
     font-size: medium;
     width: 75%;
+    max-width: 150px;
     height: auto;
+    max-height: 150px;
     padding: 8px 20px;
 }
+
+        .blinking-border {
+            animation: blink 1s infinite;
+        }
+
+        #rollDiceButton img {
+            color: transparent;
+            background-color: whitesmoke;
+            border: black;
+            border-radius: 10px;
+            font-size: medium;
+            width: 75%;
+            height: auto;
+            padding: 8px 20px;
+        }
+
+        #rollDiceButton {
+            border: 2px solid transparent;
+        }
 
 #joinGameInputId {
     width: 80%; /* Adjust width as needed */
@@ -262,4 +311,115 @@ input[type="radio"]:checked + img {
 .dropdown-button {
     padding: 10px 20px;
     font-size: 16px;
+}
+
+.player-panel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+    align-items: stretch;
+}
+
+.player-panel {
+    display: flex;
+    width: 100%;
+
+    border :1px solid black;
+    align-items: stretch;
+    background-color: transparent;
+}
+
+.player-panel-picture {
+    flex: 0 0 20%;
+    align-items: center;
+}
+
+.player-panel-name {
+    flex: 0 0 80%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.player-panel-picture img {
+    width: 100%;
+    height: auto;
+}
+
+.player-panel-name h2 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.player-panel-name p {
+    margin: 0;
+}
+
+#chat-container {
+    resize: vertical;
+    overflow-y: auto;
+    height: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: azure;
+    padding: 10px;
+}
+
+.message {
+    background-color: azure;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: black;
+}
+
+.message.incoming {
+    align-self: flex-start;
+    max-width: 80%;
+    border: 7px groove;
+}
+
+.message.outgoing {
+    align-self: flex-end;
+    max-width: 80%;
+    border: 7px groove;
+}
+
+.message.server {
+    max-width: 100%;
+    border: 7px groove #af79ff;
+}
+
+#messagesContainer {
+    display: flex;
+    flex-direction: column;
+    font: medium Arial;
+}
+
+#input-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    width: 100%;
+}
+
+#chatInput {
+    width: 100%;
+    font: medium Arial;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: azure;
+}
+
+#sendButton {
+    margin-top: 0;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.chatAndInputContainer {
+    height: 50%;
+    max-height: 50%;
+    width: 100%;
 }
