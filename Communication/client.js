@@ -358,12 +358,10 @@ function endGame() {
 
 function displayLeaveGameMessage() {
     if (currentGame.gameState === "LOBBY") {
-        // Don't show the game id when the game has already started
-        document.getElementById("inGameMessage").innerHTML =
-            'You left the game.\n Game id: ' + currentGame.gameId
+        // Don't show the game id when the game has already startedd
+        addMessageToChat('You left the game.\n Game id: ' + currentGame.gameId)
     } else {
-        document.getElementById("inGameMessage").innerHTML =
-            'You left the game.'
+        addMessageToChat('You left the game.')
     }
 }
 
