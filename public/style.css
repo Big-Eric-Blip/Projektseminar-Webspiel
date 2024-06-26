@@ -259,30 +259,30 @@ summary {
         }
 
 #joinGameInputId {
-    width: 80%; /* Adjust width as needed */
-    padding: 10px; /* Add padding for spacing */
-    font-size: 16px; /* Adjust font size as needed */
-    margin: 0 auto; /* Center the input horizontally */
-    display: block; /* Ensure the input is a block element */
-    box-sizing: border-box; /* Include padding and border in total width */
+    width: 80%; 
+    padding: 10px; 
+    font-size: 16px; 
+    margin: 0 auto; 
+    display: block; 
+    box-sizing: border-box; 
 }
 
 #adminNameInput {
-    width: 80%; /* Adjust width as needed */
-    padding: 10px; /* Add padding for spacing */
-    font-size: 16px; /* Adjust font size as needed */
-    margin: 0 auto; /* Center the input horizontally */
-    display: block; /* Ensure the input is a block element */
-    box-sizing: border-box; /* Include padding and border in total width */
+    width: 80%; 
+    padding: 10px; 
+    font-size: 16px; 
+    margin: 0 auto; 
+    display: block; 
+    box-sizing: border-box; 
 }
 
 #clientNameInput {
-    width: 80%; /* Adjust width as needed */
-    padding: 10px; /* Add padding for spacing */
-    font-size: 16px; /* Adjust font size as needed */
-    margin: 0 auto; /* Center the input horizontally */
-    display: block; /* Ensure the input is a block element */
-    box-sizing: border-box; /* Include padding and border in total width */
+    width: 80%; 
+    padding: 10px; 
+    font-size: 16px; 
+    margin: 0 auto; 
+    display: block; 
+    box-sizing: border-box; 
 }
 
 label {
@@ -367,6 +367,7 @@ input[type="radio"]:checked + img {
     border-radius: 5px;
     background-color: azure;
     padding: 10px;
+    margin-top: 10px;
 }
 
 .message {
@@ -405,6 +406,7 @@ input[type="radio"]:checked + img {
     flex-direction: row;
     justify-content: left;
     width: 100%;
+    margin-top: 10px;
 }
 
 #chatInput {

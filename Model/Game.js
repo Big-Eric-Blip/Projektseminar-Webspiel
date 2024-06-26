@@ -57,6 +57,11 @@ class Game {
             }
         }
     }
+
+    /**
+     * Gathers the infos the client needs for the winner pop up
+     * @return {*[]} an array of objects containing winner name and move counter
+     */
     getWinners() {
         let winners = []
         for(let i = 0; i < this.winner.length; i++) {
@@ -75,9 +80,7 @@ class Game {
         let numberOfPlayers = this.player.length
         let turn = Math.floor(Math.random() * (numberOfPlayers)) + 1;
         this.player[turn - 1].setPlayersTurn(true)
-        console.log("Player " + this.player[turn - 1].getPlayerId() + " has player's turn set to TRUE")
     }
-
 
     /**
      * Helper function for calculateGameAction
@@ -172,12 +175,12 @@ class Game {
      * @param {Board} board the board the comparison applies to
      * @return {boolean} true if no further move is possible, else return false
      */
-    isFurtherMovingImpossible(token, board){
+    isFurtherMovingPossible(token, board){
         let currentFieldIndex = Number.parseInt(token.fieldId.substring(2)) -1
         if (currentFieldIndex === 3) {
-            return true
+            return false
         } else {
-            return !this.isGoalPathClear(board,1,currentFieldIndex)
+            return this.isGoalPathClear(board,1,currentFieldIndex+1)
         }
     }
 
@@ -227,7 +230,7 @@ class Game {
                 this.playersTokens.push(this.tokens[i])
                 if (this.tokens[i].inHouse === true) {
                     numberOfTokensInHouse++
-                } else if (this.tokens[i].inGoal === true && this.isFurtherMovingImpossible(this.tokens[i],board)) {
+                } else if (this.tokens[i].inGoal === true && !this.isFurtherMovingPossible(this.tokens[i],board)) {
                     numberOfTokensInGoal++
                 }
             }
@@ -516,12 +519,18 @@ class Game {
         //send enemy token back to house
         this.sendTokenBackToHouse(enemyToken, board)
         token.fieldId = contestedField
-        token.updateTraversedDistance(dieValue)
+        if(token.inHouse === true) {
+            token.inHouse = false
+            token.inGame = true
+            token.updateTraversedDistance(1)
+        } else {
+            token.updateTraversedDistance(dieValue)
+        }
+
         if (dieValue < 6) {
             this.updatePlayersTurn()
         }
         this.currentDieValue = 0
-
     }
 
     /**
@@ -547,6 +556,7 @@ class Game {
     sendTokenBackToHouse(token, board) {
         token.inGame = false
         token.inHouse = true
+        token.traversedDistance = 0
         let index = this.getHomeArrayIndex(token.color)
         let fieldIds = []
         //find empty home field
