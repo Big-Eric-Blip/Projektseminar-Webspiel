@@ -13,6 +13,7 @@ let currentGame = {
     winners: []
 }
 let availableGameActions = [];
+let renderer;
 
 let dieColor;
 
@@ -97,6 +98,7 @@ function sendMessage(message) {
     }
 }
 
+
 document.addEventListener('DOMContentLoaded', function () {
     // <id of the button being clicked>: name of the function below
     const buttonFunctions = {
@@ -123,8 +125,8 @@ document.addEventListener('DOMContentLoaded', function () {
         //Game Buttons
         rollDiceButton: rollDice,
 
-         // Copy Game ID
-         copyGameIdButton: copyGameIdToClipboard,
+        // Copy Game ID
+        copyGameIdButton: copyGameIdToClipboard,
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -150,20 +152,23 @@ function closeJoinGamePopup() {
 function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
     const createGameForm = document.getElementById('createGameForm')
-    createGameForm.addEventListener('keydown', function(event) {
+    createGameForm.addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             event.preventDefault();
         }
     });
 }
+
 function closeRulePopup() {
 
     document.getElementById('rulesPopup').style.display = 'none';
 }
+
 function closeCreateGamePopup() {
     document.getElementById('createGameErrorMessage').textContent = '';
     document.getElementById('createGamePopup').style.display = 'none';
 }
+
 function openRulesPopup() {
     document.getElementById('rulesPopup').style.display = 'block';
 }
@@ -178,7 +183,7 @@ function cancel() {
 
 function copyGameIdToClipboard() {
     const gameIdElement = document.getElementById('gameId');
-    const gameIdText = gameIdElement.textContent.split(": ")[1]; 
+    const gameIdText = gameIdElement.textContent.split(": ")[1];
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(gameIdText).then(() => {
@@ -199,7 +204,6 @@ function showCopyNotification() {
         notificationElement.style.display = 'none';
     }, 2000);
 }
-
 
 
 function createGame() {
@@ -341,7 +345,7 @@ function endGame() {
     gameOverElements.forEach((element) => element.style.display = 'block')
 }
 
-function displayLeaveGameMessage(){
+function displayLeaveGameMessage() {
     if (currentGame.gameState === "LOBBY") {
         // Don't show the game id when the game has already started
         document.getElementById("inGameMessage").innerHTML =
@@ -403,7 +407,7 @@ function handleJoinGameResponse(response) {
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
         const successfullJoinForm = document.getElementById('successfullJoinForm')
-        successfullJoinForm.addEventListener('keydown', function(event) {
+        successfullJoinForm.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
             }
@@ -452,10 +456,12 @@ function handleJoinGameResponse(response) {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    renderer = new Renderer("myCanvas");
+});
+
 function initRenderer(response) {
-    document.addEventListener("DOMContentLoaded", function () {
-        const renderer = new Renderer("myCanvas");
-    });
+    renderer = new Renderer("myCanvas");
 
     renderer.canvas.addEventListener('click', function (e) {
         onCanvasClick(e)
@@ -644,7 +650,7 @@ function handleGameUpdate(message) {
     }
     //update available game actions
     let tokens = JSON.parse(message.tokens)
-    if(message.winners) {
+    if (message.winners) {
         tokenToRenderer(tokens);
         let winners = JSON.parse(message.winners)
         winners.forEach(winner => {
@@ -778,7 +784,7 @@ function onCanvasClick(event) {
         ) {
             console.log(`Game piece clicked:`, token);
             currentGame.currentTokenId = token.tn
-            moveToken(token.tn)           
+            moveToken(token.tn)
         }
     });
 }

@@ -14,6 +14,7 @@ let currentGame = {
     winners: []
 }
 let availableGameActions = [];
+let renderer;
 
 let dieColor;
 
@@ -98,6 +99,7 @@ function sendMessage(message) {
     }
 }
 
+
 document.addEventListener('DOMContentLoaded', function () {
     // <id of the button being clicked>: name of the function below
     const buttonFunctions = {
@@ -124,8 +126,8 @@ document.addEventListener('DOMContentLoaded', function () {
         //Game Buttons
         rollDiceButton: rollDice,
 
-         // Copy Game ID
-         copyGameIdButton: copyGameIdToClipboard,
+        // Copy Game ID
+        copyGameIdButton: copyGameIdToClipboard,
     };
 
     const buttons = document.querySelectorAll('.server-communication-button');
@@ -151,20 +153,23 @@ function closeJoinGamePopup() {
 function openCreateGamePopup() {
     document.getElementById('createGamePopup').style.display = 'block';
     const createGameForm = document.getElementById('createGameForm')
-    createGameForm.addEventListener('keydown', function(event) {
+    createGameForm.addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             event.preventDefault();
         }
     });
 }
+
 function closeRulePopup() {
 
     document.getElementById('rulesPopup').style.display = 'none';
 }
+
 function closeCreateGamePopup() {
     document.getElementById('createGameErrorMessage').textContent = '';
     document.getElementById('createGamePopup').style.display = 'none';
 }
+
 function openRulesPopup() {
     document.getElementById('rulesPopup').style.display = 'block';
 }
@@ -179,7 +184,7 @@ function cancel() {
 
 function copyGameIdToClipboard() {
     const gameIdElement = document.getElementById('gameId');
-    const gameIdText = gameIdElement.textContent.split(": ")[1]; 
+    const gameIdText = gameIdElement.textContent.split(": ")[1];
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(gameIdText).then(() => {
@@ -200,7 +205,6 @@ function showCopyNotification() {
         notificationElement.style.display = 'none';
     }, 2000);
 }
-
 
 
 function createGame() {
@@ -342,7 +346,7 @@ function endGame() {
     gameOverElements.forEach((element) => element.style.display = 'block')
 }
 
-function displayLeaveGameMessage(){
+function displayLeaveGameMessage() {
     if (currentGame.gameState === "LOBBY") {
         // Don't show the game id when the game has already started
         document.getElementById("inGameMessage").innerHTML =
@@ -404,7 +408,7 @@ function handleJoinGameResponse(response) {
         document.getElementById('joinGamePopup').style.display = 'none'
         document.getElementById('succesfullJoinPopup').style.display = 'block'
         const successfullJoinForm = document.getElementById('successfullJoinForm')
-        successfullJoinForm.addEventListener('keydown', function(event) {
+        successfullJoinForm.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
             }
@@ -453,10 +457,12 @@ function handleJoinGameResponse(response) {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    renderer = new Renderer("myCanvas");
+});
+
 function initRenderer(response) {
-    document.addEventListener("DOMContentLoaded", function () {
-        const renderer = new Renderer("myCanvas");
-    });
+    renderer = new Renderer("myCanvas");
 
     renderer.canvas.addEventListener('click', function (e) {
         onCanvasClick(e)
@@ -645,7 +651,7 @@ function handleGameUpdate(message) {
     }
     //update available game actions
     let tokens = JSON.parse(message.tokens)
-    if(message.winners) {
+    if (message.winners) {
         tokenToRenderer(tokens);
         let winners = JSON.parse(message.winners)
         winners.forEach(winner => {
@@ -779,29 +785,26 @@ function onCanvasClick(event) {
         ) {
             console.log(`Game piece clicked:`, token);
             currentGame.currentTokenId = token.tn
-            moveToken(token.tn)           
+            moveToken(token.tn)
         }
     });
 }
-},{"../View/Renderer":2}],2:[function(require,module,exports){
 
+},{"../View/Renderer":2}],2:[function(require,module,exports){
 class Renderer {
     constructor(canvasID) {
-
         this.scale = 1;
         this.tokens = [];
         this.fields = [];
         this.canvas = document.getElementById(canvasID);
         this.ctx = this.canvas.getContext("2d");
-
+        this.images = this.loadImages();
         this.drawFields();
         this.drawTokens();
-
     }
 
 
     drawFields() {
-        console.log(this.fields)
         let ctx = this.ctx;
         let size = 45 * this.scale;
         this.fields.forEach((field) => {
@@ -813,29 +816,33 @@ class Renderer {
         });
     }
 
+    loadImages() {
+        let images = {};
+        images['red'] = new Image();
+        images['red'].src = 'pictures/figureRed.png';
+        images['blue'] = new Image();
+        images['blue'].src = 'pictures/figureBlue.png';
+        images['green'] = new Image();
+        images['green'].src = 'pictures/figureGreen.png';
+        images['yellow'] = new Image();
+        images['yellow'].src = 'pictures/figureYellow.png';
+        return images;
+    }
 
     drawTokens() {
-
         let ctx = this.ctx;
-
-
-        let size = 35 * this.scale;
-
+        let size = 50 * this.scale;
         this.tokens.forEach((token) => {
-            ctx.beginPath();
-            ctx.scale(1, 1)
-            ctx.fillStyle = token.color;
-            ctx.fillRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
-            ctx.strokeStyle = "black";
-            ctx.strokeRect(token.x * this.scale - size / 2, token.y * this.scale - size / 2, size, size);
-            ctx.stroke();
+            let img = this.images[token.color];
+            ctx.drawImage(
+                img,
+                token.x * this.scale - size / 2,
+                token.y * this.scale - size / 2,
+                size,
+                size);
         });
     }
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-    window.renderer = new Renderer("myCanvas");
-})
 
 module.exports = Renderer;
 },{}],3:[function(require,module,exports){
