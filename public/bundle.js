@@ -920,6 +920,7 @@ function handleAPlayerLeftGame(message) {
 }
 
 function handleLeftGame(message) {
+    currentGame.gameId = ""
     addMessageToChat('You left the game.\n Game id: ' + message.gameId)
 }
 
