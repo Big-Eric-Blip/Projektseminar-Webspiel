@@ -73,14 +73,12 @@
                 <h2>Text for panel 3</h2>
             </div>
         </div>
-    <p id="gameId" class="lobby"></p> 
-    <button id="copyGameIdButton" class="server-communication-button panel-button lobby">Copy Game ID</button>
-    <p id="copyNotification" style="display:none;">Game ID copied to clipboard!</p>
+        <button id="copyGameIdButton" class="server-communication-button panel-button lobby">Copy Game ID</button>
+        <p id="copyNotification" style="display:none;">Game ID copied to clipboard!</p>
+    </div>
 </aside>
 
 <div class="main-area" id="main-area">
-    <!---->
-    <!--<div id="resultDice" display='none'>Hier wird dein Würfelergebnis angezeigt</div>-->
     <br>
     <br>
 
@@ -97,66 +95,87 @@
             </div>
         </div>
     </div>
+    <!-- End Join Game Popup-->
 
-
-        <!-- End Join Game Popup-->
-        <!-- Rules Popup-->
-        <div class="popup" id="rulesPopup">
-            <div class="popup-content">
-                <h1>Game Rules - Stay Cool Buddy!</h1>
-                <details>
-                    <summary>Goal of the game</summary>
-                    <ul>
-                        <li>Ready, set, go! The aim of this thrilling game is to be the first to get all four of your pieces from the starting square to the finish line.</li>
-                    </ul>
-                </details>
-                <details>
-                    <summary>Setting up the fun</summary>
-                    <ul>
-                        <li>Now for the fun part! Each player gets to choose a colour, and then the playing pieces are placed at the start of the game.</li>
-                        <li>Once all players are ready to go, it's time for the game creator to get the party started!</li>
-                        <li>A random player gets to start, and then the next player has to stay cool.</li>
-                    </ul>
-                </details>
-                <details>
-                    <summary>Coming out of the house</summary>
-                    <ul>
-                        <li>When all the figures are at home, you can roll the dice three times!</li>
-                        <li>A player must roll a 6 to move one of his figures from the starting square to the starting square in his colour (the first square of the circuit).</li>
-                        <li>If a 6 is rolled, a piece from home must be placed on the playing field.</li>
-                        <li>The starting field must be cleared immediately if possible.</li>
-                        <li>If a player no longer has any pieces in the starting square, he may also move on with the pieces on the playing field.</li>
-                    </ul>
-                </details>
-                <details>
-                    <summary>Moving the token</summary>
-                    <ul>
-                        <li>Once the game begins, the player gets to move their figure in a clockwise direction, with the number of dice rolled determining how far they go!</li>
-                        <li>If the player rolls a 6, he may roll the dice again.</li>
-                        <li>If a piece lands on a square occupied by an opponent's piece, the opponent's piece is returned to its home ("beat").</li>
-                        <li>You can't capture your own pieces, and you can't place them on squares with your own pieces.</li>
-                    </ul>
-                </details>
-                <details>
-                    <summary>Just pull to the finish and you'll be done!</summary>
-                    <ul>
-                        <li>Once a piece has made its way around the playing field, it reaches the finish line! This is where it's unbeatable!</li>
-                        <li>Let's say you've got a figure three spaces in front of the target area. If you roll a 4, that figure can move to the target and you've won!</li>
-                        <li>Once all the pawns are either at home or at the finish, it's time to roll the dice again!</li>
-                    </ul>
-                </details>
-                <details>
-                    <summary>The end is near</summary>
-                    <ul>
-                        <li>The game ends for each player when all four figures in their own colour have reached the finish area. Congratulations to the winner!</li>
-                        <li>The remaining players are all in it to win! Whoever is last on the field has lost, but the rest of the players are going all out to avoid that fate.</li>
-                    </ul>
-                </details>
-                <button id="closeRulePopupButton" class="server-communication-button popup-button">Close</button>
-            </div>
+    <!-- Begin Rules Popup-->
+    <div class="popup" id="rulesPopup">
+        <div class="popup-content">
+            <h1>Game Rules - Stay Cool Buddy!</h1>
+            <details>
+                <summary>Goal of the game</summary>
+                <ul>
+                    <li>Ready, set, go! The aim of this thrilling game is to be the first to get all four of your pieces
+                        from the starting square to the finish line.
+                    </li>
+                </ul>
+            </details>
+            <details>
+                <summary>Setting up the fun</summary>
+                <ul>
+                    <li>Now for the fun part! Each player gets to choose a colour, and then the playing pieces are
+                        placed at the start of the game.
+                    </li>
+                    <li>Once all players are ready to go, it's time for the game creator to get the party started!</li>
+                    <li>A random player gets to start, and then the next player has to stay cool.</li>
+                </ul>
+            </details>
+            <details>
+                <summary>Coming out of the house</summary>
+                <ul>
+                    <li>When all the figures are at home, you can roll the dice three times!</li>
+                    <li>A player must roll a 6 to move one of his figures from the starting square to the starting
+                        square in his colour (the first square of the circuit).
+                    </li>
+                    <li>If a 6 is rolled, a piece from home must be placed on the playing field.</li>
+                    <li>The starting field must be cleared immediately if possible.</li>
+                    <li>If a player no longer has any pieces in the starting square, he may also move on with the pieces
+                        on the playing field.
+                    </li>
+                </ul>
+            </details>
+            <details>
+                <summary>Moving the token</summary>
+                <ul>
+                    <li>Once the game begins, the player gets to move their figure in a clockwise direction, with the
+                        number of dice rolled determining how far they go!
+                    </li>
+                    <li>If the player rolls a 6, he may roll the dice again.</li>
+                    <li>If a piece lands on a square occupied by an opponent's piece, the opponent's piece is returned
+                        to its home ("beat").
+                    </li>
+                    <li>You can't capture your own pieces, and you can't place them on squares with your own pieces.
+                    </li>
+                </ul>
+            </details>
+            <details>
+                <summary>Just pull to the finish and you'll be done!</summary>
+                <ul>
+                    <li>Once a piece has made its way around the playing field, it reaches the finish line! This is
+                        where it's unbeatable!
+                    </li>
+                    <li>Let's say you've got a figure three spaces in front of the target area. If you roll a 4, that
+                        figure can move to the target and you've won!
+                    </li>
+                    <li>Once all the pawns are either at home or at the finish, it's time to roll the dice again!</li>
+                </ul>
+            </details>
+            <details>
+                <summary>The end is near</summary>
+                <ul>
+                    <li>The game ends for each player when all four figures in their own colour have reached the finish
+                        area. Congratulations to the winner!
+                    </li>
+                    <li>The remaining players are all in it to win! Whoever is last on the field has lost, but the rest
+                        of the players are going all out to avoid that fate.
+                    </li>
+                </ul>
+            </details>
+            <button id="closeRulePopupButton" class="server-communication-button popup-button">Close</button>
         </div>
+    </div>
+    <!-- End Rules Popup-->
 
-        <!-- Begin Succesfull Join Popup-->
+    <!-- Begin Succesfull Join Popup-->
     <div class="popup" id="succesfullJoinPopup">
         <div class="popup-content">
             <h2>Join Successful!</h2>
@@ -214,11 +233,13 @@
             </form>
             <h3 id="joinGameErrorMessage" class="errorMessage"></h3>
             <div class="button-container">
-                <button id="startJoinedGameButton" class="server-communication-button popup-button">Stay Cool, Buddy!</button>
+                <button id="startJoinedGameButton" class="server-communication-button popup-button">Stay Cool, Buddy!
+                </button>
                 <button id="cancelButton" class="server-communication-button popup-button">Cancel</button>
             </div>
         </div>
     </div>
+    <!-- End Successfull Join Popup-->
 
 
     <!-- Begin Create Game Popup-->
@@ -284,17 +305,18 @@
             </div>
         </div>
     </div>
-        <!-- End Create Game Popup-->
+    <!-- End Create Game Popup-->
 
 
-        <div class="game-board lobby game-running" id="board">
-            <canvas id="myCanvas" width="1100" height="1100"></canvas>
-        </div>
-        <div class="landing-page pre-game"><img class='img1' src="./pictures/background_landing_page.png"
-                alt="Logo of 'Stay cool, buddy!'">
-        </div>
-        
+    <div class="game-board lobby game-running" id="board">
+        <canvas id="myCanvas" width="1100" height="1100"></canvas>
+    </div>
+    <div class="landing-page pre-game"><img class='img1' src="./pictures/background_landing_page.png"
+                                            alt="Logo of 'Stay cool, buddy!'">
+    </div>
+
     <br>
+</div>
 </body>
 
 </html>
