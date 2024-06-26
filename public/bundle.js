@@ -634,7 +634,7 @@ function handleGameUpdate(message) {
         console.log(currentGame.winners)
         //TODO include popup with game over screen
         //TODO remove the following two lines, they are only for testing
-        document.getElementById("inGameMessage").innerHTML = message.message
+        addMessageToChat(message.message)
         tokenToRenderer(tokens);
     } else {
         let gameActions = JSON.parse(message.gameActions)
@@ -644,9 +644,9 @@ function handleGameUpdate(message) {
             dieAnimation(message.dieValue)
         }
         if (isGameActionNone()) {
-            console.log("You have no available game action. It's the next players turn.")
+            addMessageToChat("You have no available game action. It's the next players Turn.")
         } else {
-            document.getElementById("inGameMessage").innerHTML = message.message
+            addMessageToChat(message.message)
             tokenToRenderer(tokens);
         }
     }
