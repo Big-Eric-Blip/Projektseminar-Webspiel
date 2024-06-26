@@ -188,6 +188,7 @@ function checkClientMessage(message, playerId) {
                             let info = leavingPlayer.name + " (" + leavingPlayer.color + " player) left the game."
                             sendUpdateToAllPlayers(games[i], info)
                         }
+                        games[i].tokens = games[i].tokens.filter(token => token.color !== leavingPlayer.color);
                         sendMessageToAllPlayers(games[i], {
                             type: 'aPlayerLeftGame',
                             colorOfLeavingPlayer: leavingPlayer.color,
