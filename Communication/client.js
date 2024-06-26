@@ -25,7 +25,6 @@ function initWebSocketConnection() {
 
     // Connect to server
     socket.addEventListener('open', function (event) {
-        console.log('Connection established.');
         isSocketOpen = true;
     });
 
@@ -40,14 +39,12 @@ function initWebSocketConnection() {
 
     // Close connection
     socket.addEventListener('close', function (event) {
-        console.log('Connection closed.');
         isSocketOpen = false;
     });
 }
 
 function fromServerMessage(event) {
     const message = JSON.parse(event.data);
-    console.log('Message from server:', message);
     switch (message.type) {
         case 'createGame':
             handleCreateGameResponse(message);
@@ -206,7 +203,6 @@ function openRulesPopup() {
 }
 
 function cancel() {
-    //ToDo checken
     leaveGame()
     document.getElementById('succesfullJoinPopup').style.display = 'none';
     setGameState("PRE_GAME")
@@ -218,7 +214,6 @@ function copyGameIdToClipboard() {
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(gameIdText).then(() => {
-            console.log('Game ID wurde in die Zwischenablage kopiert.');
             showCopyNotification();
         }).catch(err => {
             console.error('Fehler beim Kopieren der Game ID: ', err);
@@ -241,7 +236,6 @@ function createGame() {
     const selectedColor = document.querySelector('input[name="playerColor"]:checked').value;
     const playerName = document.getElementById('adminNameInput').value;
     dieColor = document.querySelector('input[name="dieOptionServer"]:checked').value;
-    console.log(dieColor);
     changeRollDiceImage("./pictures/" + dieColor + ".png")
     
 
@@ -416,7 +410,6 @@ function handleCreateGameResponse(response) {
 
     addMessageToChat("Nice. You've created a game. Send the game id to your friends to join your game: "
         + currentGame.gameId)
-    console.log(currentGame);
     initRenderer(response)
 }
 
@@ -461,7 +454,6 @@ function handleNameTaken(response) {
 }
 
 function handleJoinGameResponse(response) {
-    console.log("response"+response)
     if (response.playerId) {
         
         document.getElementById('joinGamePopup').style.display = 'none'
@@ -508,7 +500,6 @@ function handleJoinGameResponse(response) {
     } else {
         let serverResponseText = document.getElementById("joinGamePopupServerResponse");
         serverResponseText.innerHTML = response.message;
-        console.log(response.message);
     }
 }
 
@@ -525,7 +516,6 @@ function initRenderer(response) {
     renderer.fields = response.fields;
     renderer.drawFields();
     renderer.drawTokens();
-    console.log(renderer.fields)
 }
 
 function startJoinedGame() {
@@ -621,7 +611,6 @@ function isPlayerEligibleForGameAction(action) {
             }
         }
     }
-    console.log(currentGame.playerId + " is not eligible for game action " + action)
     return false
 }
 
@@ -668,12 +657,8 @@ function validateMoveToken(tokenId) {
                 return availableGameActions[i]
             }
         }
-        //TODO needs message in log? "This token cannot be moved" (after log merge)
-        console.log("This token cannot be moved!")
         return false
     } else {
-        //TODO needs message in screen log? "It's not your turn to play"
-        console.log("It's not your turn to play!")
         return false
     }
 }
@@ -695,8 +680,6 @@ function chooseGameAction(gameAction, tokenId) {
 
 
 function renderPlayersTurn() {
-    console.log("AvailableGameActions: ", availableGameActions)
-    console.log("Players: ", players)
     stopBlinking()
     for (let i = 0; i < players.length; i++) {
         document.getElementById(`player-panel${i + 1}`).style.backgroundColor = "transparent";
@@ -730,9 +713,7 @@ function stopBlinking() {
     button.classList.remove('blinking-border');
 }
 
-function renderPlayerPanels() {
-    console.log("Players: ", players);
-    
+function renderPlayerPanels() {    
     
     for (let i = 0; i < 4; i++) {
         const panel = document.getElementById(`player-panel${i + 1}`);
@@ -819,10 +800,7 @@ function handleGameUpdate(message) {
                 playerName: winner.playerName, moveCounter: winner.moveCounter
             })
         })
-        console.log(currentGame.winners)
-        //TODO include popup with game over screen
         displayGameOver(winners);
-        //TODO remove the following two lines, they are only for testing
         addMessageToChat(message.message)
         tokenToRenderer(tokens);
     } else {
@@ -911,7 +889,6 @@ function handleAPlayerLeftGame(message) {
             ' There are now ' + message.numberOfPlayers + ' players in your game.'))
 
         players = players.filter(player => player.name !== message.nameOfLeavingPlayer);
-        console.log("players:"+players)
         renderPlayerPanels()
 
 }
@@ -925,9 +902,6 @@ function handleGameStarted(message) {
     handleGameUpdate(message)
     renderPlayersTurn()
     setGameState("GAME_RUNNING")
-    console.log("The current state is: " + currentGame.gameState);
-
-
 }
 
 function handleServerMessage(response) {
@@ -957,7 +931,6 @@ function onCanvasClick(event) {
             clickPoint.y >= tokenY - tokenSize / 2 &&
             clickPoint.y <= tokenY + tokenSize / 2
         ) {
-            console.log(`Game piece clicked:`, token);
             currentGame.currentTokenId = token.tn
             moveToken(token.tn)
         }
@@ -1051,8 +1024,6 @@ function attachListenerToChatInput() {
  * Handles a message from another player
  * */
 function handleIncomingChatMessages(message) {
-    console.log(message)
-    console.log(currentGame.playerColor)
     if (message.playerColor !== currentGame.playerColor) {
         addMessageToChat(message.chatMessage, 'incoming', message.playerColor)
     }

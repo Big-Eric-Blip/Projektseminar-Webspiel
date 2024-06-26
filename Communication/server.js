@@ -29,15 +29,12 @@ function checkClientMessage(message, playerId) {
             for (const game of games) {
                 if (game.gameId === message.gameId) {
                     let dieValue = (Math.floor(Math.random() * 6) + 1)
-                    //keep the following line for testing purposes
-                    //let dieValue = 6
                     let aPlayer = game.player[game.getCurrentPlayerIndex()];
                     game.currentDieValue = dieValue
                     game.calculateAvailableGameActions(board)
-                    //let info = aPlayer.name + " rolled a " + dieValue
+                    
                     sendMessageToAllPlayers(game, {
                         type: 'updateGame',
-                        //message: info,
                         status: game.status,
                         gameId: game.gameId,
                         gameActions: JSON.stringify(game.gameActions),
