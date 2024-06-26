@@ -195,16 +195,30 @@ summary {
     display: none;
 }
 
-#rollDiceButton img {
-    color: whitesmoke;
-    background-color: whitesmoke;
-    border: none;
-    border-radius: 10px;
-    font-size: medium;
-    width: 75%;
-    height: auto;
-    padding: 8px 20px;
-}
+ @keyframes blink {
+            0% { border-color: transparent; }
+            50% { border-color: red; }
+            100% { border-color: transparent; }
+        }
+
+        .blinking-border {
+            animation: blink 1s infinite;
+        }
+
+        #rollDiceButton img {
+            color: transparent;
+            background-color: whitesmoke;
+            border: black;
+            border-radius: 10px;
+            font-size: medium;
+            width: 75%;
+            height: auto;
+            padding: 8px 20px;
+        }
+
+        #rollDiceButton {
+            border: 2px solid transparent;
+        }
 
 #joinGameInputId {
     width: 80%; /* Adjust width as needed */
@@ -262,4 +276,47 @@ input[type="radio"]:checked + img {
 .dropdown-button {
     padding: 10px 20px;
     font-size: 16px;
+}
+
+.player-panel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+    align-items: stretch;
+}
+
+.player-panel {
+    display: flex;
+    width: 100%;
+
+    border :1px solid black;
+    align-items: stretch;
+    background-color: transparent;
+}
+
+.player-panel-picture {
+    flex: 0 0 20%;
+    align-items: center;
+}
+
+.player-panel-name {
+    flex: 0 0 80%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.player-panel-picture img {
+    width: 100%;
+    height: auto;
+}
+
+.player-panel-name h2 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.player-panel-name p {
+    margin: 0;
 }
