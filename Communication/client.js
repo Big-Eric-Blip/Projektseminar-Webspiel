@@ -1,5 +1,5 @@
 //constant variables
-const url = "ws://192.168.43.231:3000";
+const url = "ws://127.0.0.1:3000";
 const Renderer = require('../View/Renderer');
 
 //dynamic variables
